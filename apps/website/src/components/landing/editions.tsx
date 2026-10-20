@@ -13,7 +13,7 @@ const selfHosted = [
 const cloud = [
   'Same UI and API as self-hosted',
   'Multi-region',
-  'Retention up to [N] days',
+  'Retention up to 90 days',
   'Export your data and move to self-hosted any time',
 ]
 
