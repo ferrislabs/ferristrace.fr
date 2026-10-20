@@ -1,8 +1,12 @@
 ---
 import Base from '../layouts/base.astro'
-import { NotFound } from '../components/landing'
+import { NotFoundPage } from '../components/not-found'
 ---
 
-<Base title="404 — Page not found" description="That page does not exist.">
-  <NotFound client:load />
+<Base
+  title="Page not found · Cometrace"
+  description="Nothing lives at this address."
+  robots="noindex"
+>
+  <NotFoundPage client:load />
 </Base>

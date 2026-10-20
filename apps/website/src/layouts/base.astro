@@ -10,9 +10,11 @@ interface Props {
   thumbnail?: string
   /** Path or absolute URL of the canonical page, e.g. "/changelog". */
   canonical?: string
+  /** Robots directive, e.g. "noindex" for pages that must stay out of search. */
+  robots?: string
 }
 
-const { title, description, thumbnail, canonical } = Astro.props
+const { title, description, thumbnail, canonical, robots } = Astro.props
 // Only with a configured site: a canonical pointing at localhost is worse
 // than none at all.
 const canonicalUrl = canonical && Astro.site ? new URL(canonical, Astro.site).href : undefined
@@ -27,6 +29,7 @@ const thumbnailUrl = thumbnail ?? siteConfig.thumbnail
     <link rel="icon" type="image/svg+xml" href={siteConfig.favicon} />
     {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
     <meta name="description" content={description ?? siteConfig.description} />
+    {robots && <meta name="robots" content={robots} />}
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description ?? siteConfig.description} />
     <meta property="og:image" content={thumbnailUrl} />
