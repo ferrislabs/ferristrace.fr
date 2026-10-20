@@ -1,6 +1,7 @@
 import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { afterEach, describe, expect, it } from 'vitest'
+import type { ChangelogSource } from './changelog-source'
 
 const SNAPSHOT = fileURLToPath(new URL('../../../../CHANGELOG.md', import.meta.url))
 const EXAMPLE = fileURLToPath(new URL('../../../../CHANGELOG.example.md', import.meta.url))
@@ -9,9 +10,11 @@ const EXAMPLE = fileURLToPath(new URL('../../../../CHANGELOG.example.md', import
  * The module reads CHANGELOG_SOURCE_URL once, at import, so each case sets the
  * variable and then imports a fresh copy.
  */
-async function load(sourceUrl: string) {
+async function load(sourceUrl: string): Promise<ChangelogSource> {
   process.env.CHANGELOG_SOURCE_URL = sourceUrl
-  const module = await import(`./changelog-source?case=${encodeURIComponent(sourceUrl)}`)
+  const module = (await import(`./changelog-source?case=${encodeURIComponent(sourceUrl)}`)) as {
+    readReleases: () => Promise<ChangelogSource>
+  }
   return module.readReleases()
 }
 

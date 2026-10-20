@@ -1,4 +1,5 @@
 import { Button } from '@cometrace/ui'
+import { Image } from 'lucide-react'
 import { Container, SectionTitle } from './shared'
 import { links } from './links'
 
@@ -80,7 +81,12 @@ function SponsorTile({ sponsor }: { sponsor: Sponsor }) {
       />
     </picture>
   ) : (
-    <span className="font-mono text-sm text-muted-foreground">[IMAGE]</span>
+    // A slot waiting for a logo: the mark says so without a bracketed label.
+    <Image
+      className="size-5 text-faint-foreground"
+      aria-label={`${sponsor.name}, logo coming`}
+      role="img"
+    />
   )
 
   if (!sponsor.href) {

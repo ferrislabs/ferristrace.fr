@@ -1,3 +1,4 @@
+import { Image } from 'lucide-react'
 import { Container } from './shared'
 
 export interface Shot {
@@ -70,9 +71,9 @@ function Shots({ light, dark }: { light: Shot; dark?: Shot }) {
 function Placeholder() {
   return (
     <div className="flex aspect-[16/10] w-full flex-col items-center justify-center gap-2 bg-muted">
-      <span className="font-mono text-sm text-muted-foreground">[SCREENSHOT]</span>
+      <Image className="size-6 text-faint-foreground" aria-hidden="true" />
       <span className="px-6 text-center font-mono text-xs text-muted-foreground">
-        Trace detail view, one file per theme
+        Drop the trace view screenshots in public/screenshots to replace this.
       </span>
     </div>
   )
