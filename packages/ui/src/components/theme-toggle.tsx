@@ -3,22 +3,20 @@
 import * as React from 'react'
 import { Icon } from '@iconify/react'
 import { cn } from '../lib/utils'
-import { setCookie, getCookie } from '../lib/cookies'
+import {
+  applyTheme,
+  getStoredTheme,
+  storeTheme,
+  themes,
+  watchSystemTheme,
+  type Theme,
+} from '../lib/theme'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from './dropdown'
-
-type Theme = 'light' | 'dark' | 'system'
-
-function applyTheme(theme: Theme) {
-  const isDark =
-    theme === 'dark' ||
-    (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
-  document.documentElement.classList.toggle('dark', isDark)
-}
 
 const icons: Record<Theme, string> = {
   light: 'lucide:sun',
@@ -33,28 +31,18 @@ const labels: Record<Theme, string> = {
 }
 
 export function ThemeToggle({ className }: { className?: string }) {
-  const [theme, setTheme] = React.useState<Theme>('light')
+  const [theme, setTheme] = React.useState<Theme>('system')
 
   React.useEffect(() => {
-    const stored = getCookie('theme') as Theme | null
-    const initial: Theme = stored ?? 'system'
-    setTheme(initial)
-    applyTheme(initial)
-
-    const mq = window.matchMedia('(prefers-color-scheme: dark)')
-    const onChange = () => {
-      if ((getCookie('theme') ?? 'system') === 'system') {
-        applyTheme('system')
-      }
-    }
-    mq.addEventListener('change', onChange)
-    return () => mq.removeEventListener('change', onChange)
+    const stored = getStoredTheme()
+    setTheme(stored)
+    applyTheme(stored)
+    return watchSystemTheme()
   }, [])
 
   const select = (next: Theme) => {
     setTheme(next)
-    setCookie('theme', next)
-    applyTheme(next)
+    storeTheme(next)
   }
 
   return (
@@ -67,17 +55,14 @@ export function ThemeToggle({ className }: { className?: string }) {
           )}
           aria-label="Toggle theme"
         >
-          <Icon
-            icon={theme === 'system' ? 'lucide:monitor' : theme === 'dark' ? 'lucide:moon' : 'lucide:sun'}
-            className="size-5"
-          />
+          <Icon icon={icons[theme]} className="size-5" />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        {(['light', 'dark', 'system'] as const).map((t) => (
-          <DropdownMenuItem key={t} onClick={() => select(t)}>
-            <Icon icon={icons[t]} className="size-4" />
-            {labels[t]}
+        {themes.map((option) => (
+          <DropdownMenuItem key={option} onClick={() => select(option)}>
+            <Icon icon={icons[option]} className="size-4" />
+            {labels[option]}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
