@@ -5,12 +5,15 @@ export interface AppLink {
   current?: boolean
 }
 
-export const defaultAppLinks: AppLink[] = [
+const defaultAppLinks: AppLink[] = [
   { id: 'website', label: 'Home', href: '/' },
-  { id: 'docs', label: 'Docs', href: '/' },
+  { id: 'docs', label: 'Docs', href: '/' },
 ]
 
-export function getAppLinks(currentApp: string, overrides?: Partial<Record<string, string>>): AppLink[] {
+export function getAppLinks(
+  currentApp: string,
+  overrides?: Partial<Record<string, string>>,
+): AppLink[] {
   return defaultAppLinks.map((app) => ({
     ...app,
     href: overrides?.[app.id] ?? app.href,

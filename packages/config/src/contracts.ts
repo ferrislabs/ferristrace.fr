@@ -1,11 +1,3 @@
-export interface Sponsor {
-  id: string
-  name: string
-  href: string
-  logoUrl: string
-  tier: 'gold' | 'silver' | 'bronze'
-}
-
 export interface FooterLink {
   /** i18n key for the label */
   label: string
@@ -32,8 +24,6 @@ export interface SiteConfig {
   ogType: string
   /** GitHub repository URL */
   github: string
-  /** Sponsors list */
-  sponsors: Sponsor[]
   /** Default locale */
   defaultLocale: string
   /** Supported locales */

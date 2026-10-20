@@ -20,7 +20,11 @@ function detectLocale(config: SiteConfig): string {
   return config.defaultLocale
 }
 
-export function Footer({ config = defaultConfig, locale: localeProp, appUrlOverrides }: FooterProps) {
+export function Footer({
+  config = defaultConfig,
+  locale: localeProp,
+  appUrlOverrides,
+}: FooterProps) {
   const [locale, setLocale] = React.useState(localeProp ?? config.defaultLocale)
 
   React.useEffect(() => {
@@ -29,10 +33,14 @@ export function Footer({ config = defaultConfig, locale: localeProp, appUrlOverr
     }
   }, [localeProp, config])
 
-  const docsUrl = (appUrlOverrides?.docs ?? '').replace(/\/$/, '')
+  const docsUrl = (appUrlOverrides?.docs ?? '').replace(/\/$/, '')
+
   const { footer, name } = config
 
-  const copyrightText = t(locale, footer.copyright).replace('{year}', String(new Date().getFullYear()))
+  const copyrightText = t(locale, footer.copyright).replace(
+    '{year}',
+    String(new Date().getFullYear()),
+  )
   const builtWithParts = t(locale, footer.builtWith).split('{icon}')
 
   return (
@@ -49,11 +57,16 @@ export function Footer({ config = defaultConfig, locale: localeProp, appUrlOverr
         </div>
 
         <div>
-          <h4 className="text-sm font-semibold text-foreground mb-3">{t(locale, footer.columns.documentation)}</h4>
+          <h4 className="text-sm font-semibold text-foreground mb-3">
+            {t(locale, footer.columns.documentation)}
+          </h4>
           <ul className="space-y-2">
             {footer.links.documentation.map((link) => (
               <li key={link.href}>
-                <a href={`${docsUrl}${resolveHref(link.href, locale)}`} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <a
+                  href={`${docsUrl}${resolveHref(link.href, locale)}`}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
                   {t(locale, link.label)}
                 </a>
               </li>
@@ -63,7 +76,9 @@ export function Footer({ config = defaultConfig, locale: localeProp, appUrlOverr
 
         <div className="grid grid-cols-2 gap-8">
           <div>
-            <h4 className="text-sm font-semibold text-foreground mb-3">{t(locale, footer.columns.resources)}</h4>
+            <h4 className="text-sm font-semibold text-foreground mb-3">
+              {t(locale, footer.columns.resources)}
+            </h4>
             <ul className="space-y-2">
               {footer.links.resources.map((link) => {
                 const href = link.href
@@ -84,7 +99,9 @@ export function Footer({ config = defaultConfig, locale: localeProp, appUrlOverr
           </div>
 
           <div>
-            <h4 className="text-sm font-semibold text-foreground mb-3">{t(locale, footer.columns.community)}</h4>
+            <h4 className="text-sm font-semibold text-foreground mb-3">
+              {t(locale, footer.columns.community)}
+            </h4>
             <ul className="space-y-2">
               {footer.links.community.map((link) => (
                 <li key={link.label}>
@@ -106,7 +123,9 @@ export function Footer({ config = defaultConfig, locale: localeProp, appUrlOverr
       <div className="border-t mt-8 pt-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm text-muted-foreground">
         <p>{copyrightText}</p>
         <p className="flex items-center gap-1">
-          {builtWithParts[0]}<Icon icon="lucide:heart" className="size-3 text-red-500 fill-red-500" />{builtWithParts[1]}
+          {builtWithParts[0]}
+          <Icon icon="lucide:heart" className="size-3 text-red-500 fill-red-500" />
+          {builtWithParts[1]}
         </p>
       </div>
     </footer>

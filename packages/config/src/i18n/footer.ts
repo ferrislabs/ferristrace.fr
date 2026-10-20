@@ -2,8 +2,9 @@ import type { I18nMessages } from '../contracts'
 
 export const i18n: Record<string, I18nMessages> = {
   en: {
-    'description': 'Documentation boilerplate for developers.',
-    'footer.description': 'A modern documentation framework built with Astro. Create beautiful, fast, and accessible docs with ease.',
+    description: 'Documentation boilerplate for developers.',
+    'footer.description':
+      'A modern documentation framework built with Astro. Create beautiful, fast, and accessible docs with ease.',
     'footer.columns.documentation': 'Documentation',
     'footer.columns.resources': 'Resources',
     'footer.columns.community': 'Community',
@@ -20,8 +21,9 @@ export const i18n: Record<string, I18nMessages> = {
     'footer.links.contributing': 'Contributing',
   },
   fr: {
-    'description': 'Boilerplate de documentation pour les développeurs.',
-    'footer.description': 'Un framework de documentation moderne construit avec Astro. Créez des docs belles, rapides et accessibles facilement.',
+    description: 'Boilerplate de documentation pour les développeurs.',
+    'footer.description':
+      'Un framework de documentation moderne construit avec Astro. Créez des docs belles, rapides et accessibles facilement.',
     'footer.columns.documentation': 'Documentation',
     'footer.columns.resources': 'Ressources',
     'footer.columns.community': 'Communauté',
