@@ -1,7 +1,7 @@
 import { Badge, Button } from '@cometrace/ui'
 import { CopyCommand } from './copy-command'
 import { Container, StartOnCloudButton } from './shared'
-import { links } from './links'
+import { IMAGE, links } from './links'
 
 export function Hero() {
   return (
@@ -28,7 +28,9 @@ export function Hero() {
         <CopyCommand
           className="mt-8 max-w-[760px]"
           label="Copy the docker run command"
-          lines={['$ docker run -d -p 8080:8080 -p 4318:4318 -v cometrace:/data [IMAGE]/cometrace']}
+          lines={[
+            `$ docker run -d -p 8080:8080 -p 4318:4318 -v cometrace:/data ${IMAGE}/cometrace`,
+          ]}
         />
 
         <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">

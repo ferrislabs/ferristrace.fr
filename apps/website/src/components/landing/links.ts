@@ -11,6 +11,9 @@
  */
 const ORG = 'https://github.com/Comettrace'
 
+/** Docker Hub namespace. Change it here and every command follows. */
+export const IMAGE = 'comettrace'
+
 /**
  * Without this, every docs link silently becomes a relative path on the
  * marketing domain, where no docs exist. Dev falls back to the port in

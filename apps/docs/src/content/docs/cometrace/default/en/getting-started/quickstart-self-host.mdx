@@ -22,7 +22,7 @@ Signals and settings live in the `/data` volume. Keep it across upgrades.
 docker run -d --name cometrace \
   -p 8080:8080 -p 4318:4318 \
   -v cometrace:/data \
-  [IMAGE]/cometrace:0.0.0
+  comettrace/cometrace:0.0.0
 ```
 
 </Step>
@@ -36,7 +36,7 @@ docker logs cometrace 2>&1 | grep "setup token"
 ```
 
 ```text
-setup token: [EXAMPLE TOKEN]
+setup token: cmt_st_8Fq3vK9mXt2RnW7bLpZ4yH6d
 ```
 
 <Callout type="warning">
