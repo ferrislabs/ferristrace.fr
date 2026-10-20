@@ -17,7 +17,7 @@ export function SiteFooter() {
         {/* The copyright carries the name, so the mark goes without the wordmark. */}
         <p className="flex items-center gap-2.5 text-sm text-muted-foreground">
           <CometMark className="size-4 shrink-0" />
-          <span>© 2025 Cometrace · [LICENSE]</span>
+          <span>© 2025 Cometrace · Apache 2.0</span>
         </p>
 
         <nav aria-label="Footer">

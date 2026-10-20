@@ -12,7 +12,7 @@ const selfHosted = [
 
 const cloud = [
   'Same UI and API as self-hosted',
-  'Regions: [REGIONS]',
+  'Multi-region',
   'Retention up to [N] days',
   'Export your data and move to self-hosted any time',
 ]
@@ -34,7 +34,7 @@ export function Editions() {
           <EditionCard
             id="self-host"
             title="Self-hosted"
-            aside={<Badge variant="outline">[LICENSE]</Badge>}
+            aside={<Badge variant="outline">Apache 2.0</Badge>}
             body="One container, one volume. Your data stays on your server."
             items={selfHosted}
             action={
