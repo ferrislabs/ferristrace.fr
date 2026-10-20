@@ -32,6 +32,7 @@ jobs:
               - 'pnpm-lock.yaml'
             website:
               - 'apps/website/**'
+              - 'CHANGELOG.md'
               - 'packages/**'
               - 'pnpm-lock.yaml'
 

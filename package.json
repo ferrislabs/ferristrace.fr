@@ -6,7 +6,8 @@
     "dev": "turbo dev",
     "build": "turbo build",
     "lint": "turbo lint",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "changelog:sync": "node scripts/sync-changelog.mjs"
   },
   "devDependencies": {
     "turbo": "^2.8.0",

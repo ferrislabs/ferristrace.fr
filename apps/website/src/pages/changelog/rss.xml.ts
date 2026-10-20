@@ -14,10 +14,10 @@ const escapeXml = (value: string) =>
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&apos;')
 
-export const GET: APIRoute = ({ site }) => {
+export const GET: APIRoute = async ({ site }) => {
   const origin = site?.origin ?? ''
   const channelLink = `${origin}/changelog`
-  const { releases } = readReleases()
+  const { releases } = await readReleases()
 
   const items = releases
     .map((release) => {
