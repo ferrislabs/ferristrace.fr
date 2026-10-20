@@ -17,14 +17,9 @@ interface Sponsor {
   href?: string
 }
 
-/** Fill name, logoSrc and href per company. Empty slots stay [IMAGE]. */
+/** Add an entry per company, with its logo in public/sponsors/. */
 const sponsors: Sponsor[] = [
   { name: 'Wakfuli', logoSrc: '/sponsors/wakfuli.svg', logoOnDark: true },
-  { name: '[COMPANY]' },
-  { name: '[COMPANY]' },
-  { name: '[COMPANY]' },
-  { name: '[COMPANY]' },
-  { name: '[COMPANY]' },
 ]
 
 export function Sponsors() {
@@ -40,7 +35,7 @@ export function Sponsors() {
           description="Cometrace is open source. These teams run it on their own servers and fund the work."
         />
 
-        <ul className="mt-10 grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-3">
+        <ul className="mt-10 flex flex-wrap gap-3">
           {sponsors.map((sponsor, index) => (
             <li key={`${sponsor.name}-${index}`}>
               <SponsorTile sponsor={sponsor} />
@@ -62,7 +57,7 @@ export function Sponsors() {
 
 function tileClass(sponsor: Sponsor) {
   return [
-    'flex h-16 items-center justify-center rounded-md border border-border px-4',
+    'flex h-16 w-[180px] items-center justify-center rounded-md border border-border px-4',
     // #111114 is the dark theme's card colour, so the chip only reads as a
     // chip in the light theme and is seamless in the dark one.
     sponsor.logoOnDark ? 'bg-[#111114]' : 'bg-card',
