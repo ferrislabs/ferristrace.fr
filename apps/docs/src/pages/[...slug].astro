@@ -12,7 +12,13 @@ import {
   buildSwitchHref,
   getBreadcrumb,
 } from '../lib/docs'
-import Callout from '@explainer/mdx/components/callout.astro'
+import Callout from '../components/mdx/callout.astro'
+import Prereqs from '../components/mdx/prereqs.astro'
+import Screenshot from '../components/mdx/screenshot.astro'
+import CodeTabs from '../components/mdx/code-tabs.astro'
+import CodeTab from '../components/mdx/code-tab.astro'
+import Cards from '../components/mdx/cards.astro'
+import CometraceCard from '../components/mdx/card.astro'
 import CardGroup from '@explainer/mdx/components/card-group.astro'
 import Card from '@explainer/mdx/components/card.astro'
 import Steps from '@explainer/mdx/components/steps.astro'
@@ -118,7 +124,9 @@ const { Content, headings } = await render(entry)
     a: Link, p: Paragraph, ul: UnorderedList, ol: OrderedList,
     pre: Pre, code: Code, blockquote: Blockquote,
     Callout, Steps, Step, CodeGroup,
-    CardGroup, Card, Preview, PreviewDemo, PreviewCode,
+    Prereqs, Screenshot, CodeTabs, CodeTab,
+    Cards, Card: CometraceCard,
+    CardGroup, Preview, PreviewDemo, PreviewCode,
     MathBlock, MermaidBlock,
   }} />
 </DocsLayout>

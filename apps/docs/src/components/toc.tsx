@@ -1,4 +1,4 @@
-import { cn, defaultSponsors, SponsorCards, ContributorCards, type Contributor } from '@explainer/ui'
+import { cn } from '@explainer/ui'
 import * as React from 'react'
 
 export interface TocHeading {
@@ -9,15 +9,16 @@ export interface TocHeading {
 
 interface TocProps {
   headings: TocHeading[]
-  contributors?: Contributor[]
 }
 
-export function TableOfContents({ headings, contributors = [] }: TocProps) {
+export function TableOfContents({ headings }: TocProps) {
   const filtered = headings.filter((h) => h.depth >= 2 && h.depth <= 3)
   const [activeId, setActiveId] = React.useState<string>('')
 
   React.useEffect(() => {
-    const elements = filtered.map((h) => document.getElementById(h.slug)).filter(Boolean) as HTMLElement[]
+    const elements = filtered
+      .map((h) => document.getElementById(h.slug))
+      .filter(Boolean) as HTMLElement[]
     if (elements.length === 0) return
 
     const observer = new IntersectionObserver(
@@ -37,7 +38,8 @@ export function TableOfContents({ headings, contributors = [] }: TocProps) {
     }
 
     const onScroll = () => {
-      const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 50
+      const atBottom =
+        window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 50
       if (atBottom && elements.length > 0) {
         setActiveId(elements[elements.length - 1].id)
       }
@@ -85,8 +87,6 @@ export function TableOfContents({ headings, contributors = [] }: TocProps) {
           </li>
         ))}
       </ul>
-      <SponsorCards sponsors={defaultSponsors} />
-      <ContributorCards contributors={contributors} />
     </nav>
   )
 }

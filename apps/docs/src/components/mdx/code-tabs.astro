@@ -1,0 +1,121 @@
+---
+import { cn } from '@explainer/ui'
+
+/**
+ * Tabs over code blocks.
+ *
+ * The tab bar is built in the browser from the panels' data-tab-label, rather
+ * than from React children: Astro renders fenced code blocks to HTML through
+ * its own components, which cannot be passed into a React island as structured
+ * children. Without JavaScript every panel stays visible, which still shows
+ * the reader all the variants.
+ */
+interface Props {
+  class?: string
+  /** Panels sharing a group remember the same choice across pages. */
+  group?: string
+}
+
+const { class: className, group = 'code-tabs' } = Astro.props
+---
+
+<div
+  class={cn('code-tabs my-5 overflow-hidden rounded-md border border-border bg-card', className)}
+  data-code-tabs
+  data-tabs-group={group}
+>
+  <slot />
+</div>
+
+<script>
+  const STORAGE_PREFIX = 'cometrace.codetabs.'
+
+  function readChoice(group: string): string | null {
+    try {
+      return window.localStorage.getItem(STORAGE_PREFIX + group)
+    } catch {
+      // Private window, or storage blocked: fall back to the first tab.
+      return null
+    }
+  }
+
+  function writeChoice(group: string, label: string): void {
+    try {
+      window.localStorage.setItem(STORAGE_PREFIX + group, label)
+    } catch {
+      // Remembering the choice is a convenience, never a requirement.
+    }
+  }
+
+  function setup(container: HTMLElement): void {
+    if (container.dataset.ready === 'true') return
+
+    const panels = Array.from(
+      container.querySelectorAll<HTMLElement>('[data-tab-label]'),
+    )
+    if (panels.length === 0) return
+
+    const group = container.dataset.tabsGroup ?? 'code-tabs'
+    const labels = panels.map((panel) => panel.dataset.tabLabel ?? '')
+
+    const bar = document.createElement('div')
+    bar.className =
+      'flex items-center gap-1 overflow-x-auto border-b border-border bg-section-alt px-2'
+    bar.setAttribute('role', 'tablist')
+
+    const buttons = labels.map((label, index) => {
+      const button = document.createElement('button')
+      button.type = 'button'
+      button.textContent = label
+      button.setAttribute('role', 'tab')
+      button.id = `${group}-tab-${index}-${Math.random().toString(36).slice(2, 7)}`
+      button.className =
+        'shrink-0 border-b-2 border-transparent px-2.5 py-2 font-mono text-xs text-muted-foreground transition-colors hover:text-foreground'
+      bar.append(button)
+      return button
+    })
+
+    const select = (index: number, remember: boolean) => {
+      panels.forEach((panel, i) => {
+        panel.hidden = i !== index
+        panel.setAttribute('role', 'tabpanel')
+        panel.setAttribute('aria-labelledby', buttons[i].id)
+      })
+      buttons.forEach((button, i) => {
+        const active = i === index
+        button.setAttribute('aria-selected', String(active))
+        button.tabIndex = active ? 0 : -1
+        button.classList.toggle('border-primary', active)
+        button.classList.toggle('text-foreground', active)
+        button.classList.toggle('text-muted-foreground', !active)
+      })
+      if (remember) writeChoice(group, labels[index])
+    }
+
+    buttons.forEach((button, index) => {
+      button.addEventListener('click', () => select(index, true))
+      button.addEventListener('keydown', (event) => {
+        const step = event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0
+        if (step === 0) return
+        event.preventDefault()
+        const next = (index + step + buttons.length) % buttons.length
+        buttons[next].focus()
+        select(next, true)
+      })
+    })
+
+    container.prepend(bar)
+    container.dataset.ready = 'true'
+
+    const remembered = readChoice(group)
+    const initial = remembered ? labels.indexOf(remembered) : -1
+    select(initial >= 0 ? initial : 0, false)
+  }
+
+  function setupAll(): void {
+    document.querySelectorAll<HTMLElement>('[data-code-tabs]').forEach(setup)
+  }
+
+  setupAll()
+  document.addEventListener('astro:after-swap', setupAll)
+</script>

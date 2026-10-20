@@ -1,0 +1,6 @@
+{
+  "title": "Administration",
+  "icon": "shield-check",
+  "order": 4,
+  "type": "group"
+}

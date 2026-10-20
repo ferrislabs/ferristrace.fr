@@ -4,7 +4,6 @@ import { ClientRouter, ViewTransitions } from 'astro:transitions'
 import { Header } from '../components/header'
 import { Sidebar } from '../components/sidebar'
 import { TableOfContents, type TocHeading } from '../components/toc'
-import { fetchContributors, sortContributors } from '@explainer/ui'
 import { formatTitle } from '@explainer/config'
 import { Pagination } from '../components/pagination'
 import { Footer } from '../components/footer'
@@ -60,10 +59,6 @@ const {
 const authEnabled = import.meta.env.PUBLIC_AUTH_ENABLED === 'true'
 const isProtected = authEnabled && requiresAuth
 
-const contributors = sortContributors(
-  await fetchContributors({ token: import.meta.env.GITHUB_TOKEN }),
-  'contributions'
-)
 
 const showTabs = projects.length > 1
 const thumbnailUrl = '/assets' + (thumbnail ?? `${Astro.url.pathname.replace(/\/$/, '')}/thumbnail.png`)
@@ -180,7 +175,7 @@ const appUrlOverrides = {
         <Footer config={siteConfig} locale={currentLocale} appUrlOverrides={appUrlOverrides} client:load />
       </main>
       <div transition:animate="none">
-        <TableOfContents headings={headings} contributors={contributors} client:load />
+        <TableOfContents headings={headings} client:load />
       </div>
     </div>
   </body>

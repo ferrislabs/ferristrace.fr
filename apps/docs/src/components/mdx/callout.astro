@@ -1,0 +1,54 @@
+---
+import { Icon } from '@iconify/react'
+import { cn } from '@explainer/ui'
+
+/**
+ * Takes `type` as the docs are written, and `variant` for the pages that were
+ * already using the shared component. Every style comes from the Cometrace
+ * tokens, and the icon carries the meaning so the type never rests on colour.
+ */
+type CalloutType = 'note' | 'info' | 'warning' | 'danger' | 'success'
+
+interface Props {
+  type?: CalloutType
+  variant?: CalloutType
+  title?: string
+  class?: string
+}
+
+const { type, variant, title, class: className } = Astro.props
+const kind: CalloutType = type ?? variant ?? 'note'
+
+const styles: Record<CalloutType, string> = {
+  note: 'border-severity-info-border bg-severity-info-background text-severity-info-foreground',
+  info: 'border-severity-info-border bg-severity-info-background text-severity-info-foreground',
+  warning: 'border-severity-warn-border bg-severity-warn-background text-severity-warn-foreground',
+  danger: 'border-severity-error-border bg-severity-error-background text-severity-error-foreground',
+  success: 'border-border bg-card text-success-text',
+}
+
+const icons: Record<CalloutType, string> = {
+  note: 'lucide:info',
+  info: 'lucide:info',
+  warning: 'lucide:triangle-alert',
+  danger: 'lucide:octagon-x',
+  success: 'lucide:check',
+}
+
+const labels: Record<CalloutType, string> = {
+  note: 'Note',
+  info: 'Note',
+  warning: 'Warning',
+  danger: 'Danger',
+  success: 'Success',
+}
+---
+
+<aside class={cn('my-5 flex gap-3 rounded-md border px-4 py-3 text-sm leading-6', styles[kind], className)}>
+  <Icon icon={icons[kind]} className="mt-0.5 size-4 shrink-0" aria-hidden="true" client:load />
+  <div class="min-w-0 [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
+    <p class="sr-only">{labels[kind]}:</p>
+    {title && <p class="font-semibold">{title}</p>}
+    <slot />
+  </div>
+</aside>

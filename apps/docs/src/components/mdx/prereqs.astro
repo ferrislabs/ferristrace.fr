@@ -1,0 +1,19 @@
+---
+import { cn } from '@explainer/ui'
+
+interface Props {
+  title?: string
+  class?: string
+}
+
+const { title = 'You need', class: className } = Astro.props
+---
+
+<section class={cn('my-6 rounded-md border border-border bg-section-alt px-5 py-4', className)}>
+  <p class="text-sm font-semibold text-foreground">{title}</p>
+  <div
+    class="mt-2 text-sm leading-6 text-muted-foreground [&_li]:my-1 [&_ul]:my-0 [&_ul]:list-disc [&_ul]:pl-5"
+  >
+    <slot />
+  </div>
+</section>

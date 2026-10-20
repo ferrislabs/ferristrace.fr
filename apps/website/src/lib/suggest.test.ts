@@ -17,13 +17,13 @@ describe('suggestRoutes', () => {
   })
 
   it('recovers from a typo in the last segment', () => {
-    const [first] = suggestRoutes('/docs/upgrade-guid', routes)
-    expect(first?.path).toBe('/docs/upgrades')
+    const [first] = suggestRoutes('/administration/backups-and-upgrade', routes)
+    expect(first?.path).toBe('/administration/backups-and-upgrades')
   })
 
   it('recovers from a transposition', () => {
-    const [first] = suggestRoutes('/docs/self-hsot', routes)
-    expect(first?.path).toBe('/docs/self-host')
+    const [first] = suggestRoutes('/getting-started/quickstart-self-hsot', routes)
+    expect(first?.path).toBe('/getting-started/quickstart-self-host')
   })
 
   it('returns nothing when no route is plausible', () => {
@@ -35,20 +35,20 @@ describe('suggestRoutes', () => {
   })
 
   it('never returns more than the limit', () => {
-    expect(suggestRoutes('/docs/anything', routes).length).toBeLessThanOrEqual(3)
+    expect(suggestRoutes('/using-cometrace/anything', routes).length).toBeLessThanOrEqual(3)
   })
 
   it('only ever returns routes from the list it was given', () => {
     const known = new Set(routes.map((route) => route.path))
-    for (const suggestion of suggestRoutes('/docs/self-hsot', routes)) {
+    for (const suggestion of suggestRoutes('/getting-started/quickstart-self-hsot', routes)) {
       expect(known.has(suggestion.path)).toBe(true)
     }
   })
 
   it('ranks a route sharing more tokens above a closer tail', () => {
     const candidates = [
-      { path: '/docs/deployment/docker', title: 'Docker' },
-      { path: '/dock', title: 'Dock' },
+      { path: '/docs/deployment/docker', href: '/docs/deployment/docker', title: 'Docker' },
+      { path: '/dock', href: '/dock', title: 'Dock' },
     ]
     const [first] = suggestRoutes('/docs/deployment/dockr', candidates)
     expect(first?.path).toBe('/docs/deployment/docker')

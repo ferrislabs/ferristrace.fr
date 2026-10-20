@@ -1,0 +1,25 @@
+---
+import { cn } from '@explainer/ui'
+
+/**
+ * The dark source is swapped by the same CSS pair the marketing site uses, so
+ * the shot follows an explicit theme choice and not only the OS preference.
+ */
+interface Props {
+  src: string
+  alt: string
+  caption?: string
+  darkSrc?: string
+  class?: string
+}
+
+const { src, alt, caption, darkSrc, class: className } = Astro.props
+---
+
+<figure class={cn('my-6', className)}>
+  <div class="overflow-hidden rounded-lg border border-border">
+    <img src={src} alt={alt} class={cn('block h-auto w-full', darkSrc && 'shot-light')} />
+    {darkSrc && <img src={darkSrc} alt={alt} class="shot-dark block h-auto w-full" />}
+  </div>
+  {caption && <figcaption class="mt-2 text-sm text-faint-foreground">{caption}</figcaption>}
+</figure>

@@ -22,7 +22,8 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "remark-directive": "^4.0.0",
-    "tailwindcss": "^4.0.0"
+    "tailwindcss": "^4.0.0",
+    "tw-animate-css": "^1.2.0"
   },
   "devDependencies": {
     "@types/node": "^25.5.0",

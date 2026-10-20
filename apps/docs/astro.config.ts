@@ -15,7 +15,27 @@ export default defineConfig({
   integrations: [
     react(),
     mdx({
-      remarkPlugins: [remarkAutoImport, remarkCodeBlocks, remarkDirective, remarkDirectiveHandler],
+      remarkPlugins: [
+        // Cometrace components replace the shared Callout and Card, whose
+        // colours are hard-coded, and add the ones the docs are written with.
+        [
+          remarkAutoImport,
+          {
+            components: {
+              Callout: '/src/components/mdx/callout.astro',
+              Card: '/src/components/mdx/card.astro',
+              Cards: '/src/components/mdx/cards.astro',
+              CodeTabs: '/src/components/mdx/code-tabs.astro',
+              CodeTab: '/src/components/mdx/code-tab.astro',
+              Prereqs: '/src/components/mdx/prereqs.astro',
+              Screenshot: '/src/components/mdx/screenshot.astro',
+            },
+          },
+        ],
+        remarkCodeBlocks,
+        remarkDirective,
+        remarkDirectiveHandler,
+      ],
     }),
     thumbnailIntegration({
       appName: 'Docs',

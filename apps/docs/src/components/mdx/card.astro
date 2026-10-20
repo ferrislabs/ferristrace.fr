@@ -1,0 +1,33 @@
+---
+import { cn } from '@explainer/ui'
+
+/**
+ * Takes `title` as the docs are written, and `label` for the pages already
+ * using the shared component. The description can be a prop or the children.
+ */
+interface Props {
+  href?: string
+  title?: string
+  label?: string
+  description?: string
+  class?: string
+}
+
+const { href, title, label, description, class: className } = Astro.props
+const heading = title ?? label
+const Tag = href ? 'a' : 'div'
+---
+
+<Tag
+  href={href}
+  class={cn(
+    'flex flex-col gap-1 rounded-md border border-border bg-card p-4 no-underline transition-colors',
+    href && 'hover:border-input',
+    className,
+  )}
+>
+  {heading && <span class="text-sm font-semibold text-foreground">{heading}</span>}
+  <span class="text-sm leading-6 text-muted-foreground [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
+    {description}<slot />
+  </span>
+</Tag>

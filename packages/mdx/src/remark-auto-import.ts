@@ -1,34 +1,41 @@
 import { parse } from 'acorn'
 
-const importStatements = [
-  `import Callout from '@explainer/mdx/components/callout.astro'`,
-  `import CardGroup from '@explainer/mdx/components/card-group.astro'`,
-  `import Card from '@explainer/mdx/components/card.astro'`,
-  `import Steps from '@explainer/mdx/components/steps.astro'`,
-  `import Step from '@explainer/mdx/components/step.astro'`,
-  `import Tabs from '@explainer/mdx/components/tabs.astro'`,
-  `import Tab from '@explainer/mdx/components/tab.astro'`,
-  `import CodeGroup from '@explainer/mdx/components/code-group.astro'`,
-  `import Preview from '@explainer/mdx/components/preview.astro'`,
-  `import PreviewDemo from '@explainer/mdx/components/preview-demo.astro'`,
-  `import PreviewCode from '@explainer/mdx/components/preview-code.astro'`,
-  `import MathBlock from '@explainer/mdx/components/math.astro'`,
-  `import MermaidBlock from '@explainer/mdx/components/mermaid.astro'`,
-]
+/**
+ * Injects component imports into every MDX file so pages do not have to
+ * declare them. An explicit import wins over the `components` prop, so this
+ * list is what an app actually gets: override an entry to swap a component,
+ * add one to expose a new component to MDX.
+ */
+const DEFAULT_IMPORTS: Record<string, string> = {
+  Callout: '@explainer/mdx/components/callout.astro',
+  CardGroup: '@explainer/mdx/components/card-group.astro',
+  Card: '@explainer/mdx/components/card.astro',
+  Steps: '@explainer/mdx/components/steps.astro',
+  Step: '@explainer/mdx/components/step.astro',
+  Tabs: '@explainer/mdx/components/tabs.astro',
+  Tab: '@explainer/mdx/components/tab.astro',
+  CodeGroup: '@explainer/mdx/components/code-group.astro',
+  Preview: '@explainer/mdx/components/preview.astro',
+  PreviewDemo: '@explainer/mdx/components/preview-demo.astro',
+  PreviewCode: '@explainer/mdx/components/preview-code.astro',
+  MathBlock: '@explainer/mdx/components/math.astro',
+  MermaidBlock: '@explainer/mdx/components/mermaid.astro',
+}
 
-const importBlock = importStatements.join('\n')
+export interface AutoImportOptions {
+  /** Component name to module specifier. Merged over the defaults. */
+  components?: Record<string, string>
+}
 
-const estree = parse(importBlock, {
-  ecmaVersion: 'latest',
-  sourceType: 'module',
-})
+export function remarkAutoImport(options: AutoImportOptions = {}) {
+  const imports = { ...DEFAULT_IMPORTS, ...options.components }
+  const importBlock = Object.entries(imports)
+    .map(([name, specifier]) => `import ${name} from '${specifier}'`)
+    .join('\n')
 
-export function remarkAutoImport() {
+  const estree = parse(importBlock, { ecmaVersion: 'latest', sourceType: 'module' })
+
   return (tree: any) => {
-    tree.children.unshift({
-      type: 'mdxjsEsm',
-      value: importBlock,
-      data: { estree },
-    })
+    tree.children.unshift({ type: 'mdxjsEsm', value: importBlock, data: { estree } })
   }
 }

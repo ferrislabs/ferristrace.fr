@@ -12,7 +12,7 @@ export function Suggestions({ suggestions }: { suggestions: Suggestion[] }) {
         {suggestions.map((suggestion) => (
           <li key={suggestion.path}>
             <a
-              href={suggestion.path}
+              href={suggestion.href}
               className="-mx-2 flex items-baseline gap-2 rounded-md px-2 py-1 text-sm transition-colors hover:bg-accent"
             >
               <ArrowRight
