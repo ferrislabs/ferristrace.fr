@@ -1,0 +1,11 @@
+---
+import Base from '../layouts/base.astro'
+import { ChangelogPage, LEAD } from '../components/changelog'
+import { readReleases } from '../lib/changelog-source'
+
+const { releases, isExample } = readReleases()
+---
+
+<Base title="Changelog · Cometrace" description={LEAD} canonical="/changelog" thumbnail="/thumbnail.png">
+  <ChangelogPage releases={releases} isExample={isExample} client:load />
+</Base>
