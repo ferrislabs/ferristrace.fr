@@ -1,6 +1,5 @@
 # Multi-stage Dockerfile for building any Explainer app
 # Usage: docker build --build-arg APP=docs -t explainer-docs .
-#        docker build --build-arg APP=blog -t explainer-blog .
 #        docker build --build-arg APP=website -t explainer-website .
 
 # --- Stage 1: Install dependencies ---
@@ -11,7 +10,6 @@ COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 COPY packages/ui/package.json packages/ui/package.json
 COPY packages/mdx/package.json packages/mdx/package.json
 COPY apps/docs/package.json apps/docs/package.json
-COPY apps/blog/package.json apps/blog/package.json
 COPY apps/website/package.json apps/website/package.json
 RUN pnpm install --frozen-lockfile
 

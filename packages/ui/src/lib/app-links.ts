@@ -7,8 +7,7 @@ export interface AppLink {
 
 export const defaultAppLinks: AppLink[] = [
   { id: 'website', label: 'Home', href: '/' },
-  { id: 'docs', label: 'Docs', href: '/' },
-  { id: 'blog', label: 'Blog', href: '/' },
+  { id: 'docs', label: 'Docs', href: '/' },
 ]
 
 export function getAppLinks(currentApp: string, overrides?: Partial<Record<string, string>>): AppLink[] {

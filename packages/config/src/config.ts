@@ -37,8 +37,7 @@ export const defaultConfig: SiteConfig = {
         { label: 'footer.links.deployment', href: '/{locale}/explainer/deployment/docker' },
       ],
       resources: [
-        { label: 'footer.links.github', href: 'https://github.com/LeadcodeDev/explainer_v2', external: true },
-        { label: 'footer.links.blog', href: '', appId: 'blog' },
+        { label: 'footer.links.github', href: 'https://github.com/LeadcodeDev/explainer_v2', external: true },
         { label: 'footer.links.changelog', href: 'https://github.com/LeadcodeDev/explainer_v2/releases', external: true },
       ],
       community: [

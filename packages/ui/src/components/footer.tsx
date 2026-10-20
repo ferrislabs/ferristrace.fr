@@ -29,8 +29,7 @@ export function Footer({ config = defaultConfig, locale: localeProp, appUrlOverr
     }
   }, [localeProp, config])
 
-  const docsUrl = (appUrlOverrides?.docs ?? '').replace(/\/$/, '')
-  const blogUrl = appUrlOverrides?.blog ?? '/'
+  const docsUrl = (appUrlOverrides?.docs ?? '').replace(/\/$/, '')
   const { footer, name } = config
 
   const copyrightText = t(locale, footer.copyright).replace('{year}', String(new Date().getFullYear()))
@@ -67,7 +66,7 @@ export function Footer({ config = defaultConfig, locale: localeProp, appUrlOverr
             <h4 className="text-sm font-semibold text-foreground mb-3">{t(locale, footer.columns.resources)}</h4>
             <ul className="space-y-2">
               {footer.links.resources.map((link) => {
-                const href = link.appId === 'blog' ? blogUrl : link.href
+                const href = link.href
                 return (
                   <li key={link.label}>
                     <a
