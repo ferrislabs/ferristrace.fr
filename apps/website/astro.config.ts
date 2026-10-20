@@ -8,19 +8,14 @@ export default defineConfig({
   integrations: [
     react(),
     thumbnailIntegration({
-      appName: 'Explainer',
+      appName: 'Cometrace',
       content: {
         type: 'static',
         pages: [
           {
             path: '/',
-            title: 'Explainer v2',
-            description: 'Documentation boilerplate for developers.',
-          },
-          {
-            path: '/thumbnails/fr',
-            title: 'Explainer v2',
-            description: 'Boilerplate de documentation pour les développeurs.',
+            title: 'Cometrace',
+            description: 'Traces, metrics and logs in a single container.',
           },
         ],
       },

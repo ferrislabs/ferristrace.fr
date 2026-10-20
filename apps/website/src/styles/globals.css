@@ -1,3 +1,294 @@
-@import '@explainer/ui/styles/globals.css';
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import 'tailwindcss';
+@import 'tw-animate-css';
 
 @source "../../../../packages/ui/src";
+
+/* ---------------------------------------------------------------------------
+   Cometrace tokens. :root is light. Dark comes either from the system
+   preference (prefers-color-scheme) or from the explicit .dark class written
+   by the theme script in layouts/base.astro, which also writes .light so an
+   explicit light choice still wins over a dark system preference.
+   --------------------------------------------------------------------------- */
+
+:root {
+  color-scheme: light;
+
+  --background: #ffffff;
+  --section-alt: #fafafa;
+  --sidebar: #fafafa;
+  --card: #ffffff;
+  --card-foreground: #09090b;
+  --popover: #ffffff;
+  --popover-foreground: #09090b;
+  --muted: #f4f4f5;
+  --muted-foreground: #52525b;
+  --faint-foreground: #71717a;
+  --foreground: #09090b;
+  --border: #e4e4e7;
+  --input: #d4d4d8;
+  --primary: #4f46e5;
+  --primary-foreground: #ffffff;
+  --primary-hover: #4338ca;
+  --accent-text: #4338ca;
+  --ring: #4f46e5;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --success-text: #15803d;
+
+  /* shadcn hover surfaces. Neutral on purpose: the only accent is --primary. */
+  --accent: #f4f4f5;
+  --accent-foreground: #09090b;
+  --secondary: #f4f4f5;
+  --secondary-foreground: #09090b;
+
+  --severity-info-foreground: #1d4ed8;
+  --severity-info-background: #eff6ff;
+  --severity-info-border: #bfdbfe;
+  --severity-warn-foreground: #92400e;
+  --severity-warn-background: #fffbeb;
+  --severity-warn-border: #fcd34d;
+  --severity-error-foreground: #b91c1c;
+  --severity-error-background: #fef2f2;
+  --severity-error-border: #fecaca;
+  --severity-fatal-foreground: #ffffff;
+  --severity-fatal-background: #9f1239;
+  --severity-fatal-border: #9f1239;
+
+  --service-1: #3d6fe0;
+  --service-2: #c8651a;
+  --service-3: #16927a;
+  --service-4: #b8458f;
+  --service-5: #9a7a12;
+
+  --elevation-sm: 0 1px 2px rgb(9 9 11 / 0.06);
+  --elevation-lg: 0 16px 40px -8px rgb(9 9 11 / 0.2);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    color-scheme: dark;
+
+    --background: #0c0c0e;
+    --section-alt: #09090b;
+    --sidebar: #09090b;
+    --card: #111114;
+    --card-foreground: #fafafa;
+    --popover: #111114;
+    --popover-foreground: #fafafa;
+    --muted: #1c1c20;
+    --muted-foreground: #a1a1aa;
+    --faint-foreground: #8b8b94;
+    --foreground: #fafafa;
+    --border: #26262b;
+    --input: #3a3a41;
+    --primary: #8b93ff;
+    --primary-foreground: #0a0a23;
+    --primary-hover: #a5abff;
+    --accent-text: #a5b4fc;
+    --ring: #8b93ff;
+    --destructive: #dc2626;
+    --destructive-foreground: #fafafa;
+    --success-text: #86efac;
+
+    --accent: #1c1c20;
+    --accent-foreground: #fafafa;
+    --secondary: #1c1c20;
+    --secondary-foreground: #fafafa;
+
+    --severity-info-foreground: #93c5fd;
+    --severity-info-background: #0f1d33;
+    --severity-info-border: #1e3a8a;
+    --severity-warn-foreground: #fcd34d;
+    --severity-warn-background: #271d07;
+    --severity-warn-border: #6b4a0f;
+    --severity-error-foreground: #fca5a5;
+    --severity-error-background: #2a1215;
+    --severity-error-border: #7f1d1d;
+    --severity-fatal-foreground: #fff1f2;
+    --severity-fatal-background: #be123c;
+    --severity-fatal-border: #be123c;
+
+    --service-1: #5b8cf5;
+    --service-2: #e8893c;
+    --service-3: #2fb394;
+    --service-4: #d468ac;
+    --service-5: #c9a43a;
+
+    --elevation-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+    --elevation-lg: 0 16px 40px -8px rgb(0 0 0 / 0.6), 0 0 0 1px rgb(255 255 255 / 0.05);
+  }
+}
+
+.dark {
+  color-scheme: dark;
+
+  --background: #0c0c0e;
+  --section-alt: #09090b;
+  --sidebar: #09090b;
+  --card: #111114;
+  --card-foreground: #fafafa;
+  --popover: #111114;
+  --popover-foreground: #fafafa;
+  --muted: #1c1c20;
+  --muted-foreground: #a1a1aa;
+  --faint-foreground: #8b8b94;
+  --foreground: #fafafa;
+  --border: #26262b;
+  --input: #3a3a41;
+  --primary: #8b93ff;
+  --primary-foreground: #0a0a23;
+  --primary-hover: #a5abff;
+  --accent-text: #a5b4fc;
+  --ring: #8b93ff;
+  --destructive: #dc2626;
+  --destructive-foreground: #fafafa;
+  --success-text: #86efac;
+
+  --accent: #1c1c20;
+  --accent-foreground: #fafafa;
+  --secondary: #1c1c20;
+  --secondary-foreground: #fafafa;
+
+  --severity-info-foreground: #93c5fd;
+  --severity-info-background: #0f1d33;
+  --severity-info-border: #1e3a8a;
+  --severity-warn-foreground: #fcd34d;
+  --severity-warn-background: #271d07;
+  --severity-warn-border: #6b4a0f;
+  --severity-error-foreground: #fca5a5;
+  --severity-error-background: #2a1215;
+  --severity-error-border: #7f1d1d;
+  --severity-fatal-foreground: #fff1f2;
+  --severity-fatal-background: #be123c;
+  --severity-fatal-border: #be123c;
+
+  --service-1: #5b8cf5;
+  --service-2: #e8893c;
+  --service-3: #2fb394;
+  --service-4: #d468ac;
+  --service-5: #c9a43a;
+
+  --elevation-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+  --elevation-lg: 0 16px 40px -8px rgb(0 0 0 / 0.6), 0 0 0 1px rgb(255 255 255 / 0.05);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-section-alt: var(--section-alt);
+  --color-sidebar: var(--sidebar);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-faint-foreground: var(--faint-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent-text: var(--accent-text);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success-text: var(--success-text);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-severity-info-foreground: var(--severity-info-foreground);
+  --color-severity-info-background: var(--severity-info-background);
+  --color-severity-info-border: var(--severity-info-border);
+  --color-severity-warn-foreground: var(--severity-warn-foreground);
+  --color-severity-warn-background: var(--severity-warn-background);
+  --color-severity-warn-border: var(--severity-warn-border);
+  --color-severity-error-foreground: var(--severity-error-foreground);
+  --color-severity-error-background: var(--severity-error-background);
+  --color-severity-error-border: var(--severity-error-border);
+  --color-severity-fatal-foreground: var(--severity-fatal-foreground);
+  --color-severity-fatal-background: var(--severity-fatal-background);
+  --color-severity-fatal-border: var(--severity-fatal-border);
+
+  --color-service-1: var(--service-1);
+  --color-service-2: var(--service-2);
+  --color-service-3: var(--service-3);
+  --color-service-4: var(--service-4);
+  --color-service-5: var(--service-5);
+
+  --shadow-sm: var(--elevation-sm);
+  --shadow-lg: var(--elevation-lg);
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+
+  --font-sans: 'Source Sans 3', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+    /* Keeps the shadcn ring gap on the surface behind it, in both themes. */
+    --tw-ring-offset-color: var(--background);
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+  }
+
+  a:focus-visible,
+  button:focus-visible,
+  summary:focus-visible,
+  [tabindex]:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background-color: color-mix(in srgb, var(--primary) 22%, transparent);
+  }
+}
+
+/* Inline code, kept from the shared stylesheet for prose pages. */
+.prose :not(pre) > code {
+  background-color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.15em 0.4em;
+  font-size: 0.8125em;
+  font-weight: 500;
+}
+
+/* Theme-paired images. Unlayered on purpose, so these win over the display
+   utilities. Mirrors the token cascade above: a <picture> media query would
+   only follow the OS, leaving the screenshot in the wrong theme whenever the
+   header toggle overrides it. */
+.shot-dark {
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) .shot-light {
+    display: none;
+  }
+
+  :root:not(.light) .shot-dark {
+    display: block;
+  }
+}
+
+.dark .shot-light {
+  display: none;
+}
+
+.dark .shot-dark {
+  display: block;
+}

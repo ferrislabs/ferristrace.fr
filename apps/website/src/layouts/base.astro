@@ -8,9 +8,14 @@ interface Props {
   title: string
   description?: string
   thumbnail?: string
+  /** Path or absolute URL of the canonical page, e.g. "/changelog". */
+  canonical?: string
 }
 
-const { title, description, thumbnail } = Astro.props
+const { title, description, thumbnail, canonical } = Astro.props
+// Only with a configured site: a canonical pointing at localhost is worse
+// than none at all.
+const canonicalUrl = canonical && Astro.site ? new URL(canonical, Astro.site).href : undefined
 const thumbnailUrl = thumbnail ?? siteConfig.thumbnail
 ---
 
@@ -20,6 +25,7 @@ const thumbnailUrl = thumbnail ?? siteConfig.thumbnail
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href={siteConfig.favicon} />
+    {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
     <meta name="description" content={description ?? siteConfig.description} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description ?? siteConfig.description} />
@@ -37,6 +43,7 @@ const thumbnailUrl = thumbnail ?? siteConfig.thumbnail
         var theme = match ? match[1] : 'system'
         var isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
         document.documentElement.classList.toggle('dark', isDark)
+        document.documentElement.classList.toggle('light', !isDark)
       })()
     </script>
     <script is:inline>
@@ -45,6 +52,7 @@ const thumbnailUrl = thumbnail ?? siteConfig.thumbnail
         var theme = match ? match[1] : 'system'
         var isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
         document.documentElement.classList.toggle('dark', isDark)
+        document.documentElement.classList.toggle('light', !isDark)
       })
     </script>
   </head>

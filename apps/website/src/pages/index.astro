@@ -1,76 +1,34 @@
 ---
+import { closeSync, existsSync, openSync, readSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
 import Base from '../layouts/base.astro'
-import { WebsiteNavbar } from '../components/website-navbar'
-import HeroSection from '../components/hero-section.astro'
-import FeaturesSection from '../components/features-section.astro'
-import HighlightsSection from '../components/highlights-section.astro'
-import TestimonialsSection from '../components/testimonials-section.astro'
-import CtaSection from '../components/cta-section.astro'
-import LatestArticlesSection from '../components/latest-articles-section.astro'
-import { Footer } from '@explainer/ui'
-import { siteConfig } from '../config'
-import { ui } from '../i18n/ui'
+import { Landing } from '../components/landing'
 
-const appUrlOverrides = {
-  website: import.meta.env.PUBLIC_WEBSITE_URL,
-  docs: import.meta.env.PUBLIC_DOCS_URL,
-  blog: import.meta.env.PUBLIC_BLOG_URL,
+/**
+ * Drop the trace view screenshots in public/screenshots/ and they replace the
+ * [SCREENSHOT] placeholder on the next build. Width and height come from the
+ * file itself so the frame reserves the right height before the image loads.
+ */
+const shot = (name: string) => {
+  const src = `/screenshots/${name}`
+  const file = fileURLToPath(new URL(`../../public${src}`, import.meta.url))
+  if (!existsSync(file)) return undefined
+
+  // PNG: an 8-byte signature, then the IHDR chunk, whose width and height sit
+  // at byte 16 and 20 as big-endian uint32.
+  const head = Buffer.alloc(24)
+  const fd = openSync(file, 'r')
+  readSync(fd, head, 0, 24, 0)
+  closeSync(fd)
+
+  return { src, width: head.readUInt32BE(16), height: head.readUInt32BE(20) }
 }
-
-const translations = ui.fr
-const thumbnails = { en: '/thumbnail.png', fr: '/thumbnails/fr/thumbnail.png' }
 ---
 
-<Base title="Explainer" description="Documentation boilerplate for developers." thumbnail="/thumbnail.png">
-  <WebsiteNavbar appUrlOverrides={appUrlOverrides} client:load transition:persist />
-
-  <HeroSection />
-  <FeaturesSection />
-  <HighlightsSection />
-  <TestimonialsSection />
-  <LatestArticlesSection />
-  <CtaSection />
-
-  <div class="mx-auto max-w-6xl px-6">
-    <Footer config={siteConfig} appUrlOverrides={appUrlOverrides} client:load />
-  </div>
+<Base
+  title="Cometrace"
+  description="Traces, metrics and logs in a single container. Open source, OpenTelemetry native."
+  thumbnail="/thumbnail.png"
+>
+  <Landing shotLight={shot('trace-light.png')} shotDark={shot('trace-dark.png')} client:load />
 </Base>
-
-<script is:inline define:vars={{ translations, thumbnails }}>
-  function detectLocale() {
-    const match = document.cookie.match(/(?:^|; )locale=([^;]*)/)
-    const cookie = match ? match[1] : null
-    if (cookie === 'en' || cookie === 'fr') return cookie
-
-    const browser = (navigator.language || '').split('-')[0]
-    if (browser === 'en' || browser === 'fr') return browser
-    return 'en'
-  }
-
-  function applyTranslations(e) {
-    const locale = (e instanceof CustomEvent && e.detail && e.detail.locale) ? e.detail.locale : detectLocale()
-    document.documentElement.lang = locale
-
-    if (locale === 'en') {
-      document.querySelectorAll('[data-t]').forEach(function (el) {
-        if (el.dataset.tDefault) el.textContent = el.dataset.tDefault
-      })
-      return
-    }
-
-    document.querySelectorAll('[data-t]').forEach(function (el) {
-      const key = el.getAttribute('data-t')
-      if (!el.dataset.tDefault) el.dataset.tDefault = el.textContent
-      if (translations[key]) el.textContent = translations[key]
-    })
-
-    const thumb = thumbnails[locale] || thumbnails['en']
-    document.querySelectorAll('meta[property="og:image"], meta[name="twitter:image"]').forEach(function (el) {
-      el.setAttribute('content', thumb)
-    })
-  }
-
-  applyTranslations()
-  document.addEventListener('astro:after-swap', applyTranslations)
-  window.addEventListener('locale:change', applyTranslations)
-</script>
