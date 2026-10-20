@@ -48,7 +48,7 @@ export function Editions() {
             id="cloud"
             title="Cloud"
             highlighted
-            aside={<span className="font-mono text-sm text-foreground">[PRICE]</span>}
+            aside={<span className="text-sm font-semibold text-foreground">Free while in beta</span>}
             body="We run, upgrade and back up the container. You get a workspace and an ingest key."
             items={cloud}
             action={<StartOnCloudButton className="w-full" />}
