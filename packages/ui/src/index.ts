@@ -5,13 +5,7 @@ export { Badge, badgeVariants, type BadgeProps } from './components/badge'
 export { Separator, type SeparatorProps } from './components/separator'
 export { Switch } from './components/switch'
 export { ToggleGroup, ToggleGroupItem } from './components/toggle-group'
-export {
-  Alert,
-  AlertTitle,
-  AlertDescription,
-  alertVariants,
-  type AlertProps,
-} from './components/alert'
+export { Alert, AlertDescription, type AlertProps } from './components/alert'
 export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from './components/tooltip'
 export {
   Card,
@@ -35,7 +29,6 @@ export { ThemeToggle } from './components/theme-toggle'
 export {
   applyTheme,
   getStoredTheme,
-  isDarkTheme,
   storeTheme,
   themes,
   watchSystemTheme,

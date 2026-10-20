@@ -11,14 +11,7 @@
  * has none, and the page falls back rather than filling the gap.
  */
 
-export const GROUP_TYPES = [
-  'Added',
-  'Changed',
-  'Deprecated',
-  'Removed',
-  'Fixed',
-  'Security',
-] as const
+const GROUP_TYPES = ['Added', 'Changed', 'Deprecated', 'Removed', 'Fixed', 'Security'] as const
 
 export type GroupType = (typeof GROUP_TYPES)[number]
 

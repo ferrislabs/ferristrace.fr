@@ -30,13 +30,6 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
 )
 Alert.displayName = 'Alert'
 
-const AlertTitle = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLElement>>(
-  ({ className, ...props }, ref) => (
-    <p ref={ref} className={cn('font-semibold', className)} {...props} />
-  ),
-)
-AlertTitle.displayName = 'AlertTitle'
-
 const AlertDescription = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
     <div ref={ref} className={cn('space-y-1.5 leading-6', className)} {...props} />
@@ -44,4 +37,4 @@ const AlertDescription = React.forwardRef<HTMLDivElement, React.HTMLAttributes<H
 )
 AlertDescription.displayName = 'AlertDescription'
 
-export { Alert, AlertTitle, AlertDescription, alertVariants }
+export { Alert, AlertDescription }

@@ -7,12 +7,13 @@ const ORG = 'https://github.com/Comettrace'
 
 export const links = {
   docs: '/docs',
-  selfHost: '#self-host',
-  cloud: '#cloud',
+  // Root-relative: the header is shared by every page, and these sections
+  // only exist on the landing page.
+  selfHost: '/#self-host',
+  cloud: '/#cloud',
   changelog: '/changelog',
   /** The core repository: what a visitor clicking "GitHub" is after. */
   github: `${ORG}/Cometrace`,
-  org: ORG,
   sponsor: 'https://github.com/sponsors/Comettrace',
   signIn: '/sign-in',
   startOnCloud: '/sign-up',

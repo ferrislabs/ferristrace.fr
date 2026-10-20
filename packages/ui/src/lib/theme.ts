@@ -4,7 +4,7 @@ export type Theme = 'light' | 'dark' | 'system'
 
 export const themes: readonly Theme[] = ['light', 'dark', 'system']
 
-export function isDarkTheme(theme: Theme): boolean {
+function isDarkTheme(theme: Theme): boolean {
   return (
     theme === 'dark' ||
     (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
