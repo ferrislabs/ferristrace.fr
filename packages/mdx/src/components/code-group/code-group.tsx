@@ -1,6 +1,6 @@
 'use client'
 
-import { cn } from '@explainer/ui'
+import { cn } from '@cometrace/ui'
 import { Icon } from '@iconify/react'
 import { type PropsWithChildren, useEffect, useRef, useState } from 'react'
 import { languageIcons, terminalCommands } from '../../language-icons'

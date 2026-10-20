@@ -1,4 +1,4 @@
-import { cn } from '@explainer/ui'
+import { cn } from '@cometrace/ui'
 
 /**
  * The Cometrace mark: a head and three trailing strokes, on the same 24x24

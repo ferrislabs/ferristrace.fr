@@ -29,19 +29,19 @@ importers:
       '@astrojs/react':
         specifier: ^4.2.0
         version: 4.4.2(@types/node@25.5.0)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(jiti@2.6.1)(lightningcss@1.31.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      '@explainer/auth':
+      '@cometrace/auth':
         specifier: workspace:*
         version: link:../../packages/auth
-      '@explainer/config':
+      '@cometrace/config':
         specifier: workspace:*
         version: link:../../packages/config
-      '@explainer/mdx':
+      '@cometrace/mdx':
         specifier: workspace:*
         version: link:../../packages/mdx
-      '@explainer/thumbnail':
+      '@cometrace/thumbnail':
         specifier: workspace:*
         version: link:../../packages/thumbnail
-      '@explainer/ui':
+      '@cometrace/ui':
         specifier: workspace:*
         version: link:../../packages/ui
       '@iconify/react':
@@ -90,13 +90,13 @@ importers:
       '@astrojs/react':
         specifier: ^4.2.0
         version: 4.4.2(@types/node@25.5.0)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(jiti@2.6.1)(lightningcss@1.31.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      '@explainer/config':
+      '@cometrace/config':
         specifier: workspace:*
         version: link:../../packages/config
-      '@explainer/thumbnail':
+      '@cometrace/thumbnail':
         specifier: workspace:*
         version: link:../../packages/thumbnail
-      '@explainer/ui':
+      '@cometrace/ui':
         specifier: workspace:*
         version: link:../../packages/ui
       '@tailwindcss/vite':
@@ -163,7 +163,7 @@ importers:
 
   packages/mdx:
     dependencies:
-      '@explainer/ui':
+      '@cometrace/ui':
         specifier: workspace:*
         version: link:../ui
       '@iconify/react':
@@ -234,7 +234,7 @@ importers:
 
   packages/ui:
     dependencies:
-      '@explainer/config':
+      '@cometrace/config':
         specifier: workspace:*
         version: link:../config
       '@iconify/react':

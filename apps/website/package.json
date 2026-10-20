@@ -1,5 +1,5 @@
 {
-  "name": "@explainer/website",
+  "name": "@cometrace/website",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -12,9 +12,9 @@
   },
   "dependencies": {
     "@astrojs/react": "^4.2.0",
-    "@explainer/config": "workspace:*",
-    "@explainer/thumbnail": "workspace:*",
-    "@explainer/ui": "workspace:*",
+    "@cometrace/config": "workspace:*",
+    "@cometrace/thumbnail": "workspace:*",
+    "@cometrace/ui": "workspace:*",
     "@tailwindcss/vite": "^4.0.0",
     "astro": "^5.5.0",
     "lucide-react": "^1.60.0",

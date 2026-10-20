@@ -15,14 +15,14 @@
     "sourceMap": true,
     "baseUrl": ".",
     "paths": {
-      "@explainer/ui": ["./packages/ui/src"],
-      "@explainer/ui/*": ["./packages/ui/src/*"],
-      "@explainer/mdx": ["./packages/mdx/src"],
-      "@explainer/mdx/*": ["./packages/mdx/src/*"],
-      "@explainer/thumbnail": ["./packages/thumbnail/src"],
-      "@explainer/thumbnail/*": ["./packages/thumbnail/src/*"],
-      "@explainer/auth": ["./packages/auth/src"],
-      "@explainer/auth/*": ["./packages/auth/src/*"]
+      "@cometrace/ui": ["./packages/ui/src"],
+      "@cometrace/ui/*": ["./packages/ui/src/*"],
+      "@cometrace/mdx": ["./packages/mdx/src"],
+      "@cometrace/mdx/*": ["./packages/mdx/src/*"],
+      "@cometrace/thumbnail": ["./packages/thumbnail/src"],
+      "@cometrace/thumbnail/*": ["./packages/thumbnail/src/*"],
+      "@cometrace/auth": ["./packages/auth/src"],
+      "@cometrace/auth/*": ["./packages/auth/src/*"]
     }
   },
   "exclude": ["node_modules", "dist"]

@@ -1,4 +1,4 @@
-import { Badge, Button } from '@explainer/ui'
+import { Badge, Button } from '@cometrace/ui'
 import { CopyCommand } from './copy-command'
 import { Container, StartOnCloudButton } from './shared'
 import { links } from './links'

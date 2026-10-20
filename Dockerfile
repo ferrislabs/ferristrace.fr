@@ -1,6 +1,6 @@
-# Multi-stage Dockerfile for building any Explainer app
-# Usage: docker build --build-arg APP=docs -t explainer-docs .
-#        docker build --build-arg APP=website -t explainer-website .
+# Multi-stage Dockerfile for building any Cometrace app
+# Usage: docker build --build-arg APP=docs -t cometrace-docs .
+#        docker build --build-arg APP=website -t cometrace-website .
 
 # --- Stage 1: Install dependencies ---
 FROM node:20-alpine AS deps
@@ -23,7 +23,7 @@ COPY --from=deps /app/packages/ui/node_modules ./packages/ui/node_modules
 COPY --from=deps /app/packages/mdx/node_modules ./packages/mdx/node_modules
 COPY --from=deps /app/apps/${APP}/node_modules ./apps/${APP}/node_modules
 COPY . .
-RUN pnpm --filter @explainer/${APP} build
+RUN pnpm --filter @cometrace/${APP} build
 
 # --- Stage 3: Serve with nginx ---
 FROM nginx:1.28.0-alpine3.21-slim AS runtime

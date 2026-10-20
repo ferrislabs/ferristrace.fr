@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { Card } from '@explainer/ui'
+import { Card } from '@cometrace/ui'
 import { ChartGantt, ChartLine, Logs, type LucideIcon } from 'lucide-react'
 import { Container, SectionTitle } from './shared'
 import { SeverityPreview, SparklinePreview, WaterfallPreview } from './signal-previews'

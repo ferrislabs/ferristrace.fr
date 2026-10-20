@@ -1,5 +1,5 @@
 import type { CollectionEntry } from 'astro:content'
-import { resolvePageAccess } from '@explainer/auth'
+import { resolvePageAccess } from '@cometrace/auth'
 
 export interface MetaFile {
   title?: string
@@ -73,7 +73,10 @@ export function buildHrefFromParts(
 }
 
 /** Extract all unique projects with their versions from the collection */
-export function getProjectsInfo(entries: CollectionEntry<'docs'>[], metaFiles?: Record<string, MetaFile>): ProjectInfo[] {
+export function getProjectsInfo(
+  entries: CollectionEntry<'docs'>[],
+  metaFiles?: Record<string, MetaFile>,
+): ProjectInfo[] {
   const projectMap = new Map<string, Set<string>>()
 
   for (const entry of entries) {
@@ -149,9 +152,7 @@ export function buildSwitchHref(
   const fallback = entries.find((e) => {
     const parsed = parsePath(e.id)
     return (
-      parsed.project === newProject &&
-      parsed.version === newVersion &&
-      parsed.locale === newLocale
+      parsed.project === newProject && parsed.version === newVersion && parsed.locale === newLocale
     )
   })
 
@@ -244,43 +245,35 @@ function sortNavItems(items: NavItem[]) {
 }
 
 function formatTitle(slug: string): string {
-  return slug
-    .replace(/[-_]/g, ' ')
-    .replace(/\b\w/g, (c) => c.toUpperCase())
+  return slug.replace(/[-_]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
 }
 
-export function getFlatEntries(
-  entries: CollectionEntry<'docs'>[],
-  project: string,
-  version: string,
-  locale: string,
-): CollectionEntry<'docs'>[] {
-  return entries
-    .filter((entry) => {
-      const parsed = parsePath(entry.id)
-      return parsed.project === project && parsed.version === version && parsed.locale === locale
-    })
-    .sort((a, b) => {
-      const orderA = a.data.order ?? Infinity
-      const orderB = b.data.order ?? Infinity
-      if (orderA !== orderB) return orderA - orderB
-      return a.data.title.localeCompare(b.data.title)
-    })
+/**
+ * The pages in sidebar order: depth first through the nav tree, so the order
+ * comes from the group _meta.json files as well as each page's own order.
+ * Sorting the entries by page order alone bunches every `order: 1` page
+ * together and makes the previous/next links cross groups at random.
+ */
+export function flattenNav(items: NavItem[]): Array<{ title: string; href: string }> {
+  const pages: Array<{ title: string; href: string }> = []
+
+  for (const item of items) {
+    if (item.type === 'page') pages.push({ title: item.title, href: item.href })
+    if (item.children) pages.push(...flattenNav(item.children))
+  }
+
+  return pages
 }
 
 export function getPagination(
   currentHref: string,
-  flatEntries: CollectionEntry<'docs'>[],
+  pages: Array<{ title: string; href: string }>,
 ): { prev: { title: string; href: string } | null; next: { title: string; href: string } | null } {
-  const hrefs = flatEntries.map((e) => buildHref(e))
-  const index = hrefs.indexOf(currentHref)
+  const index = pages.findIndex((page) => page.href === currentHref)
 
   return {
-    prev: index > 0 ? { title: flatEntries[index - 1].data.title, href: hrefs[index - 1] } : null,
-    next:
-      index < flatEntries.length - 1
-        ? { title: flatEntries[index + 1].data.title, href: hrefs[index + 1] }
-        : null,
+    prev: index > 0 ? pages[index - 1] : null,
+    next: index >= 0 && index < pages.length - 1 ? pages[index + 1] : null,
   }
 }
 
@@ -328,9 +321,7 @@ export function filterNavByAccess(
   return out
 }
 
-export function loadMetaFiles(
-  globs: Record<string, unknown>,
-): Record<string, MetaFile> {
+export function loadMetaFiles(globs: Record<string, unknown>): Record<string, MetaFile> {
   const result: Record<string, MetaFile> = {}
 
   for (const [path, mod] of Object.entries(globs)) {

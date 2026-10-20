@@ -35,7 +35,7 @@ export interface NavbarProps {
 }
 
 export function Navbar({
-  brand = 'Explainer',
+  brand = 'Cometrace',
   brandHref = '/',
   brandIcon = '/logo.svg',
   links = [],

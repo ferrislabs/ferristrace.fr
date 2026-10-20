@@ -1,8 +1,7 @@
 /**
  * Resolves the shared root domain attribute for a cookie.
  *
- * `explainer.dev`      → `domain=.explainer.dev`  (shared with blog.explainer.dev, docs.explainer.dev)
- * `blog.explainer.dev` → `domain=.explainer.dev`  (same root)
+ * `cometrace.dev`      → `domain=.cometrace.dev`  (shared with docs.cometrace.dev)
  * `localhost`          → (no domain attribute)
  * `myapp.pages.dev`    → (no domain attribute – public suffix)
  */

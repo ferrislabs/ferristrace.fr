@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Button, Separator, TooltipProvider } from '@explainer/ui'
+import { Button, Separator, TooltipProvider } from '@cometrace/ui'
 import { routes } from '../../lib/routes'
 import { searchTermFromPath, suggestRoutes, type Suggestion } from '../../lib/suggest'
 import { Container } from '../landing/shared'

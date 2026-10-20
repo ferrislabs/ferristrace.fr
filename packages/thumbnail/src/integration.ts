@@ -86,7 +86,7 @@ export function thumbnailIntegration(config: ThumbnailConfig): AstroIntegration 
   }
 
   return {
-    name: '@explainer/thumbnail',
+    name: '@cometrace/thumbnail',
     hooks: {
       'astro:config:setup': ({ updateConfig, logger }) => {
         const cache = new Map<string, Buffer>()
@@ -95,7 +95,7 @@ export function thumbnailIntegration(config: ThumbnailConfig): AstroIntegration 
           vite: {
             plugins: [
               {
-                name: '@explainer/thumbnail-dev',
+                name: '@cometrace/thumbnail-dev',
                 configureServer(server) {
                   server.middlewares.use(async (req, res, next) => {
                     if (!req.url?.endsWith('/thumbnail.png')) {

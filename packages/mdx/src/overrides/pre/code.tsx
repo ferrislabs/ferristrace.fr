@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { cn } from '@explainer/ui'
+import { cn } from '@cometrace/ui'
 import { Icon } from '@iconify/react'
 import { languageIcons, shellLanguages, terminalCommands } from '../../language-icons'
 

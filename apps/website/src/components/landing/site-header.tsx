@@ -1,4 +1,4 @@
-import { Button, cn } from '@explainer/ui'
+import { Button, cn } from '@cometrace/ui'
 import { CometMark } from './comet-mark'
 import { GithubMark } from './github-mark'
 import { ThemeToggle } from './theme-toggle'

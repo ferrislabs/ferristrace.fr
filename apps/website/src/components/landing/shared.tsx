@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { Button, cn } from '@explainer/ui'
+import { Button, cn } from '@cometrace/ui'
 import { Check } from 'lucide-react'
 import { links } from './links'
 

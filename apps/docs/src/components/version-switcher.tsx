@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Icon } from '@iconify/react'
-import { cn } from '@explainer/ui'
+import { cn } from '@cometrace/ui'
 
 interface VersionSwitcherProps {
   versions: string[]

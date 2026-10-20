@@ -1,5 +1,5 @@
 import react from '@astrojs/react'
-import { thumbnailIntegration } from '@explainer/thumbnail/integration'
+import { thumbnailIntegration } from '@cometrace/thumbnail/integration'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'astro/config'
 

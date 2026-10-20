@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { Badge, Button, Card, Separator, cn } from '@explainer/ui'
+import { Badge, Button, Card, Separator, cn } from '@cometrace/ui'
 import { CheckList, Container, SectionTitle, StartOnCloudButton } from './shared'
 import { links } from './links'
 

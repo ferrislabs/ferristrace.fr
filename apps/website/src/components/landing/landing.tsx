@@ -1,4 +1,4 @@
-import { TooltipProvider } from '@explainer/ui'
+import { TooltipProvider } from '@cometrace/ui'
 import { Editions } from './editions'
 import { Hero } from './hero'
 import { Instrument } from './instrument'

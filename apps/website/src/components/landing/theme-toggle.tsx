@@ -10,7 +10,7 @@ import {
   storeTheme,
   watchSystemTheme,
   type Theme,
-} from '@explainer/ui'
+} from '@cometrace/ui'
 import { Monitor, Moon, Sun } from 'lucide-react'
 
 /** Light, then dark, then back to following the system. */

@@ -1,8 +1,8 @@
-import { cn } from '@explainer/ui'
+import { cn } from '@cometrace/ui'
 import { Icon } from '@iconify/react'
 import * as React from 'react'
-import { useAuth } from '@explainer/auth/react'
-import { hasRequiredRole } from '@explainer/auth'
+import { useAuth } from '@cometrace/auth/react'
+import { hasRequiredRole } from '@cometrace/auth'
 import { filterNavByAccess, type NavItem } from '../lib/docs'
 
 interface SidebarProps {

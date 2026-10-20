@@ -1,4 +1,4 @@
-import { Switch, ToggleGroup, ToggleGroupItem } from '@explainer/ui'
+import { Switch, ToggleGroup, ToggleGroupItem } from '@cometrace/ui'
 import { links } from './links'
 
 export const FILTER_TYPES = ['all', 'added', 'changed', 'fixed', 'security'] as const

@@ -3,11 +3,11 @@ import react from '@astrojs/react'
 import mdx from '@astrojs/mdx'
 import tailwindcss from '@tailwindcss/vite'
 import remarkDirective from 'remark-directive'
-import { shikiConfig } from '@explainer/mdx/shiki'
-import { remarkAutoImport } from '@explainer/mdx/remark-auto-import'
-import { remarkDirectiveHandler } from '@explainer/mdx/remark-directive-handler'
-import { remarkCodeBlocks } from '@explainer/mdx/remark-code-blocks'
-import { thumbnailIntegration } from '@explainer/thumbnail/integration'
+import { shikiConfig } from '@cometrace/mdx/shiki'
+import { remarkAutoImport } from '@cometrace/mdx/remark-auto-import'
+import { remarkDirectiveHandler } from '@cometrace/mdx/remark-directive-handler'
+import { remarkCodeBlocks } from '@cometrace/mdx/remark-code-blocks'
+import { thumbnailIntegration } from '@cometrace/thumbnail/integration'
 
 export default defineConfig({
   site: process.env.PUBLIC_DOCS_URL || undefined,
@@ -45,7 +45,7 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
     envDir: '../../',
-    // oidc-client-ts is imported from the linked @explainer/auth source package,
+    // oidc-client-ts is imported from the linked @cometrace/auth source package,
     // which Vite's dep scanner doesn't crawl; pre-bundle it to avoid on-demand
     // re-optimization invalidating the deps cache mid-session.
     optimizeDeps: {

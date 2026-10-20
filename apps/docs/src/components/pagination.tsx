@@ -1,4 +1,4 @@
-import { cn } from '@explainer/ui'
+import { cn } from '@cometrace/ui'
 import { Icon } from '@iconify/react'
 
 interface PaginationLink {

@@ -5,7 +5,7 @@ import {
   parsePath,
   buildHref,
   buildNavTree,
-  getFlatEntries,
+  flattenNav,
   getPagination,
   loadMetaFiles,
   buildDocsContext,
@@ -19,21 +19,21 @@ import CodeTabs from '../components/mdx/code-tabs.astro'
 import CodeTab from '../components/mdx/code-tab.astro'
 import Cards from '../components/mdx/cards.astro'
 import CometraceCard from '../components/mdx/card.astro'
-import CardGroup from '@explainer/mdx/components/card-group.astro'
-import Card from '@explainer/mdx/components/card.astro'
-import Steps from '@explainer/mdx/components/steps.astro'
-import Step from '@explainer/mdx/components/step.astro'
-import CodeGroup from '@explainer/mdx/components/code-group.astro'
-import Preview from '@explainer/mdx/components/preview.astro'
-import PreviewDemo from '@explainer/mdx/components/preview-demo.astro'
-import PreviewCode from '@explainer/mdx/components/preview-code.astro'
-import MathBlock from '@explainer/mdx/components/math.astro'
-import MermaidBlock from '@explainer/mdx/components/mermaid.astro'
-import Pre from '@explainer/mdx/overrides/pre.astro'
-import Blockquote from '@explainer/mdx/overrides/blockquote.astro'
-import { Code } from '@explainer/mdx'
-import { H1, H2, H3, H4, H5, H6, Link, Paragraph, UnorderedList, OrderedList } from '@explainer/mdx'
-import { resolvePageAccess } from '@explainer/auth'
+import CardGroup from '@cometrace/mdx/components/card-group.astro'
+import Card from '@cometrace/mdx/components/card.astro'
+import Steps from '@cometrace/mdx/components/steps.astro'
+import Step from '@cometrace/mdx/components/step.astro'
+import CodeGroup from '@cometrace/mdx/components/code-group.astro'
+import Preview from '@cometrace/mdx/components/preview.astro'
+import PreviewDemo from '@cometrace/mdx/components/preview-demo.astro'
+import PreviewCode from '@cometrace/mdx/components/preview-code.astro'
+import MathBlock from '@cometrace/mdx/components/math.astro'
+import MermaidBlock from '@cometrace/mdx/components/mermaid.astro'
+import Pre from '@cometrace/mdx/overrides/pre.astro'
+import Blockquote from '@cometrace/mdx/overrides/blockquote.astro'
+import { Code } from '@cometrace/mdx'
+import { H1, H2, H3, H4, H5, H6, Link, Paragraph, UnorderedList, OrderedList } from '@cometrace/mdx'
+import { resolvePageAccess } from '@cometrace/auth'
 
 export async function getStaticPaths() {
   const allDocs = await getCollection('docs')
@@ -56,9 +56,9 @@ const metaFiles = loadMetaFiles(metaGlobs)
 
 const context = buildDocsContext(allDocs, entry, metaFiles)
 const navItems = buildNavTree(allDocs, metaFiles, project, version, locale)
-const flatEntries = getFlatEntries(allDocs, project, version, locale)
+const pages = flattenNav(navItems)
 const currentHref = buildHref(entry)
-const { prev, next } = getPagination(currentHref, flatEntries)
+const { prev, next } = getPagination(currentHref, pages)
 const breadcrumb = getBreadcrumb(navItems, currentHref)
 const access = resolvePageAccess(entry.id, entry.data.auth, metaFiles)
 

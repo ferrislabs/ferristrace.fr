@@ -1,5 +1,5 @@
 {
-  "name": "@explainer/docs",
+  "name": "@cometrace/docs",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -11,11 +11,11 @@
   "dependencies": {
     "@astrojs/mdx": "^4.2.0",
     "@astrojs/react": "^4.2.0",
-    "@explainer/auth": "workspace:*",
-    "@explainer/config": "workspace:*",
-    "@explainer/mdx": "workspace:*",
-    "@explainer/thumbnail": "workspace:*",
-    "@explainer/ui": "workspace:*",
+    "@cometrace/auth": "workspace:*",
+    "@cometrace/config": "workspace:*",
+    "@cometrace/mdx": "workspace:*",
+    "@cometrace/thumbnail": "workspace:*",
+    "@cometrace/ui": "workspace:*",
     "@iconify/react": "^5.2.0",
     "@tailwindcss/vite": "^4.0.0",
     "astro": "^5.5.0",

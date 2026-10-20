@@ -1,4 +1,4 @@
-import { cn } from '@explainer/ui'
+import { cn } from '@cometrace/ui'
 import { Icon } from '@iconify/react'
 import * as React from 'react'
 import { createPortal } from 'react-dom'

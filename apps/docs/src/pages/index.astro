@@ -1,19 +1,26 @@
 ---
 import { getCollection } from 'astro:content'
-import { parsePath, buildHref, getLocales } from '../lib/docs'
+import { buildNavTree, flattenNav, getLocales, loadMetaFiles, parsePath } from '../lib/docs'
 
 const allDocs = await getCollection('docs')
 const locales = getLocales(allDocs)
 
-// Find the first entry per locale for the redirect map
+const metaGlobs = import.meta.glob('../content/docs/**/_meta.json', { eager: true })
+const metaFiles = loadMetaFiles(metaGlobs)
+
+/**
+ * Land on the first page of the sidebar, not on whichever page happens to
+ * sort first by its own order: every group starts at order 1, so sorting the
+ * entries alone picks a page at random.
+ */
 const localeRedirects: Record<string, string> = {}
 for (const locale of locales) {
-  const first = allDocs
-    .filter((e) => parsePath(e.id).locale === locale)
-    .sort((a, b) => (a.data.order ?? Infinity) - (b.data.order ?? Infinity))[0]
-  if (first) {
-    localeRedirects[locale] = buildHref(first)
-  }
+  const entry = allDocs.find((candidate) => parsePath(candidate.id).locale === locale)
+  if (!entry) continue
+
+  const { project, version } = parsePath(entry.id)
+  const [first] = flattenNav(buildNavTree(allDocs, metaFiles, project, version, locale))
+  if (first) localeRedirects[locale] = first.href
 }
 
 const defaultRedirect = localeRedirects['en'] ?? Object.values(localeRedirects)[0] ?? '/'
@@ -28,10 +35,11 @@ const defaultRedirect = localeRedirects['en'] ?? Object.values(localeRedirects)[
   </head>
   <body>
     <script is:inline define:vars={{ localeRedirects, defaultRedirect }}>
-      const lang = navigator.language?.split('-')[0]?.toLowerCase()
-      const target = localeRedirects[lang] || defaultRedirect
+      const match = document.cookie.match(/(?:^|; )locale=([^;]*)/)
+      const cookie = match ? match[1] : null
+      const browser = (navigator.language || '').split('-')[0]
+      const target = localeRedirects[cookie] || localeRedirects[browser] || defaultRedirect
       window.location.replace(target)
     </script>
-    <p>Redirecting to <a href={defaultRedirect}>documentation</a>...</p>
   </body>
 </html>

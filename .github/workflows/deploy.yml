@@ -48,7 +48,7 @@ jobs:
           node-version: 22
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter @explainer/docs build
+      - run: pnpm --filter @cometrace/docs build
         env:
           PUBLIC_DOCS_URL: ${{ vars.PUBLIC_DOCS_URL }}
           PUBLIC_WEBSITE_URL: ${{ vars.PUBLIC_WEBSITE_URL }}
@@ -70,7 +70,7 @@ jobs:
           node-version: 22
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter @explainer/website build
+      - run: pnpm --filter @cometrace/website build
         env:
           PUBLIC_WEBSITE_URL: ${{ vars.PUBLIC_WEBSITE_URL }}
           PUBLIC_DOCS_URL: ${{ vars.PUBLIC_DOCS_URL }}

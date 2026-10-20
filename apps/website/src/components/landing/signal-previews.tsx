@@ -1,4 +1,4 @@
-import { Badge, cn } from '@explainer/ui'
+import { Badge, cn } from '@cometrace/ui'
 import { CircleX, Info, OctagonX, TriangleAlert } from 'lucide-react'
 
 const spans = [

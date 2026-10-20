@@ -7,19 +7,19 @@ import { parse } from 'acorn'
  * add one to expose a new component to MDX.
  */
 const DEFAULT_IMPORTS: Record<string, string> = {
-  Callout: '@explainer/mdx/components/callout.astro',
-  CardGroup: '@explainer/mdx/components/card-group.astro',
-  Card: '@explainer/mdx/components/card.astro',
-  Steps: '@explainer/mdx/components/steps.astro',
-  Step: '@explainer/mdx/components/step.astro',
-  Tabs: '@explainer/mdx/components/tabs.astro',
-  Tab: '@explainer/mdx/components/tab.astro',
-  CodeGroup: '@explainer/mdx/components/code-group.astro',
-  Preview: '@explainer/mdx/components/preview.astro',
-  PreviewDemo: '@explainer/mdx/components/preview-demo.astro',
-  PreviewCode: '@explainer/mdx/components/preview-code.astro',
-  MathBlock: '@explainer/mdx/components/math.astro',
-  MermaidBlock: '@explainer/mdx/components/mermaid.astro',
+  Callout: '@cometrace/mdx/components/callout.astro',
+  CardGroup: '@cometrace/mdx/components/card-group.astro',
+  Card: '@cometrace/mdx/components/card.astro',
+  Steps: '@cometrace/mdx/components/steps.astro',
+  Step: '@cometrace/mdx/components/step.astro',
+  Tabs: '@cometrace/mdx/components/tabs.astro',
+  Tab: '@cometrace/mdx/components/tab.astro',
+  CodeGroup: '@cometrace/mdx/components/code-group.astro',
+  Preview: '@cometrace/mdx/components/preview.astro',
+  PreviewDemo: '@cometrace/mdx/components/preview-demo.astro',
+  PreviewCode: '@cometrace/mdx/components/preview-code.astro',
+  MathBlock: '@cometrace/mdx/components/math.astro',
+  MermaidBlock: '@cometrace/mdx/components/mermaid.astro',
 }
 
 export interface AutoImportOptions {

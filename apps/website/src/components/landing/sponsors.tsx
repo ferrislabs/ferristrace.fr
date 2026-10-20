@@ -1,4 +1,4 @@
-import { Button } from '@explainer/ui'
+import { Button } from '@cometrace/ui'
 import { Container, SectionTitle } from './shared'
 import { links } from './links'
 

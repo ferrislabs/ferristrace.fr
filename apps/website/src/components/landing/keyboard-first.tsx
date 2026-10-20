@@ -1,4 +1,4 @@
-import { Card } from '@explainer/ui'
+import { Card } from '@cometrace/ui'
 import { Container, SectionTitle } from './shared'
 
 const shortcuts = [

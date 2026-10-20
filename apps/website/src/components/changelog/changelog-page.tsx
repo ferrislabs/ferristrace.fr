@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Button, TooltipProvider } from '@explainer/ui'
+import { Button, TooltipProvider } from '@cometrace/ui'
 import { ExternalLink, Rss } from 'lucide-react'
 import type { Release } from '../../lib/changelog'
 import { Container } from '../landing/shared'

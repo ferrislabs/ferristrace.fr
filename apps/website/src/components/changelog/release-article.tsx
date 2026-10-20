@@ -1,4 +1,4 @@
-import { Alert, AlertDescription, Badge, Button, cn } from '@explainer/ui'
+import { Alert, AlertDescription, Badge, Button, cn } from '@cometrace/ui'
 import {
   ArrowRight,
   Check,
