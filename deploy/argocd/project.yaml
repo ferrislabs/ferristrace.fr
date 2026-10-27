@@ -23,3 +23,7 @@ spec:
       kind: Deployment
     - group: networking.k8s.io
       kind: Ingress
+    - group: autoscaling
+      kind: HorizontalPodAutoscaler
+    - group: policy
+      kind: PodDisruptionBudget

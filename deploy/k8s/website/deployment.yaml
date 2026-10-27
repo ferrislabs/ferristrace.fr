@@ -6,7 +6,9 @@ metadata:
     app.kubernetes.io/name: website
     app.kubernetes.io/part-of: cometrace
 spec:
-  replicas: 2
+  # No replicas here on purpose: the HPA in autoscaling.yaml owns the count.
+  # Declaring one as well makes ArgoCD selfHeal revert whatever the HPA just
+  # did; a field absent from the manifest is one ArgoCD leaves alone.
   selector:
     matchLabels:
       app.kubernetes.io/name: website
