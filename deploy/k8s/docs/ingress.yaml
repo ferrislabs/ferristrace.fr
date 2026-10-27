@@ -4,7 +4,11 @@ metadata:
   name: docs
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
-    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    # Both entrypoints, not just websecure: a router bound to websecure
+    # alone leaves nothing listening on :80, so plain-HTTP visitors get a
+    # 404 instead of being redirected. The middleware below sends them to
+    # HTTPS. Let's Encrypt follows the redirect, so HTTP-01 renewal is fine.
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
     traefik.ingress.kubernetes.io/router.middlewares: kube-system-redirect-https@kubernetescrd
 spec:
   ingressClassName: traefik
