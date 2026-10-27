@@ -1,0 +1,62 @@
+# Both sites, synced straight from `main`. The deploy workflow never talks to
+# the cluster: it pushes an image and rewrites the tag in deploy/k8s/<app>/
+# kustomization.yaml, and ArgoCD picks the commit up from here.
+#
+# Rollback is `git revert` on that commit.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: website
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: cometrace
+  source:
+    repoURL: git@github.com:Comettrace/website.git
+    targetRevision: main
+    path: deploy/k8s/website
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cometrace
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 3m
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: docs
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: cometrace
+  source:
+    repoURL: git@github.com:Comettrace/website.git
+    targetRevision: main
+    path: deploy/k8s/docs
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cometrace
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 3m

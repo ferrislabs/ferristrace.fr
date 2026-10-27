@@ -1,0 +1,25 @@
+# The project both Cometrace sites live in. Scoped deliberately narrowly:
+# this repository as the only source, the `cometrace` namespace as the only
+# destination, and just the resource kinds the manifests actually declare.
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: cometrace
+  namespace: argocd
+spec:
+  description: Cometrace public sites (website + docs)
+  sourceRepos:
+    - git@github.com:Comettrace/website.git
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: cometrace
+  clusterResourceWhitelist:
+    - group: ''
+      kind: Namespace
+  namespaceResourceWhitelist:
+    - group: ''
+      kind: Service
+    - group: apps
+      kind: Deployment
+    - group: networking.k8s.io
+      kind: Ingress

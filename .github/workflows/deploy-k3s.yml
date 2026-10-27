@@ -1,0 +1,157 @@
+# Build each changed site into a container image, push it to GHCR, then write
+# the new tag into deploy/k8s/<app>/kustomization.yaml and commit.
+#
+# This workflow never contacts the cluster. ArgoCD watches `main` and applies
+# the commit, so the deployed state is whatever git says it is, and a rollback
+# is `git revert` on the bump commit.
+#
+# Gated on vars.DEPLOY_TARGET == 'k3s' so it coexists with the Cloudflare
+# Pages path in deploy.yml.
+name: Deploy (k3s)
+
+on:
+  push:
+    branches: [main]
+    # The bump commit touches only deploy/**. Pushes made with GITHUB_TOKEN
+    # don't retrigger workflows, so this is belt and braces.
+    paths-ignore:
+      - 'deploy/**'
+      - '**.md'
+  workflow_dispatch:
+    inputs:
+      website:
+        description: 'Deploy Website'
+        type: boolean
+        default: false
+      docs:
+        description: 'Deploy Docs'
+        type: boolean
+        default: false
+
+concurrency:
+  # One deploy at a time: the bump job pushes to main and must not race itself.
+  group: deploy-k3s
+  cancel-in-progress: false
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  changes:
+    if: vars.DEPLOY_TARGET == 'k3s'
+    runs-on: ubuntu-latest
+    outputs:
+      apps: ${{ steps.collect.outputs.apps }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: dorny/paths-filter@v4
+        id: filter
+        if: github.event_name == 'push'
+        with:
+          filters: |
+            website:
+              - 'apps/website/**'
+              - 'packages/**'
+              - 'CHANGELOG.md'
+              - 'pnpm-lock.yaml'
+              - 'Dockerfile'
+              - 'nginx.conf'
+            docs:
+              - 'apps/docs/**'
+              - 'packages/**'
+              - 'pnpm-lock.yaml'
+              - 'Dockerfile'
+              - 'nginx.conf'
+      - id: collect
+        env:
+          EVENT: ${{ github.event_name }}
+          F_WEBSITE: ${{ steps.filter.outputs.website }}
+          F_DOCS: ${{ steps.filter.outputs.docs }}
+          I_WEBSITE: ${{ inputs.website }}
+          I_DOCS: ${{ inputs.docs }}
+        run: |
+          apps=()
+          if [ "$EVENT" = "push" ]; then
+            [ "$F_WEBSITE" = "true" ] && apps+=("website")
+            [ "$F_DOCS" = "true" ] && apps+=("docs")
+          else
+            [ "$I_WEBSITE" = "true" ] && apps+=("website")
+            [ "$I_DOCS" = "true" ] && apps+=("docs")
+          fi
+          json=$(printf '%s\n' "${apps[@]+"${apps[@]}"}" | jq -R . | jq -sc 'map(select(. != ""))')
+          echo "apps=$json" >> "$GITHUB_OUTPUT"
+          echo "Apps to deploy: $json"
+
+  build:
+    needs: changes
+    if: needs.changes.outputs.apps != '[]'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: true
+      matrix:
+        app: ${{ fromJSON(needs.changes.outputs.apps) }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          build-args: |
+            APP=${{ matrix.app }}
+            PUBLIC_WEBSITE_URL=${{ vars.PUBLIC_WEBSITE_URL || 'https://cometrace.dev' }}
+            PUBLIC_DOCS_URL=${{ vars.PUBLIC_DOCS_URL || 'https://docs.cometrace.dev' }}
+          tags: |
+            ${{ env.REGISTRY }}/comettrace/${{ matrix.app }}:sha-${{ github.sha }}
+            ${{ env.REGISTRY }}/comettrace/${{ matrix.app }}:latest
+          cache-from: type=gha,scope=${{ matrix.app }}
+          cache-to: type=gha,scope=${{ matrix.app }},mode=max
+
+  bump:
+    needs: [changes, build]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: main
+
+      - name: Pin the new image tags
+        env:
+          APPS: ${{ needs.changes.outputs.apps }}
+          TAG: sha-${{ github.sha }}
+        run: |
+          curl -sSfL https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv5.8.1/kustomize_v5.8.1_linux_amd64.tar.gz \
+            | tar xz -C /usr/local/bin kustomize
+          for app in $(echo "$APPS" | jq -r '.[]'); do
+            ( cd "deploy/k8s/$app" \
+              && kustomize edit set image "ghcr.io/comettrace/$app:$TAG" )
+            echo "Pinned $app to $TAG"
+          done
+
+      - name: Commit when the tags changed
+        env:
+          APPS: ${{ needs.changes.outputs.apps }}
+        run: |
+          if git diff --quiet -- deploy/k8s; then
+            echo "Tags already current, nothing to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add deploy/k8s
+          git commit -m "chore(deploy): $(echo "$APPS" | jq -r 'join(", ")') -> sha-${GITHUB_SHA:0:7}"
+          git push
