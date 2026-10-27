@@ -54,3 +54,7 @@ spec:
             allowPrivilegeEscalation: false
             capabilities:
               drop: ["ALL"]
+              # nginx starts as root to chown its cache dirs and spawn its
+              # workers as uid 101; with ALL dropped it exits at startup on
+              # chown("/var/cache/nginx/client_temp", 101).
+              add: ["CHOWN", "SETGID", "SETUID"]
