@@ -5,7 +5,7 @@ const REPO = 'https://github.com/ferrislabs/ferristrace'
 export const defaultConfig: SiteConfig = {
   name: 'FerrisTrace',
   titleTemplate: '%s · FerrisTrace',
-  favicon: '/favicon.svg',
+  favicon: '/favicon-512.png',
   logo: '/logo.svg',
   thumbnail: '/thumbnail.png',
   twitterCard: 'summary_large_image',

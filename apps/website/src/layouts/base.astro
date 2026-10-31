@@ -37,7 +37,14 @@ const THUMBNAIL_SIZE = { width: '1200', height: '630' }
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href={siteConfig.favicon} />
+    {/* Four sizes of the mark; the browser takes the nearest one above the
+        slot it is filling. siteConfig.favicon is the 512, the one anything
+        that ignores `sizes` falls back to. */}
+    <link rel="icon" type="image/png" sizes="256x256" href="/favicon-256.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href={siteConfig.favicon} />
+    <link rel="icon" type="image/png" sizes="1024x1024" href="/favicon-1024.png" />
+    <link rel="icon" type="image/png" sizes="2048x2048" href="/favicon-2048.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
     <meta name="description" content={description ?? siteConfig.description} />
     {robots && <meta name="robots" content={robots} />}
