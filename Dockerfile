@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 #
-# Multi-stage build for any Ferristrace app.
+# Multi-stage build for any FerrisTrace app.
 #
 #   docker build --build-arg APP=website -t ferristrace-website .
 #   docker build --build-arg APP=docs    -t ferristrace-docs .

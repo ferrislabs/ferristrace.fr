@@ -1,7 +1,7 @@
 import { cn } from '@ferristrace/ui'
 
 /**
- * The Ferristrace mark: a head and three trailing strokes, on the same 24x24
+ * The FerrisTrace mark: a head and three trailing strokes, on the same 24x24
  * grid as the lucide icons. The stroke is lighter than lucide's 2 because the
  * mark renders at 20 px next to 16 px icons, which evens out the two weights.
  */

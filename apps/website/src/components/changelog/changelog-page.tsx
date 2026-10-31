@@ -12,12 +12,12 @@ import { ReleaseArticle } from './release-article'
 const PAGE_SIZE = 10
 
 export const LEAD =
-  'Every release of Ferristrace. Each version is tagged in the repository and published as a container image the same day.'
+  'Every release of FerrisTrace. Each version is tagged in the repository and published as a container image the same day.'
 
 interface ChangelogPageProps {
+  /** Empty until a real CHANGELOG.md exists. The page then lists nothing, and
+   *  the filters go with it: there is nothing to filter. */
   releases: Release[]
-  /** True when CHANGELOG.md was missing and the example fixture was read. */
-  isExample?: boolean
   /** The repository's star count, for the shared header. */
   stars?: number
 }
@@ -46,7 +46,7 @@ function visibleReleases(releases: Release[], type: FilterType, breakingOnly: bo
     )
 }
 
-export function ChangelogPage({ releases, isExample = false, stars }: ChangelogPageProps) {
+export function ChangelogPage({ releases, stars }: ChangelogPageProps) {
   const [type, setType] = useState<FilterType>('all')
   const [breakingOnly, setBreakingOnly] = useState(false)
   const [shown, setShown] = useState(PAGE_SIZE)
@@ -140,23 +140,18 @@ export function ChangelogPage({ releases, isExample = false, stars }: ChangelogP
               </div>
             </div>
 
-            {isExample ? (
-              <p className="mt-6 rounded-md border border-severity-warn-border bg-severity-warn-background px-4 py-3 text-sm text-severity-warn-foreground">
-                Example data. No CHANGELOG.md was found at the repository root, so this page is
-                rendering CHANGELOG.example.md. Add the real file to replace it.
-              </p>
+            {releases.length > 0 ? (
+              <div className="mt-8">
+                <FilterBar
+                  type={type}
+                  breakingOnly={breakingOnly}
+                  onTypeChange={onTypeChange}
+                  onBreakingChange={onBreakingChange}
+                />
+              </div>
             ) : null}
 
-            <div className="mt-8">
-              <FilterBar
-                type={type}
-                breakingOnly={breakingOnly}
-                onTypeChange={onTypeChange}
-                onBreakingChange={onBreakingChange}
-              />
-            </div>
-
-            {page.length === 0 ? (
+            {releases.length === 0 ? null : page.length === 0 ? (
               <p className="py-12 text-[15px] text-muted-foreground">
                 No release matches these filters.
               </p>

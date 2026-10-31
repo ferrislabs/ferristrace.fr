@@ -57,15 +57,19 @@ export function FilterBar({ type, breakingOnly, onTypeChange, onBreakingChange }
         </label>
       </div>
 
-      <p className="ml-auto text-sm text-muted-foreground">
-        Running an older version?{' '}
-        <a
-          href={links.upgradeGuide}
-          className="rounded-sm text-accent-text underline underline-offset-2 hover:no-underline"
-        >
-          Upgrade guide
-        </a>
-      </p>
+      {/* The whole sentence goes while the docs are unpublished: asking the
+          question without being able to answer it only strands the reader. */}
+      {links.upgradeGuide ? (
+        <p className="ml-auto text-sm text-muted-foreground">
+          Running an older version?{' '}
+          <a
+            href={links.upgradeGuide}
+            className="rounded-sm text-accent-text underline underline-offset-2 hover:no-underline"
+          >
+            Upgrade guide
+          </a>
+        </p>
+      ) : null}
     </div>
   )
 }

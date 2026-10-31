@@ -49,7 +49,9 @@ export function Hero({ stars, version }: HeroProps) {
           </p>
 
           <div className="mt-2 flex flex-wrap justify-center gap-2">
-            <LinkButton href={links.docs}>Get started</LinkButton>
+            {/* Without the docs there is nothing to get started with, and the
+                docker command sits right below. GitHub becomes the one call. */}
+            {links.docs ? <LinkButton href={links.docs}>Get started</LinkButton> : null}
             <LinkButton
               variant="outline"
               href={links.github}

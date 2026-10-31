@@ -3,7 +3,7 @@ import { Band, Column } from './frame'
 import { links } from './links'
 
 const footerLinks = [
-  { label: 'Docs', href: links.docs },
+  ...(links.docs ? [{ label: 'Docs', href: links.docs }] : []),
   { label: 'Changelog', href: links.changelog },
   { label: 'Security', href: links.security },
   { label: 'GitHub', href: links.github },
@@ -15,7 +15,7 @@ export function SiteFooter() {
       <Column className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 py-6 text-[13.5px]">
         <p className="flex flex-wrap items-center gap-2">
           <BrandMark className="size-4 shrink-0" />
-          <span className="font-bold">Ferristrace</span>
+          <span className="font-bold">FerrisTrace</span>
           <span className="text-faint-foreground">
             Apache 2.0 · © {new Date().getFullYear()} Ferrislabs
           </span>

@@ -2,9 +2,9 @@ import type { APIRoute } from 'astro'
 import { releaseAnchor } from '../../lib/changelog'
 import { readReleases } from '../../lib/changelog-source'
 
-const TITLE = 'Ferristrace changelog'
+const TITLE = 'FerrisTrace changelog'
 const DESCRIPTION =
-  'Every release of Ferristrace. Each version is tagged in the repository and published as a container image the same day.'
+  'Every release of FerrisTrace. Each version is tagged in the repository and published as a container image the same day.'
 
 const rfc822 = (iso: string) => new Date(`${iso}T00:00:00Z`).toUTCString()
 

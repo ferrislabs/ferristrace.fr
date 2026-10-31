@@ -1,5 +1,5 @@
 /**
- * Parser for a Keep a Changelog 1.1 file, plus the two conventions Ferristrace
+ * Parser for a Keep a Changelog 1.1 file, plus the two conventions FerrisTrace
  * adds on top of it:
  *
  *   - the first "> " line after a version heading is the release title, and a

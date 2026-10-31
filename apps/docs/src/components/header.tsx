@@ -23,7 +23,7 @@ interface HeaderProps {
 }
 
 export function Header({
-  title = 'Ferristrace',
+  title = 'FerrisTrace',
   projects,
   currentProject,
   currentVersion,

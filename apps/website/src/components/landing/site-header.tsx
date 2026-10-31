@@ -5,8 +5,9 @@ import { LinkButton } from './ui'
 import { ThemeToggle } from './theme-toggle'
 import { links } from './links'
 
+/** The Docs entry drops out of the row entirely while they are unpublished. */
 const nav = [
-  { label: 'Docs', href: links.docs },
+  ...(links.docs ? [{ label: 'Docs', href: links.docs }] : []),
   { label: 'Changelog', href: links.changelog },
   { label: 'Community', href: '#community' },
 ]
@@ -35,7 +36,7 @@ export function SiteHeader({ stars }: { stars?: number }) {
       <Column className="flex h-full items-center gap-5">
         <a href="/" className="flex items-center gap-2 text-[16px] font-bold">
           <BrandMark className="size-5" />
-          Ferristrace
+          FerrisTrace
         </a>
 
         <nav aria-label="Site" className="hidden md:block">
@@ -69,9 +70,13 @@ export function SiteHeader({ stars }: { stars?: number }) {
 
           <ThemeToggle />
 
-          <LinkButton size="sm" href={links.docs}>
-            Get started
-          </LinkButton>
+          {/* Get started has nowhere to go until the docs are published; the
+              GitHub link beside it carries the visitor in the meantime. */}
+          {links.docs ? (
+            <LinkButton size="sm" href={links.docs}>
+              Get started
+            </LinkButton>
+          ) : null}
         </div>
       </Column>
     </header>

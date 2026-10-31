@@ -26,14 +26,17 @@ const shot = (name: string) => {
   return { src, width: head.readUInt32BE(16), height: head.readUInt32BE(20) }
 }
 
+// Empty until a real CHANGELOG.md exists, which drops "Recently shipped"
+// out of the page entirely. readReleases no longer has a fixture to fall
+// back to, so nothing made up can reach it.
 const { releases } = await readReleases()
 const stats = await readRepoStats()
 ---
 
 <Base
-  title="Ferristrace"
+  title="FerrisTrace"
   description="Traces, logs and metrics for your services. Open source, self-hosted, OpenTelemetry native."
-  thumbnail="/thumbnail.png"
+  canonical="/"
 >
   <Landing
     shotLight={shot('trace-light.png')}

@@ -35,7 +35,7 @@ const modules: Module[] = [
 ]
 
 const alt =
-  "The Ferristrace trace detail view: a waterfall of spans coloured by service, with the selected span's attributes, events and resource beside it."
+  "The FerrisTrace trace detail view: a waterfall of spans coloured by service, with the selected span's attributes, events and resource beside it."
 
 export function Modules({ shotLight, shotDark }: { shotLight?: Shot; shotDark?: Shot }) {
   return (

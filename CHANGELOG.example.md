@@ -1,12 +1,12 @@
 # Changelog — EXAMPLE FILE
 
-This file is **an example**, not the Ferristrace changelog. It exists so the
+This file is **an example**, not the FerrisTrace changelog. It exists so the
 parser has a fixture to be tested against and so `/changelog` has something to
 render before the real `CHANGELOG.md` lands at the repository root. The
 releases below are made up. Never publish it as the real changelog.
 
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 1.1, plus two
-Ferristrace conventions:
+FerrisTrace conventions:
 
 - the first `>` line under a version heading is the release title, a second one
   is the summary;

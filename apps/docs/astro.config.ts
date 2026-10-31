@@ -16,7 +16,7 @@ export default defineConfig({
     react(),
     mdx({
       remarkPlugins: [
-        // Ferristrace components replace the shared Callout and Card, whose
+        // FerrisTrace components replace the shared Callout and Card, whose
         // colours are hard-coded, and add the ones the docs are written with.
         [
           remarkAutoImport,

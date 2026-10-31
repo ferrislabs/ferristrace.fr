@@ -35,7 +35,7 @@ export interface NavbarProps {
 }
 
 export function Navbar({
-  brand = 'Ferristrace',
+  brand = 'FerrisTrace',
   brandHref = '/',
   brandIcon = '/logo.svg',
   links = [],

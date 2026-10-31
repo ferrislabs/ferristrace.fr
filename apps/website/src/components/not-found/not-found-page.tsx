@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Button, Separator, TooltipProvider } from '@ferristrace/ui'
-import { routes } from '../../lib/routes'
+import { suggestibleRoutes } from '../../lib/routes'
 import { searchTermFromPath, suggestRoutes, type Suggestion } from '../../lib/suggest'
 import { Column } from '../landing/frame'
 import { links } from '../landing/links'
@@ -21,7 +21,7 @@ export function NotFoundPage({ stars }: { stars?: number }) {
   useEffect(() => {
     const requested = window.location.pathname
     setPath(requested)
-    setSuggestions(suggestRoutes(requested, routes))
+    setSuggestions(suggestRoutes(requested, suggestibleRoutes))
     report404()
   }, [])
 
@@ -40,19 +40,21 @@ export function NotFoundPage({ stars }: { stars?: number }) {
               </h1>
 
               <p className="text-[17px] leading-[26px] text-muted-foreground">
-                Nothing lives at this address. It may have moved when the docs were reorganised, or
-                the link has a typo.
+                Nothing lives at this address. The link may have a typo.
               </p>
 
-              <DocsSearch term={path ? searchTermFromPath(path) : ''} />
+              {/* The search queries the docs site, so it goes with them. */}
+              {links.docs ? <DocsSearch term={path ? searchTermFromPath(path) : ''} /> : null}
 
               <div className="flex flex-wrap items-center gap-3">
                 <Button asChild className="px-5 font-semibold hover:bg-primary-hover">
                   <a href="/">Back to home</a>
                 </Button>
-                <Button asChild variant="outline" className="px-5 font-semibold">
-                  <a href={links.docs}>Open the docs</a>
-                </Button>
+                {links.docs ? (
+                  <Button asChild variant="outline" className="px-5 font-semibold">
+                    <a href={links.docs}>Open the docs</a>
+                  </Button>
+                ) : null}
               </div>
 
               {suggestions.length > 0 ? (

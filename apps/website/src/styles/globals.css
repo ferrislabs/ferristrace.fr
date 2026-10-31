@@ -14,3 +14,51 @@
   letter-spacing: -0.03em;
   text-wrap: balance;
 }
+
+/*
+ * The square sitting on each wire of the ingest diagram travels it, so the
+ * three boxes read as a flow and not as a row. The diagram is stacked under
+ * 768 px and a line above it, so the axis changes with the layout.
+ *
+ * The offsets move rather than a transform because a percentage transform
+ * resolves against the square's own 8 px, not against the wire it crosses.
+ * Centring is done with margins, which leaves the 45 degree turn alone.
+ */
+@keyframes packet-down {
+  from {
+    top: 0;
+  }
+  to {
+    top: 100%;
+  }
+}
+
+@keyframes packet-right {
+  from {
+    left: 0;
+  }
+  to {
+    left: 100%;
+  }
+}
+
+.packet {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -4px 0 0 -4px;
+  animation: packet-down 1.8s linear infinite;
+}
+
+@media (min-width: 48rem) {
+  .packet {
+    animation-name: packet-right;
+  }
+}
+
+/* Honour the system setting: the square then stays where it was drawn. */
+@media (prefers-reduced-motion: reduce) {
+  .packet {
+    animation: none;
+  }
+}

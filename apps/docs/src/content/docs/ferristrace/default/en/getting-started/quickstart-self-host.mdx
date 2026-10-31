@@ -16,7 +16,7 @@ order: 2
 
 <Step title="Bring the stack up">
 
-Ferristrace runs as four services: the server, Postgres for the accounts and
+FerrisTrace runs as four services: the server, Postgres for the accounts and
 projects, ClickHouse for the spans, and Redis for the usage counter. The
 compose file in the repository wires them together.
 
@@ -112,7 +112,7 @@ withdraws it, naming the part of the key before the dot.
 
 <Step title="Send a span">
 
-Any OpenTelemetry SDK or Collector works; there is no Ferristrace SDK. Point
+Any OpenTelemetry SDK or Collector works; there is no FerrisTrace SDK. Point
 its trace pipeline at the server with the key as a bearer token.
 
 <CodeTabs group="send-a-span">

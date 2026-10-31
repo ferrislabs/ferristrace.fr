@@ -1,4 +1,4 @@
-import { docs } from '../components/landing/links'
+import { DOCS_PUBLISHED, docs } from '../components/landing/links'
 
 /**
  * The routes the 404 page is allowed to suggest. Only pages that exist.
@@ -47,3 +47,13 @@ export const routes: Route[] = [
   { path: '/changelog', href: '/changelog', title: 'Changelog', local: true },
   ...DOCS_PAGES.map(([path, title]) => ({ path, href: docs(path), title })),
 ]
+
+/**
+ * What the 404 may actually offer. The full list stays whole so the test that
+ * holds it against the docs sidebar keeps working; this is the view that
+ * drops the docs pages while they would answer 404 themselves, which would
+ * send the reader from one dead end to another.
+ */
+export const suggestibleRoutes: Route[] = DOCS_PUBLISHED
+  ? routes
+  : routes.filter((route) => route.local)

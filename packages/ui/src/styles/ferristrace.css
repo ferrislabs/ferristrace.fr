@@ -1,5 +1,5 @@
 /*
- * Ferristrace design tokens. The single source for both the marketing site
+ * FerrisTrace design tokens. The single source for both the marketing site
  * and the docs: neither app may redefine a colour.
  *
  * Load it after `@import 'tailwindcss'`, with the Google Fonts import kept as
@@ -7,7 +7,7 @@
  */
 
 /* ---------------------------------------------------------------------------
-   Ferristrace tokens. :root is light. Dark comes either from the system
+   FerrisTrace tokens. :root is light. Dark comes either from the system
    preference (prefers-color-scheme) or from the explicit .dark class written
    by the theme script in layouts/base.astro, which also writes .light so an
    explicit light choice still wins over a dark system preference.

@@ -1,6 +1,7 @@
 import type { Release } from '../../lib/changelog'
 import { ColumnRails } from './frame'
 import { Community, type RepoStats } from './community'
+import { Faq } from './faq'
 import { Hero } from './hero'
 import { Ingest } from './ingest'
 import { Logos } from './logos'
@@ -9,6 +10,7 @@ import { Shipped } from './shipped'
 import { SiteFooter } from './site-footer'
 import { SiteHeader } from './site-header'
 import { Where } from './where'
+import { Why } from './why'
 import type { Shot } from './shot'
 
 interface LandingProps {
@@ -17,7 +19,11 @@ interface LandingProps {
   shotDark?: Shot
   /** Repository counts, read at build time. Missing values stay placeholders. */
   stats?: RepoStats
-  /** Parsed CHANGELOG.md. The four most recent entries fill "Recently shipped". */
+  /**
+   * Parsed CHANGELOG.md. The four most recent entries fill "Recently shipped",
+   * and an empty list drops the section: the caller passes nothing rather than
+   * the example fixture, so the page never presents made-up releases.
+   */
   releases?: Release[]
 }
 
@@ -38,11 +44,13 @@ export function Landing({ shotLight, shotDark, stats, releases }: LandingProps) 
 
       <main id="main" className="flex-1">
         <Hero stars={stats?.stars} version={stats?.version} />
+        <Why />
         <Logos />
         <Ingest />
         <Modules shotLight={shotLight} shotDark={shotDark} />
         <Shipped releases={releases} />
         <Where />
+        <Faq />
         <Community stats={stats} />
       </main>
 

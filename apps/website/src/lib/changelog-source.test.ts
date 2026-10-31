@@ -26,14 +26,14 @@ afterEach(() => {
 })
 
 describe('readReleases', () => {
-  it('falls back to the example when the core cannot be reached and no snapshot exists', async () => {
+  it('reports nothing at all when neither the core nor a snapshot answers', async () => {
     if (hadSnapshot) return
     const { origin, releases } = await load('off')
-    expect(origin).toBe('example')
-    expect(releases.length).toBeGreaterThan(0)
+    expect(origin).toBe('none')
+    expect(releases).toEqual([])
   })
 
-  it('prefers the committed snapshot over the example', async () => {
+  it('reads the committed snapshot when the core cannot be reached', async () => {
     writeFileSync(
       SNAPSHOT,
       ['## [1.2.3] - 2026-01-02', '', '### Fixed', '', '- a real release', ''].join('\n'),
@@ -44,11 +44,13 @@ describe('readReleases', () => {
     expect(releases.map((release) => release.version)).toEqual(['1.2.3'])
   })
 
-  it('never reports the example as real data', async () => {
+  it('never serves the example fixture, whatever the other sources do', async () => {
     if (hadSnapshot) return
-    const { origin } = await load('off')
-    expect(origin).not.toBe('core')
-    expect(origin).not.toBe('snapshot')
+    const { releases } = await load('off')
+    const example = readFileSync(EXAMPLE, 'utf8')
+
+    expect(example).toContain('## [0.9.0]')
+    expect(releases.map((release) => release.version)).not.toContain('0.9.0')
   })
 
   it('reads the core when the fetch succeeds', async () => {
@@ -63,7 +65,7 @@ describe('readReleases', () => {
     expect(releases.map((release) => release.version)).toEqual(['9.9.9'])
   })
 
-  it('keeps the example fixture parseable, since it is the last resort', () => {
+  it('keeps the example fixture parseable, since the parser is tested on it', () => {
     expect(readFileSync(EXAMPLE, 'utf8')).toContain('## [0.9.0]')
   })
 })

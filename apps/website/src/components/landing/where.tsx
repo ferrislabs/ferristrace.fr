@@ -17,7 +17,7 @@ const targets = [
   },
   {
     name: 'Docker Compose',
-    description: 'Ferristrace and an OpenTelemetry Collector side by side.',
+    description: 'FerrisTrace and an OpenTelemetry Collector side by side.',
     keyword: 'compose.yaml',
     action: 'Example file',
     href: links.quickstart,
@@ -33,7 +33,7 @@ const targets = [
 
 export function Where() {
   return (
-    <Band tint labelledBy="where-title">
+    <Band labelledBy="where-title">
       <Column className="py-[88px]">
         <H2 id="where-title">Where it runs</H2>
         <Intro className="mt-5">
@@ -49,9 +49,13 @@ export function Where() {
               <H3>{name}</H3>
               <p className="text-sm text-muted-foreground">{description}</p>
               <p className="font-mono text-sm text-faint-foreground">{keyword}</p>
-              <LinkButton variant="outline" href={href} className="w-full">
-                {action}
-              </LinkButton>
+              {/* Each action is a docs page. While they are unpublished the
+                  row keeps its name, its description and its command. */}
+              {href ? (
+                <LinkButton variant="outline" href={href} className="w-full">
+                  {action}
+                </LinkButton>
+              ) : null}
             </div>
           ))}
         </div>

@@ -18,7 +18,18 @@ const { title, description, thumbnail, canonical, robots } = Astro.props
 // Only with a configured site: a canonical pointing at localhost is worse
 // than none at all.
 const canonicalUrl = canonical && Astro.site ? new URL(canonical, Astro.site).href : undefined
-const thumbnailUrl = thumbnail ?? siteConfig.thumbnail
+
+/**
+ * Social cards are fetched by Slack, X and LinkedIn from their own servers, so
+ * the image has to be an absolute URL. A path resolves against nothing there
+ * and the card comes out blank, which is how this shipped before.
+ */
+const thumbnailPath = thumbnail ?? siteConfig.thumbnail
+const thumbnailUrl = Astro.site ? new URL(thumbnailPath, Astro.site).href : thumbnailPath
+
+/** Every card in public/og is drawn at this size. Declaring it lets a platform
+ *  lay the card out before it has finished downloading the image. */
+const THUMBNAIL_SIZE = { width: '1200', height: '630' }
 ---
 
 <!doctype html>
@@ -33,6 +44,9 @@ const thumbnailUrl = thumbnail ?? siteConfig.thumbnail
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description ?? siteConfig.description} />
     <meta property="og:image" content={thumbnailUrl} />
+    <meta property="og:image:width" content={THUMBNAIL_SIZE.width} />
+    <meta property="og:image:height" content={THUMBNAIL_SIZE.height} />
+    {canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
     <meta property="og:type" content={siteConfig.ogType} />
     <meta name="twitter:card" content={siteConfig.twitterCard} />
     <meta name="twitter:title" content={title} />

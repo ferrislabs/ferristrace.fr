@@ -1,5 +1,5 @@
 import { defineConfig } from '@ferristrace/config'
 
 export const siteConfig = defineConfig({
-  titleTemplate: '%s · Ferristrace docs',
+  titleTemplate: '%s · FerrisTrace docs',
 })
