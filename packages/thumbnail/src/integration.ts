@@ -29,9 +29,7 @@ interface ContentEntry {
  * Scan a content directory and build a map of URL paths to content metadata.
  * Supports both flat structures (blog posts) and nested structures (docs with project/version/locale).
  */
-async function buildContentIndex(
-  contentDir: string,
-): Promise<Map<string, ContentEntry>> {
+async function buildContentIndex(contentDir: string): Promise<Map<string, ContentEntry>> {
   const entries = new Map<string, ContentEntry>()
   const allFiles = await readdir(contentDir, { recursive: true })
   const mdxFiles = allFiles.filter((f) => f.endsWith('.mdx') || f.endsWith('.md'))
@@ -45,9 +43,7 @@ async function buildContentIndex(
       const { data } = matter(fileContent)
 
       // Derive URL path from file path by stripping extension
-      const urlPath = file
-        .replace(/\.(mdx|md)$/, '')
-        .replace(/\/index$/, '')
+      const urlPath = file.replace(/\.(mdx|md)$/, '').replace(/\/index$/, '')
 
       const entry: ContentEntry = {
         filePath,
@@ -86,7 +82,7 @@ export function thumbnailIntegration(config: ThumbnailConfig): AstroIntegration 
   }
 
   return {
-    name: '@cometrace/thumbnail',
+    name: '@ferristrace/thumbnail',
     hooks: {
       'astro:config:setup': ({ updateConfig, logger }) => {
         const cache = new Map<string, Buffer>()
@@ -95,7 +91,7 @@ export function thumbnailIntegration(config: ThumbnailConfig): AstroIntegration 
           vite: {
             plugins: [
               {
-                name: '@cometrace/thumbnail-dev',
+                name: '@ferristrace/thumbnail-dev',
                 configureServer(server) {
                   server.middlewares.use(async (req, res, next) => {
                     if (!req.url?.endsWith('/thumbnail.png')) {

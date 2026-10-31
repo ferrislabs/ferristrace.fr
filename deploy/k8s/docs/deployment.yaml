@@ -4,7 +4,7 @@ metadata:
   name: docs
   labels:
     app.kubernetes.io/name: docs
-    app.kubernetes.io/part-of: cometrace
+    app.kubernetes.io/part-of: ferristrace
 spec:
   # No replicas here on purpose: the HPA in autoscaling.yaml owns the count.
   # Declaring one as well makes ArgoCD selfHeal revert whatever the HPA just
@@ -21,7 +21,7 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: docs
-        app.kubernetes.io/part-of: cometrace
+        app.kubernetes.io/part-of: ferristrace
     spec:
       imagePullSecrets:
         - name: ghcr

@@ -1,5 +1,5 @@
-import { LocaleSwitcher, Navbar, getAppLinks } from '@cometrace/ui'
-import { AuthButton } from '@cometrace/auth/react'
+import { LocaleSwitcher, Navbar, getAppLinks } from '@ferristrace/ui'
+import { AuthButton } from '@ferristrace/auth/react'
 import type { NavItem, ProjectInfo } from '../lib/docs'
 import { MobileMenu } from './mobile-menu'
 import { ProjectTabs } from './project-tabs'
@@ -23,7 +23,7 @@ interface HeaderProps {
 }
 
 export function Header({
-  title = 'Cometrace',
+  title = 'Ferristrace',
   projects,
   currentProject,
   currentVersion,

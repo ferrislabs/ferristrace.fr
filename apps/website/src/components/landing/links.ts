@@ -6,13 +6,17 @@
  * links. Their URL shape is the docs engine's:
  * /{locale}/{project}/{group}/{page}.
  *
- * What is still unknown stays a visible bracketed placeholder rather than
- * being invented: the container registry, the licence and the legal entity.
+ * Every coordinate here is one the project actually publishes: the repository
+ * the remote points at, the registry the release workflow pushes to. No page
+ * may name an address that does not answer.
  */
-const ORG = 'https://github.com/Comettrace'
+const ORG = 'https://github.com/ferrislabs'
 
-/** Docker Hub namespace. Change it here and every command follows. */
-export const IMAGE = 'comettrace'
+/**
+ * The image the release workflow publishes, registry included. Change it here
+ * and every command on the page follows.
+ */
+export const IMAGE = 'ghcr.io/ferrislabs/ferristrace'
 
 /**
  * Without this, every docs link silently becomes a relative path on the
@@ -38,20 +42,30 @@ const DOCS_ORIGIN = docsOrigin()
 
 /** `docs('/getting-started/introduction')` -> the full cross-app URL. */
 export function docs(path = ''): string {
-  return `${DOCS_ORIGIN}/en/cometrace${path}`
+  return `${DOCS_ORIGIN}/en/ferristrace${path}`
 }
+
+/** The repository as the header and the repo card name it. */
+export const REPO_SLUG = 'ferrislabs/ferristrace'
 
 export const links = {
   docs: docs('/getting-started/introduction'),
   selfHost: '/#self-host',
-  cloud: '/#cloud',
   changelog: '/changelog',
   /** The core repository: what a visitor clicking "GitHub" is after. */
-  github: `${ORG}/Cometrace`,
-  sponsor: 'https://github.com/sponsors/Comettrace',
-  signIn: '/sign-in',
-  startOnCloud: '/sign-up',
+  github: `${ORG}/ferristrace`,
+  sponsor: 'https://github.com/sponsors/ferrislabs',
   selfHostGuide: docs('/getting-started/quickstart-self-host'),
-  status: '/status',
-  security: '/security',
+  /**
+   * The repository's own policy. This domain serves no /security page, and a
+   * footer link that 404s is worse than one that leaves the site.
+   */
+  security: `${ORG}/ferristrace/blob/main/SECURITY.md`,
+  /** Where the brief sends 'Open an issue'. */
+  newIssue: `${ORG}/ferristrace/issues/new`,
+  /** The published image, registry included. */
+  image: IMAGE,
+  /** Left undefined keeps the placeholder visible rather than a dead link. */
+  discord: 'https://discord.gg/VXVT9AXQqZ' as string | undefined,
+  quickstart: docs('/getting-started/quickstart-self-host'),
 } as const

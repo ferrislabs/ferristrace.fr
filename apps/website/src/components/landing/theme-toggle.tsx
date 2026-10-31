@@ -1,16 +1,12 @@
 import { useEffect, useState } from 'react'
 import {
-  Button,
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
   applyTheme,
   cn,
   getStoredTheme,
   storeTheme,
   watchSystemTheme,
   type Theme,
-} from '@cometrace/ui'
+} from '@ferristrace/ui'
 import { Monitor, Moon, Sun } from 'lucide-react'
 
 /** Light, then dark, then back to following the system. */
@@ -19,6 +15,10 @@ const cycle: Theme[] = ['light', 'dark', 'system']
 const icons = { light: Sun, dark: Moon, system: Monitor }
 const labels: Record<Theme, string> = { light: 'Light', dark: 'Dark', system: 'System' }
 
+/**
+ * The landing's own toggle, on the page's 2 px corners, for the same reason
+ * `LinkButton` exists: the app's Button carries the product's radii.
+ */
 export function ThemeToggle({ className }: { className?: string }) {
   // The server cannot know the stored choice, so the first paint shows the
   // default and the effect below corrects it.
@@ -40,20 +40,17 @@ export function ThemeToggle({ className }: { className?: string }) {
   }
 
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={select}
-          aria-label={`Theme: ${labels[theme]}. Switch to ${labels[next].toLowerCase()}.`}
-          className={cn('w-9 px-0', className)}
-        >
-          <Icon aria-hidden="true" />
-        </Button>
-      </TooltipTrigger>
-      <TooltipContent>Theme: {labels[theme]}</TooltipContent>
-    </Tooltip>
+    <button
+      type="button"
+      onClick={select}
+      title={`Theme: ${labels[theme]}`}
+      aria-label={`Theme: ${labels[theme]}. Switch to ${labels[next].toLowerCase()}.`}
+      className={cn(
+        'inline-flex size-[34px] items-center justify-center rounded-[2px] text-muted-foreground transition-colors hover:bg-muted hover:text-foreground [&_svg]:size-4 [&_svg]:shrink-0',
+        className,
+      )}
+    >
+      <Icon aria-hidden="true" />
+    </button>
   )
 }

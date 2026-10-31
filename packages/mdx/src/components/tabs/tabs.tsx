@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { cn } from '@cometrace/ui'
+import { cn } from '@ferristrace/ui'
 
 interface TabsProps {
   items: string[]
@@ -53,7 +53,10 @@ export function Tabs({ items, children, className }: TabsProps) {
           </button>
         ))}
       </div>
-      <div ref={containerRef} className="pt-4 [&_.code-block-header]:hidden [&_.code-block]:my-0 [&_.code-block]:rounded-none [&_.code-block]:border-0 [&_pre]:my-0 [&_pre]:rounded-none [&_pre]:border-0">
+      <div
+        ref={containerRef}
+        className="pt-4 [&_.code-block-header]:hidden [&_.code-block]:my-0 [&_.code-block]:rounded-none [&_.code-block]:border-0 [&_pre]:my-0 [&_pre]:rounded-none [&_pre]:border-0"
+      >
         {children}
       </div>
     </div>

@@ -1,9 +1,12 @@
-import { cn } from '@cometrace/ui'
+import { cn } from '@ferristrace/ui'
 import * as React from 'react'
 
 function getAnchor(text: React.ReactNode): string {
   if (typeof text === 'string') {
-    return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+    return text
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '')
   }
   return ''
 }

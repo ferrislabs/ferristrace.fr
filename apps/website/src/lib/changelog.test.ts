@@ -83,6 +83,25 @@ describe('parseChangelog', () => {
     expect(parsed).toHaveLength(1)
     expect(parsed[0].version).toBe('1.0.0')
   })
+
+  it('keeps a release whose heading carries no date', () => {
+    const parsed = parseChangelog('## [1.0.0]\n\n### Fixed\n\n- a thing\n')
+    expect(parsed).toHaveLength(1)
+    expect(parsed[0].version).toBe('1.0.0')
+    expect(parsed[0].date).toBeUndefined()
+  })
+
+  it('drops the v a tag-shaped heading carries', () => {
+    const parsed = parseChangelog('## [v1.0.0] - 2026-01-02\n\n### Fixed\n\n- a thing\n')
+    expect(parsed[0].version).toBe('1.0.0')
+  })
+
+  it('still ignores Unreleased, which has no version to read', () => {
+    const parsed = parseChangelog(
+      '## [Unreleased]\n\n### Added\n\n- soon\n\n## [1.0.0] - 2026-01-02\n\n### Fixed\n\n- a thing\n',
+    )
+    expect(parsed.map((release) => release.version)).toEqual(['1.0.0'])
+  })
 })
 
 describe('formatReleaseDate', () => {

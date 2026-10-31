@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { cn } from '@cometrace/ui'
+import { cn } from '@ferristrace/ui'
 
 export function Link({
   className,

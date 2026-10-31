@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
-import { Button, Separator, TooltipProvider } from '@cometrace/ui'
+import { Button, Separator, TooltipProvider } from '@ferristrace/ui'
 import { routes } from '../../lib/routes'
 import { searchTermFromPath, suggestRoutes, type Suggestion } from '../../lib/suggest'
-import { Container } from '../landing/shared'
+import { Column } from '../landing/frame'
 import { links } from '../landing/links'
 import { SiteFooter } from '../landing/site-footer'
 import { SiteHeader } from '../landing/site-header'
@@ -11,7 +11,8 @@ import { PathChip } from './path-chip'
 import { report404 } from './report'
 import { Suggestions } from './suggestions'
 
-export function NotFoundPage() {
+/** `stars` is only here for the shared header, which shows the count. */
+export function NotFoundPage({ stars }: { stars?: number }) {
   // The host serves this page for any unknown URL, so the browser's address
   // bar holds the requested path. A static build cannot know it any earlier.
   const [path, setPath] = useState<string | null>(null)
@@ -27,10 +28,10 @@ export function NotFoundPage() {
   return (
     <TooltipProvider delayDuration={250}>
       <div className="flex min-h-dvh flex-col">
-        <SiteHeader />
+        <SiteHeader stars={stars} />
 
         <main id="main" className="flex flex-1 items-center">
-          <Container className="py-16">
+          <Column className="py-16">
             <div className="mx-auto flex w-full max-w-[560px] flex-col gap-5">
               <PathChip path={path} />
 
@@ -61,7 +62,7 @@ export function NotFoundPage() {
                 </>
               ) : null}
             </div>
-          </Container>
+          </Column>
         </main>
 
         <SiteFooter />

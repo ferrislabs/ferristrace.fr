@@ -1,5 +1,5 @@
 {
-  "name": "@cometrace/mdx",
+  "name": "@ferristrace/mdx",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -27,7 +27,7 @@
     "./components/mermaid.astro": "./src/components/mermaid/mermaid.astro"
   },
   "dependencies": {
-    "@cometrace/ui": "workspace:*",
+    "@ferristrace/ui": "workspace:*",
     "@iconify/react": "^5.2.0",
     "@shikijs/transformers": "^4.0.2",
     "acorn": "^8.14.0",

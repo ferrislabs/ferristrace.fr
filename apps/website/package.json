@@ -1,5 +1,5 @@
 {
-  "name": "@cometrace/website",
+  "name": "@ferristrace/website",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -12,9 +12,9 @@
   },
   "dependencies": {
     "@astrojs/react": "^4.2.0",
-    "@cometrace/config": "workspace:*",
-    "@cometrace/thumbnail": "workspace:*",
-    "@cometrace/ui": "workspace:*",
+    "@ferristrace/config": "workspace:*",
+    "@ferristrace/thumbnail": "workspace:*",
+    "@ferristrace/ui": "workspace:*",
     "@tailwindcss/vite": "^4.0.0",
     "astro": "^5.5.0",
     "lucide-react": "^1.60.0",
@@ -27,6 +27,7 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "typescript": "^5.8.0",
+    "vite": "^6.4.1",
     "vitest": "^3.0.0"
   }
 }

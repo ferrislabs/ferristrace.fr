@@ -13,7 +13,7 @@ metadata:
 spec:
   ingressClassName: traefik
   rules:
-    - host: docs.cometrace.dev
+    - host: docs.ferristrace.dev
       http:
         paths:
           - path: /
@@ -25,5 +25,5 @@ spec:
                   number: 80
   tls:
     - hosts:
-        - docs.cometrace.dev
+        - docs.ferristrace.dev
       secretName: docs-tls

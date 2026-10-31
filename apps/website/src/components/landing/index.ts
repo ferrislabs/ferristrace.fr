@@ -1,2 +1,3 @@
 export { Landing } from './landing'
-export { CopyCommand } from './copy-command'
+export { CodeBlock } from './code-block'
+export type { Shot } from './shot'

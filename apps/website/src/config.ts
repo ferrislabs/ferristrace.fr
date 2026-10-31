@@ -1,4 +1,4 @@
-import { defineConfig } from '@cometrace/config'
+import { defineConfig } from '@ferristrace/config'
 
 export const siteConfig = defineConfig({
   titleTemplate: '%s',

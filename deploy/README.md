@@ -4,10 +4,10 @@ Both public sites run as static nginx containers on the k3s cluster
 `cassini.nebulabs.org`, behind Traefik with Let's Encrypt certificates from
 cert-manager.
 
-| Site | Host | Image |
-| --- | --- | --- |
-| `apps/website` | `cometrace.dev`, `www.cometrace.dev` | `ghcr.io/comettrace/website` |
-| `apps/docs` | `docs.cometrace.dev` | `ghcr.io/comettrace/docs` |
+| Site           | Host                                     | Image                        |
+| -------------- | ---------------------------------------- | ---------------------------- |
+| `apps/website` | `ferristrace.dev`, `www.ferristrace.dev` | `ghcr.io/comettrace/website` |
+| `apps/docs`    | `docs.ferristrace.dev`                   | `ghcr.io/comettrace/docs`    |
 
 ## How a deploy happens
 
@@ -38,11 +38,11 @@ deploy/
 
 Actions variables (`gh variable list`):
 
-| Variable | Value |
-| --- | --- |
-| `DEPLOY_TARGET` | `k3s` — also what keeps the Cloudflare path in `deploy.yml` off |
-| `PUBLIC_WEBSITE_URL` | `https://cometrace.dev` |
-| `PUBLIC_DOCS_URL` | `https://docs.cometrace.dev` |
+| Variable             | Value                                                           |
+| -------------------- | --------------------------------------------------------------- |
+| `DEPLOY_TARGET`      | `k3s` — also what keeps the Cloudflare path in `deploy.yml` off |
+| `PUBLIC_WEBSITE_URL` | `https://ferristrace.dev`                                       |
+| `PUBLIC_DOCS_URL`    | `https://docs.ferristrace.dev`                                  |
 
 Both `PUBLIC_*` values are baked into the static output at build time
 (canonical URLs, cross-app navigation), so changing one needs a rebuild.
@@ -51,14 +51,14 @@ Both `PUBLIC_*` values are baked into the static output at build time
 
 These are set up once, outside git, because they hold credentials:
 
-- **`cometrace-website-repo`** Secret in `argocd` — the read-only GitHub
+- **`ferristrace-website-repo`** Secret in `argocd` — the read-only GitHub
   deploy key ArgoCD reads `main` with.
-- **`ghcr`** Secret in `cometrace` — a dockerconfigjson pull secret for the
+- **`ghcr`** Secret in `ferristrace` — a dockerconfigjson pull secret for the
   private GHCR packages. Rotate it before the token expires, or deploys stop
   being able to pull:
 
   ```sh
-  kubectl -n cometrace create secret docker-registry ghcr \
+  kubectl -n ferristrace create secret docker-registry ghcr \
     --docker-server=ghcr.io \
     --docker-username=<github-user> \
     --docker-password=<PAT with read:packages> \

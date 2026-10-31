@@ -39,7 +39,7 @@ afterAll(async () => {
 
 describe('404 handling', () => {
   it('has a built 404 page', () => {
-    expect(existsSync(built), 'run `pnpm --filter @cometrace/website build` first').toBe(true)
+    expect(existsSync(built), 'run `pnpm --filter @ferristrace/website build` first').toBe(true)
   })
 
   it('answers an unknown path with status 404', async () => {

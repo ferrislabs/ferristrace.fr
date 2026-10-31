@@ -1,5 +1,5 @@
 {
-  "name": "@cometrace/ui",
+  "name": "@ferristrace/ui",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -8,10 +8,10 @@
     "./components/*": "./src/components/*.tsx",
     "./lib/*": "./src/lib/*.ts",
     "./styles/globals.css": "./src/styles/globals.css",
-    "./styles/cometrace.css": "./src/styles/cometrace.css"
+    "./styles/ferristrace.css": "./src/styles/ferristrace.css"
   },
   "dependencies": {
-    "@cometrace/config": "workspace:*",
+    "@ferristrace/config": "workspace:*",
     "@iconify/react": "^5.2.0",
     "@radix-ui/react-dropdown-menu": "^2.1.6",
     "@radix-ui/react-slot": "^1.1.2",

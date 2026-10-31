@@ -1,5 +1,5 @@
 {
-  "name": "@cometrace/config",
+  "name": "@ferristrace/config",
   "version": "0.1.0",
   "private": true,
   "type": "module",

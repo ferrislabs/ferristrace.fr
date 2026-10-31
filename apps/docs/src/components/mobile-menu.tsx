@@ -1,5 +1,5 @@
-import { MobileMenu as MobileMenuShell, LocaleSwitcher } from '@cometrace/ui'
-import type { AppLink } from '@cometrace/ui'
+import { MobileMenu as MobileMenuShell, LocaleSwitcher } from '@ferristrace/ui'
+import type { AppLink } from '@ferristrace/ui'
 import { Sidebar } from './sidebar'
 import { VersionSwitcher } from './version-switcher'
 import type { NavItem } from '../lib/docs'
@@ -56,7 +56,7 @@ export function MobileMenu({
       {appLinks && appLinks.length > 0 && (
         <div className="mt-4 pt-4 border-t">
           <span className="px-3 py-1 text-xs font-medium text-muted-foreground uppercase tracking-wider">
-            Cometrace
+            Ferristrace
           </span>
           <nav className="flex flex-col gap-1 mt-1">
             {appLinks.map((link) => (

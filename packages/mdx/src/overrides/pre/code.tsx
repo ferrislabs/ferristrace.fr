@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { cn } from '@cometrace/ui'
+import { cn } from '@ferristrace/ui'
 import { Icon } from '@iconify/react'
 import { languageIcons, shellLanguages, terminalCommands } from '../../language-icons'
 
@@ -11,7 +11,11 @@ function extractTextContent(children: React.ReactNode): string {
   return ''
 }
 
-function resolveIcon(language: string | undefined, label: string | undefined, children: React.ReactNode): string {
+function resolveIcon(
+  language: string | undefined,
+  label: string | undefined,
+  children: React.ReactNode,
+): string {
   const lang = (language || '').toLowerCase()
   const lbl = (label || '').toLowerCase()
 
@@ -46,10 +50,7 @@ export function Pre({ className, children, ...props }: React.HTMLAttributes<HTML
           <span className="font-medium text-muted-foreground">{label}</span>
         </div>
         <div className="relative">
-          <pre
-            className={cn('overflow-x-auto p-4 text-sm leading-relaxed', className)}
-            {...props}
-          >
+          <pre className={cn('overflow-x-auto p-4 text-sm leading-relaxed', className)} {...props}>
             {children}
           </pre>
         </div>

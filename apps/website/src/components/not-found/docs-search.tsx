@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Input } from '@cometrace/ui'
+import { Input } from '@ferristrace/ui'
 import { Search } from 'lucide-react'
 
 /**

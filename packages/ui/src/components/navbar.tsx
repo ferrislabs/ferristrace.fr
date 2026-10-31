@@ -35,7 +35,7 @@ export interface NavbarProps {
 }
 
 export function Navbar({
-  brand = 'Cometrace',
+  brand = 'Ferristrace',
   brandHref = '/',
   brandIcon = '/logo.svg',
   links = [],
@@ -68,7 +68,12 @@ export function Navbar({
             {brand}
           </a>
           {appLinks.length > 0 && (
-            <nav className={cn('hidden items-center gap-1', breakpoint === 'lg' ? 'lg:flex' : 'md:flex')}>
+            <nav
+              className={cn(
+                'hidden items-center gap-1',
+                breakpoint === 'lg' ? 'lg:flex' : 'md:flex',
+              )}
+            >
               <div className="mx-1 h-5 w-px bg-border" />
               {appLinks.map((link) => (
                 <a
@@ -91,7 +96,12 @@ export function Navbar({
         {/* Right: in-app links (variable) + extra controls + theme toggle */}
         <div className="flex items-center gap-2">
           {links.length > 0 && (
-            <nav className={cn('hidden items-center gap-1', breakpoint === 'lg' ? 'lg:flex' : 'md:flex')}>
+            <nav
+              className={cn(
+                'hidden items-center gap-1',
+                breakpoint === 'lg' ? 'lg:flex' : 'md:flex',
+              )}
+            >
               {links.map((link) => {
                 const isActive = activePath === link.href
                 return (

@@ -1,5 +1,16 @@
-@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 @import 'tailwindcss';
-@import '@cometrace/ui/styles/cometrace.css';
+@import '@ferristrace/ui/styles/ferristrace.css';
 
 @source "../../../../packages/ui/src";
+
+/*
+ * The landing's display face. Headings and the hero lead are set in Space
+ * Grotesk; everything else keeps the app's own sans, so the marketing pages
+ * and the product do not drift apart.
+ */
+@utility font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}

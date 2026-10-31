@@ -1,4 +1,4 @@
-import { defaultConfig, resolveHref, t, type SiteConfig } from '@cometrace/config'
+import { defaultConfig, resolveHref, t, type SiteConfig } from '@ferristrace/config'
 import { Icon } from '@iconify/react'
 import * as React from 'react'
 

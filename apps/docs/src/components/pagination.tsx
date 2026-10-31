@@ -1,4 +1,4 @@
-import { cn } from '@cometrace/ui'
+import { cn } from '@ferristrace/ui'
 import { Icon } from '@iconify/react'
 
 interface PaginationLink {
@@ -21,7 +21,10 @@ export function Pagination({ prev, next }: PaginationProps) {
           href={prev.href}
           className="group flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
-          <Icon icon="lucide:chevron-left" className="size-4 transition-transform group-hover:-translate-x-0.5" />
+          <Icon
+            icon="lucide:chevron-left"
+            className="size-4 transition-transform group-hover:-translate-x-0.5"
+          />
           <div>
             <p className="text-xs text-muted-foreground">Previous</p>
             <p className="font-medium text-foreground">{prev.title}</p>
@@ -39,7 +42,10 @@ export function Pagination({ prev, next }: PaginationProps) {
             <p className="text-xs text-muted-foreground">Next</p>
             <p className="font-medium text-foreground">{next.title}</p>
           </div>
-          <Icon icon="lucide:chevron-right" className="size-4 transition-transform group-hover:translate-x-0.5" />
+          <Icon
+            icon="lucide:chevron-right"
+            className="size-4 transition-transform group-hover:translate-x-0.5"
+          />
         </a>
       ) : (
         <div />

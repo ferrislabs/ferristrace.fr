@@ -1,9 +1,9 @@
 /**
  * Resolves the shared root domain attribute for a cookie.
  *
- * `cometrace.dev`      → `domain=.cometrace.dev`  (shared with docs.cometrace.dev)
- * `localhost`          → (no domain attribute)
- * `myapp.pages.dev`    → (no domain attribute – public suffix)
+ * `ferristrace.dev`   → `domain=.ferristrace.dev`  (shared with docs.ferristrace.dev)
+ * `localhost`         → (no domain attribute)
+ * `myapp.pages.dev`   → (no domain attribute – public suffix)
  */
 const PUBLIC_SUFFIX_HOSTS = ['pages.dev', 'github.io', 'vercel.app', 'netlify.app', 'workers.dev']
 

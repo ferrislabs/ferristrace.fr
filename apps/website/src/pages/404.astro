@@ -1,12 +1,15 @@
 ---
 import Base from '../layouts/base.astro'
 import { NotFoundPage } from '../components/not-found'
+import { readRepoStats } from '../lib/repo-stats'
+
+const stats = await readRepoStats()
 ---
 
 <Base
-  title="Page not found · Cometrace"
+  title="Page not found · Ferristrace"
   description="Nothing lives at this address."
   robots="noindex"
 >
-  <NotFoundPage client:load />
+  <NotFoundPage stars={stats?.stars} client:load />
 </Base>

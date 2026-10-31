@@ -1,4 +1,4 @@
-import { cn } from '@cometrace/ui'
+import { cn } from '@ferristrace/ui'
 import * as React from 'react'
 
 export interface TocHeading {

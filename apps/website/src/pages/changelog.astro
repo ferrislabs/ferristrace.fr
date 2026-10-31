@@ -2,15 +2,24 @@
 import Base from '../layouts/base.astro'
 import { ChangelogPage, LEAD } from '../components/changelog'
 import { readReleases } from '../lib/changelog-source'
+import { readRepoStats } from '../lib/repo-stats'
 
 const { releases, origin } = await readReleases()
+// The shared header shows the star count, so every page that renders it has
+// to read the stats. Without them the header falls back to its placeholder.
+const stats = await readRepoStats()
 ---
 
 <Base
-  title="Changelog · Cometrace"
+  title="Changelog · Ferristrace"
   description={LEAD}
   canonical="/changelog"
   thumbnail="/thumbnail.png"
 >
-  <ChangelogPage releases={releases} isExample={origin === 'example'} client:load />
+  <ChangelogPage
+    releases={releases}
+    isExample={origin === 'example'}
+    stars={stats?.stars}
+    client:load
+  />
 </Base>

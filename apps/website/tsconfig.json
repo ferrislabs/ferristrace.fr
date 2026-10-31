@@ -4,8 +4,8 @@
     "jsx": "react-jsx",
     "paths": {
       "@/*": ["./src/*"],
-      "@cometrace/ui": ["../../packages/ui/src"],
-      "@cometrace/ui/*": ["../../packages/ui/src/*"]
+      "@ferristrace/ui": ["../../packages/ui/src"],
+      "@ferristrace/ui/*": ["../../packages/ui/src/*"]
     }
   }
 }

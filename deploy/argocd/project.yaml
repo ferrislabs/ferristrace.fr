@@ -1,18 +1,18 @@
-# The project both Cometrace sites live in. Scoped deliberately narrowly:
-# this repository as the only source, the `cometrace` namespace as the only
+# The project both Ferristrace sites live in. Scoped deliberately narrowly:
+# this repository as the only source, the `ferristrace` namespace as the only
 # destination, and just the resource kinds the manifests actually declare.
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
-  name: cometrace
+  name: ferristrace
   namespace: argocd
 spec:
-  description: Cometrace public sites (website + docs)
+  description: Ferristrace public sites (website + docs)
   sourceRepos:
     - git@github.com:Comettrace/website.git
   destinations:
     - server: https://kubernetes.default.svc
-      namespace: cometrace
+      namespace: ferristrace
   clusterResourceWhitelist:
     - group: ''
       kind: Namespace

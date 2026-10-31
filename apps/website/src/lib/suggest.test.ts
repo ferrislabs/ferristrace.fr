@@ -35,7 +35,7 @@ describe('suggestRoutes', () => {
   })
 
   it('never returns more than the limit', () => {
-    expect(suggestRoutes('/using-cometrace/anything', routes).length).toBeLessThanOrEqual(3)
+    expect(suggestRoutes('/using-ferristrace/anything', routes).length).toBeLessThanOrEqual(3)
   })
 
   it('only ever returns routes from the list it was given', () => {

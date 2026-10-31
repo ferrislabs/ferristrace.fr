@@ -1,4 +1,4 @@
-import { cn } from '@cometrace/ui'
+import { cn } from '@ferristrace/ui'
 
 /**
  * lucide-react v1 dropped its brand icons, so the GitHub mark is inlined here

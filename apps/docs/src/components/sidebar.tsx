@@ -1,8 +1,8 @@
-import { cn } from '@cometrace/ui'
+import { cn } from '@ferristrace/ui'
 import { Icon } from '@iconify/react'
 import * as React from 'react'
-import { useAuth } from '@cometrace/auth/react'
-import { hasRequiredRole } from '@cometrace/auth'
+import { useAuth } from '@ferristrace/auth/react'
+import { hasRequiredRole } from '@ferristrace/auth'
 import { filterNavByAccess, type NavItem } from '../lib/docs'
 
 interface SidebarProps {
@@ -13,7 +13,11 @@ interface SidebarProps {
 
 const normalize = (p: string) => p.replace(/\/$/, '') || '/'
 
-export function Sidebar({ items: initialItems, currentPath: initialPath, authEnabled = false }: SidebarProps) {
+export function Sidebar({
+  items: initialItems,
+  currentPath: initialPath,
+  authEnabled = false,
+}: SidebarProps) {
   const [items, setItems] = React.useState(initialItems)
   const [currentPath, setCurrentPath] = React.useState(() => normalize(initialPath))
 
@@ -58,7 +62,15 @@ export function Sidebar({ items: initialItems, currentPath: initialPath, authEna
   )
 }
 
-function SidebarItem({ item, currentPath, depth = 0 }: { item: NavItem; currentPath: string; depth?: number }) {
+function SidebarItem({
+  item,
+  currentPath,
+  depth = 0,
+}: {
+  item: NavItem
+  currentPath: string
+  depth?: number
+}) {
   const [open, setOpen] = React.useState(() => {
     if (item.type === 'category') {
       return isActiveCategory(item, currentPath)
@@ -124,13 +136,21 @@ function SidebarItem({ item, currentPath, depth = 0 }: { item: NavItem; currentP
         {item.title}
         <Icon
           icon="lucide:chevron-down"
-          className={cn('size-3.5 shrink-0 text-muted-foreground transition-transform ml-auto', !open && '-rotate-90')}
+          className={cn(
+            'size-3.5 shrink-0 text-muted-foreground transition-transform ml-auto',
+            !open && '-rotate-90',
+          )}
         />
       </button>
       {open && item.children && (
         <ul>
           {item.children.map((child) => (
-            <SidebarItem key={child.slug} item={child} currentPath={currentPath} depth={depth + 1} />
+            <SidebarItem
+              key={child.slug}
+              item={child}
+              currentPath={currentPath}
+              depth={depth + 1}
+            />
           ))}
         </ul>
       )}

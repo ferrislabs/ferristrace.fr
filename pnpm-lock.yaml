@@ -29,19 +29,19 @@ importers:
       '@astrojs/react':
         specifier: ^4.2.0
         version: 4.4.2(@types/node@25.5.0)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(jiti@2.6.1)(lightningcss@1.31.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      '@cometrace/auth':
+      '@ferristrace/auth':
         specifier: workspace:*
         version: link:../../packages/auth
-      '@cometrace/config':
+      '@ferristrace/config':
         specifier: workspace:*
         version: link:../../packages/config
-      '@cometrace/mdx':
+      '@ferristrace/mdx':
         specifier: workspace:*
         version: link:../../packages/mdx
-      '@cometrace/thumbnail':
+      '@ferristrace/thumbnail':
         specifier: workspace:*
         version: link:../../packages/thumbnail
-      '@cometrace/ui':
+      '@ferristrace/ui':
         specifier: workspace:*
         version: link:../../packages/ui
       '@iconify/react':
@@ -90,13 +90,13 @@ importers:
       '@astrojs/react':
         specifier: ^4.2.0
         version: 4.4.2(@types/node@25.5.0)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(jiti@2.6.1)(lightningcss@1.31.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      '@cometrace/config':
+      '@ferristrace/config':
         specifier: workspace:*
         version: link:../../packages/config
-      '@cometrace/thumbnail':
+      '@ferristrace/thumbnail':
         specifier: workspace:*
         version: link:../../packages/thumbnail
-      '@cometrace/ui':
+      '@ferristrace/ui':
         specifier: workspace:*
         version: link:../../packages/ui
       '@tailwindcss/vite':
@@ -130,6 +130,9 @@ importers:
       typescript:
         specifier: ^5.8.0
         version: 5.9.3
+      vite:
+        specifier: ^6.4.1
+        version: 6.4.1(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.31.1)
       vitest:
         specifier: ^3.0.0
         version: 3.2.6(@types/debug@4.1.12)(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.31.1)
@@ -163,7 +166,7 @@ importers:
 
   packages/mdx:
     dependencies:
-      '@cometrace/ui':
+      '@ferristrace/ui':
         specifier: workspace:*
         version: link:../ui
       '@iconify/react':
@@ -234,7 +237,7 @@ importers:
 
   packages/ui:
     dependencies:
-      '@cometrace/config':
+      '@ferristrace/config':
         specifier: workspace:*
         version: link:../config
       '@iconify/react':

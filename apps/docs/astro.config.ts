@@ -3,11 +3,11 @@ import react from '@astrojs/react'
 import mdx from '@astrojs/mdx'
 import tailwindcss from '@tailwindcss/vite'
 import remarkDirective from 'remark-directive'
-import { shikiConfig } from '@cometrace/mdx/shiki'
-import { remarkAutoImport } from '@cometrace/mdx/remark-auto-import'
-import { remarkDirectiveHandler } from '@cometrace/mdx/remark-directive-handler'
-import { remarkCodeBlocks } from '@cometrace/mdx/remark-code-blocks'
-import { thumbnailIntegration } from '@cometrace/thumbnail/integration'
+import { shikiConfig } from '@ferristrace/mdx/shiki'
+import { remarkAutoImport } from '@ferristrace/mdx/remark-auto-import'
+import { remarkDirectiveHandler } from '@ferristrace/mdx/remark-directive-handler'
+import { remarkCodeBlocks } from '@ferristrace/mdx/remark-code-blocks'
+import { thumbnailIntegration } from '@ferristrace/thumbnail/integration'
 
 export default defineConfig({
   site: process.env.PUBLIC_DOCS_URL || undefined,
@@ -16,7 +16,7 @@ export default defineConfig({
     react(),
     mdx({
       remarkPlugins: [
-        // Cometrace components replace the shared Callout and Card, whose
+        // Ferristrace components replace the shared Callout and Card, whose
         // colours are hard-coded, and add the ones the docs are written with.
         [
           remarkAutoImport,
@@ -45,7 +45,7 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
     envDir: '../../',
-    // oidc-client-ts is imported from the linked @cometrace/auth source package,
+    // oidc-client-ts is imported from the linked @ferristrace/auth source package,
     // which Vite's dep scanner doesn't crawl; pre-bundle it to avoid on-demand
     // re-optimization invalidating the deps cache mid-session.
     optimizeDeps: {

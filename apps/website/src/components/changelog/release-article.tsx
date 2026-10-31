@@ -1,4 +1,4 @@
-import { Alert, AlertDescription, Badge, Button, cn } from '@cometrace/ui'
+import { Alert, AlertDescription, Badge, Button, cn } from '@ferristrace/ui'
 import {
   ArrowRight,
   Check,
@@ -58,16 +58,16 @@ export function ReleaseArticle({ release, previousVersion, isLatest }: ReleaseAr
         >
           {tag}
         </a>
-        <time dateTime={release.date} className="text-sm text-muted-foreground">
-          {formatReleaseDate(release.date)}
-        </time>
-        <div className="mt-1 flex flex-wrap items-center gap-2">
-          {isLatest ? <Badge>Latest</Badge> : null}
-          <Badge variant="outline" className="border-success-text/35 text-success-text">
-            <Check aria-hidden="true" />
-            Live on Cloud
-          </Badge>
-        </div>
+        {release.date ? (
+          <time dateTime={release.date} className="text-sm text-muted-foreground">
+            {formatReleaseDate(release.date)}
+          </time>
+        ) : null}
+        {isLatest ? (
+          <div className="mt-1 flex flex-wrap items-center gap-2">
+            <Badge>Latest</Badge>
+          </div>
+        ) : null}
       </div>
 
       <div className="min-w-0">
@@ -129,7 +129,7 @@ export function ReleaseArticle({ release, previousVersion, isLatest }: ReleaseAr
           <CopyCommand
             className="max-w-[520px]"
             label={`Copy the docker pull command for ${tag}`}
-            lines={[`docker pull ${links.image}/cometrace:${release.version}`]}
+            lines={[`docker pull ${links.image}:${release.version}`]}
           />
           <div className="flex flex-wrap items-center gap-1">
             <Button asChild variant="ghost" size="sm" className="px-2 font-semibold">

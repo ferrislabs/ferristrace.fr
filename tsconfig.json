@@ -15,14 +15,14 @@
     "sourceMap": true,
     "baseUrl": ".",
     "paths": {
-      "@cometrace/ui": ["./packages/ui/src"],
-      "@cometrace/ui/*": ["./packages/ui/src/*"],
-      "@cometrace/mdx": ["./packages/mdx/src"],
-      "@cometrace/mdx/*": ["./packages/mdx/src/*"],
-      "@cometrace/thumbnail": ["./packages/thumbnail/src"],
-      "@cometrace/thumbnail/*": ["./packages/thumbnail/src/*"],
-      "@cometrace/auth": ["./packages/auth/src"],
-      "@cometrace/auth/*": ["./packages/auth/src/*"]
+      "@ferristrace/ui": ["./packages/ui/src"],
+      "@ferristrace/ui/*": ["./packages/ui/src/*"],
+      "@ferristrace/mdx": ["./packages/mdx/src"],
+      "@ferristrace/mdx/*": ["./packages/mdx/src/*"],
+      "@ferristrace/thumbnail": ["./packages/thumbnail/src"],
+      "@ferristrace/thumbnail/*": ["./packages/thumbnail/src/*"],
+      "@ferristrace/auth": ["./packages/auth/src"],
+      "@ferristrace/auth/*": ["./packages/auth/src/*"]
     }
   },
   "exclude": ["node_modules", "dist"]

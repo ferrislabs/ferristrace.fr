@@ -1,9 +1,9 @@
 # syntax=docker/dockerfile:1
 #
-# Multi-stage build for any Cometrace app.
+# Multi-stage build for any Ferristrace app.
 #
-#   docker build --build-arg APP=website -t cometrace-website .
-#   docker build --build-arg APP=docs    -t cometrace-docs .
+#   docker build --build-arg APP=website -t ferristrace-website .
+#   docker build --build-arg APP=docs    -t ferristrace-docs .
 #
 # The build stages run on Debian, not Alpine: astro's image pipeline (sharp),
 # the thumbnail package (@resvg/resvg-js) and the docs search index (pagefind)
@@ -43,7 +43,13 @@ ARG PUBLIC_DOCS_URL
 ENV PUBLIC_WEBSITE_URL=$PUBLIC_WEBSITE_URL \
     PUBLIC_DOCS_URL=$PUBLIC_DOCS_URL
 COPY . .
-RUN pnpm --filter @cometrace/${APP} build
+# The landing reads the repository's star, contributor and commit counts from
+# the GitHub API at build time. Anonymous calls are capped at 60 an hour per
+# machine and one build spends five, so CI passes a token. It arrives as a
+# BuildKit secret, not a build arg: an arg is written into the image history
+# for anyone who pulls it. Without the secret the file is simply absent, the
+# calls go out anonymously and the counts fall back to their placeholders.
+RUN --mount=type=secret,id=github_token GITHUB_TOKEN_FILE=/run/secrets/github_token pnpm --filter @ferristrace/${APP} build
 
 # --- Stage 3: serve ---
 FROM nginx:1.28.0-alpine3.21-slim AS runtime

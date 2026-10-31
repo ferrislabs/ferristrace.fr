@@ -18,22 +18,22 @@ import Screenshot from '../components/mdx/screenshot.astro'
 import CodeTabs from '../components/mdx/code-tabs.astro'
 import CodeTab from '../components/mdx/code-tab.astro'
 import Cards from '../components/mdx/cards.astro'
-import CometraceCard from '../components/mdx/card.astro'
-import CardGroup from '@cometrace/mdx/components/card-group.astro'
-import Card from '@cometrace/mdx/components/card.astro'
-import Steps from '@cometrace/mdx/components/steps.astro'
-import Step from '@cometrace/mdx/components/step.astro'
-import CodeGroup from '@cometrace/mdx/components/code-group.astro'
-import Preview from '@cometrace/mdx/components/preview.astro'
-import PreviewDemo from '@cometrace/mdx/components/preview-demo.astro'
-import PreviewCode from '@cometrace/mdx/components/preview-code.astro'
-import MathBlock from '@cometrace/mdx/components/math.astro'
-import MermaidBlock from '@cometrace/mdx/components/mermaid.astro'
-import Pre from '@cometrace/mdx/overrides/pre.astro'
-import Blockquote from '@cometrace/mdx/overrides/blockquote.astro'
-import { Code } from '@cometrace/mdx'
-import { H1, H2, H3, H4, H5, H6, Link, Paragraph, UnorderedList, OrderedList } from '@cometrace/mdx'
-import { resolvePageAccess } from '@cometrace/auth'
+import FerristraceCard from '../components/mdx/card.astro'
+import CardGroup from '@ferristrace/mdx/components/card-group.astro'
+import Card from '@ferristrace/mdx/components/card.astro'
+import Steps from '@ferristrace/mdx/components/steps.astro'
+import Step from '@ferristrace/mdx/components/step.astro'
+import CodeGroup from '@ferristrace/mdx/components/code-group.astro'
+import Preview from '@ferristrace/mdx/components/preview.astro'
+import PreviewDemo from '@ferristrace/mdx/components/preview-demo.astro'
+import PreviewCode from '@ferristrace/mdx/components/preview-code.astro'
+import MathBlock from '@ferristrace/mdx/components/math.astro'
+import MermaidBlock from '@ferristrace/mdx/components/mermaid.astro'
+import Pre from '@ferristrace/mdx/overrides/pre.astro'
+import Blockquote from '@ferristrace/mdx/overrides/blockquote.astro'
+import { Code } from '@ferristrace/mdx'
+import { H1, H2, H3, H4, H5, H6, Link, Paragraph, UnorderedList, OrderedList } from '@ferristrace/mdx'
+import { resolvePageAccess } from '@ferristrace/auth'
 
 export async function getStaticPaths() {
   const allDocs = await getCollection('docs')
@@ -125,7 +125,7 @@ const { Content, headings } = await render(entry)
     pre: Pre, code: Code, blockquote: Blockquote,
     Callout, Steps, Step, CodeGroup,
     Prereqs, Screenshot, CodeTabs, CodeTab,
-    Cards, Card: CometraceCard,
+    Cards, Card: FerristraceCard,
     CardGroup, Preview, PreviewDemo, PreviewCode,
     MathBlock, MermaidBlock,
   }} />

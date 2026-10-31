@@ -1,5 +1,5 @@
 /**
- * Parser for a Keep a Changelog 1.1 file, plus the two conventions Cometrace
+ * Parser for a Keep a Changelog 1.1 file, plus the two conventions Ferristrace
  * adds on top of it:
  *
  *   - the first "> " line after a version heading is the release title, and a
@@ -22,16 +22,23 @@ export interface ReleaseGroup {
 
 export interface Release {
   version: string
-  /** ISO date, as written in the heading. */
-  date: string
+  /** ISO date, as written in the heading. Absent when the heading carried none. */
+  date?: string
   title?: string
   summary?: string
   breaking: string[]
   groups: ReleaseGroup[]
 }
 
-/** "## [0.9.0] - 2026-10-14", also tolerating a bare "## 0.9.0 - 2026-10-14". */
-const VERSION_HEADING = /^##\s+\[?([^\]\s]+)\]?\s*-\s*(\d{4}-\d{2}-\d{2})\s*$/
+/**
+ * "## [0.9.0] - 2026-10-14", also tolerating a bare "## 0.9.0 - 2026-10-14",
+ * a "v" in front, and a heading with no date — a generated file may omit it,
+ * and dropping the release in silence is worse than showing it undated.
+ *
+ * The version must start with a digit, which is what keeps "## [Unreleased]"
+ * out: it falls through to the heading that closes the current release.
+ */
+const VERSION_HEADING = /^##\s+\[?v?(\d[^\]\s]*)\]?(?:\s*-\s*(\d{4}-\d{2}-\d{2}))?\s*$/
 const SECTION_HEADING = /^###\s+(.+?)\s*$/
 const BULLET = /^[-*]\s+(.+)$/
 const QUOTE = /^>\s?(.*)$/

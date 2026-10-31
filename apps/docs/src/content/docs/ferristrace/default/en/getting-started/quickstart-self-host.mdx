@@ -1,0 +1,209 @@
+---
+title: 'Quickstart: self-host'
+description: Bring the stack up on one server, found the first account, issue an ingest key and see your first trace.
+icon: server
+order: 2
+---
+
+# Quickstart: self-host
+
+<Prereqs>
+- A Linux server with Docker and the Compose plugin, and `git` to fetch the compose file.
+- Port 4318 reachable by your team and your services: it serves the UI, the API and OTLP over HTTP. Port 4317 serves OTLP over gRPC.
+</Prereqs>
+
+<Steps>
+
+<Step title="Bring the stack up">
+
+Ferristrace runs as four services: the server, Postgres for the accounts and
+projects, ClickHouse for the spans, and Redis for the usage counter. The
+compose file in the repository wires them together.
+
+```shell
+git clone https://github.com/ferrislabs/ferristrace
+cd ferristrace/deploy
+docker compose up --build --detach
+```
+
+The server waits for all three stores to report healthy, applies its own
+Postgres and ClickHouse migrations, then listens on 4317 and 4318.
+
+<Callout type="note">
+To run a released image instead of building from the checkout, set
+`COMETTRACE_IMAGE=ghcr.io/ferrislabs/ferristrace:<version>` and bring it up
+with `--no-build --pull always`.
+</Callout>
+
+</Step>
+
+<Step title="Found the first account">
+
+A fresh deployment holds no account and no organisation, so nothing can sign
+in and no key can authenticate a payload. One command fixes all of that.
+
+```shell
+docker compose exec server comettrace bootstrap --email you@example.com
+```
+
+It creates the account, creates an organisation owned by it with one project
+named `default`, and prints their ids, the command that draws an ingest key,
+and a single-use token. Keep that output: the ids are how you address the
+organisation from the command line.
+
+<Callout type="note">
+`bootstrap` does nothing if an organisation already exists, so it is safe to
+run again.
+</Callout>
+
+</Step>
+
+<Step title="Spend the token to set a password">
+
+The account has no password until you spend the printed token, which starts
+with `ct_pr_`, lasts 24 hours and works once.
+
+```shell
+curl -X POST http://your-server:4318/auth/reset/confirm \
+  -H 'x-requested-with: cli' \
+  -H 'content-type: application/json' \
+  -d '{"token":"ct_pr_…","password":"<at least twelve characters>"}'
+```
+
+<Callout type="warning">
+There is no default password. If the token expires before you spend it, draw
+another one with `comettrace reset-password --email you@example.com`.
+</Callout>
+
+</Step>
+
+<Step title="Sign in">
+
+Open `http://your-server:4318` and sign in with that address and password.
+You land in the organisation you own.
+
+<Callout type="note">
+Several screens — Overview, Issues, Releases, Alerts, Logs, Metrics — are
+drawn but not yet wired to the server. Each one carries a **Mock data** badge
+so you can tell at a glance what is real. Traces, Services and the
+organisation settings read from the server.
+</Callout>
+
+</Step>
+
+<Step title="Issue an ingest key">
+
+Keys are drawn from the command line, with the ids `bootstrap` printed. A key
+starts with `ct_live_`.
+
+```shell
+docker compose exec server comettrace issue-key \
+  --org <the printed org id> \
+  --project <the printed project id>
+```
+
+<Callout type="warning">
+The key is printed once and cannot be read back. Store it in your secret
+manager before you close the terminal. `comettrace revoke-key --prefix …`
+withdraws it, naming the part of the key before the dot.
+</Callout>
+
+</Step>
+
+<Step title="Send a span">
+
+Any OpenTelemetry SDK or Collector works; there is no Ferristrace SDK. Point
+its trace pipeline at the server with the key as a bearer token.
+
+<CodeTabs group="send-a-span">
+
+<CodeTab label="SDK">
+
+```shell
+export OTEL_EXPORTER_OTLP_ENDPOINT=http://your-server:4318
+export OTEL_EXPORTER_OTLP_HEADERS="authorization=Bearer ct_live_…"
+export OTEL_SERVICE_NAME=checkout
+```
+
+</CodeTab>
+
+<CodeTab label="Collector">
+
+```yaml
+exporters:
+  otlphttp/ferristrace:
+    endpoint: http://your-server:4318
+    headers:
+      authorization: Bearer ct_live_…
+
+service:
+  pipelines:
+    traces:
+      exporters: [otlphttp/ferristrace]
+```
+
+</CodeTab>
+
+<CodeTab label="curl">
+
+```shell
+curl -X POST http://your-server:4318/v1/traces \
+  -H "authorization: Bearer ct_live_…" \
+  -H 'content-type: application/x-protobuf' \
+  --data-binary @payload.pb
+```
+
+</CodeTab>
+
+</CodeTabs>
+
+<Callout type="warning">
+Spans are the only signal the server accepts today. `/v1/traces` is the only
+OTLP path it serves, and `TraceService` the only gRPC service, so a Collector
+pipeline exporting logs or metrics here will fail. Give those pipelines
+another exporter until the endpoints exist.
+</Callout>
+
+Restart your service with these variables.
+
+</Step>
+
+<Step title="Check it arrived">
+
+Open Traces with the range set to Last 15 m. If nothing shows up:
+
+| Symptom | Fix |
+| --- | --- |
+| 401 from the exporter | The key is wrong or revoked. Draw a new one with `issue-key`. |
+| 404 from the exporter | The endpoint has a path. Set the base URL only; SDKs add `/v1/traces`. |
+| 404 on a logs or metrics export | Expected: only `/v1/traces` is served. |
+| No error, no data | Check the project selector in the top bar, then widen the time range. |
+
+<Screenshot
+  src="/screenshots/trace-light.png"
+  darkSrc="/screenshots/trace-dark.png"
+  alt="The trace detail view: a waterfall of spans on the left, the selected span's attributes, events and resource on the right."
+  caption="A trace that arrived: the waterfall on the left, the selected span on the right."
+/>
+
+</Step>
+
+</Steps>
+
+## Next steps
+
+<Cards>
+
+<Card href="/en/ferristrace/administration/members-and-roles" label="Invite your team">
+Invitation tokens and roles.
+</Card>
+
+<Card href="/en/ferristrace/administration/retention" label="Set retention">
+`RETENTION_DAYS` and how long a span is kept.
+</Card>
+
+<Card href="/en/ferristrace/administration/single-sign-on" label="Single sign-on">
+Turn on OpenID Connect.
+</Card>
+
+</Cards>

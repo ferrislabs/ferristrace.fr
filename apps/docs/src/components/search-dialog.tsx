@@ -1,4 +1,4 @@
-import { cn } from '@cometrace/ui'
+import { cn } from '@ferristrace/ui'
 import { Icon } from '@iconify/react'
 import * as React from 'react'
 import { createPortal } from 'react-dom'
@@ -110,9 +110,14 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
             className="flex-1 bg-transparent px-3 py-3 text-sm outline-none placeholder:text-muted-foreground"
           />
           {loading && (
-            <Icon icon="lucide:loader-2" className="size-4 shrink-0 text-muted-foreground animate-spin" />
+            <Icon
+              icon="lucide:loader-2"
+              className="size-4 shrink-0 text-muted-foreground animate-spin"
+            />
           )}
-          <kbd className="ml-2 rounded border bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">Esc</kbd>
+          <kbd className="ml-2 rounded border bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">
+            Esc
+          </kbd>
         </div>
 
         {results.length > 0 && (

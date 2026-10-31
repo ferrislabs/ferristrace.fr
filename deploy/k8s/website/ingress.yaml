@@ -13,7 +13,7 @@ metadata:
 spec:
   ingressClassName: traefik
   rules:
-    - host: cometrace.dev
+    - host: ferristrace.dev
       http:
         paths:
           - path: /
@@ -23,7 +23,7 @@ spec:
                 name: website
                 port:
                   number: 80
-    - host: www.cometrace.dev
+    - host: www.ferristrace.dev
       http:
         paths:
           - path: /
@@ -36,6 +36,6 @@ spec:
   tls:
     # One certificate covering both names; cert-manager solves each over HTTP-01.
     - hosts:
-        - cometrace.dev
-        - www.cometrace.dev
+        - ferristrace.dev
+        - www.ferristrace.dev
       secretName: website-tls

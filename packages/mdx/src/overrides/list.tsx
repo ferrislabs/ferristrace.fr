@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { cn } from '@cometrace/ui'
+import { cn } from '@ferristrace/ui'
 
 export function UnorderedList({ className, ...props }: React.HTMLAttributes<HTMLUListElement>) {
   return <ul className={cn('my-4 ml-6 list-disc [&>li]:mt-2', className)} {...props} />

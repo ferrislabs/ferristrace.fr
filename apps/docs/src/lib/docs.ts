@@ -1,5 +1,5 @@
 import type { CollectionEntry } from 'astro:content'
-import { resolvePageAccess } from '@cometrace/auth'
+import { resolvePageAccess } from '@ferristrace/auth'
 
 export interface MetaFile {
   title?: string

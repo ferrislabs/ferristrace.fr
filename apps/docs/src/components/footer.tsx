@@ -1,1 +1,1 @@
-export { Footer } from '@cometrace/ui'
+export { Footer } from '@ferristrace/ui'

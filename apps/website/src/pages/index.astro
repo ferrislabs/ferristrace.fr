@@ -3,11 +3,13 @@ import { closeSync, existsSync, openSync, readSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import Base from '../layouts/base.astro'
 import { Landing } from '../components/landing'
+import { readReleases } from '../lib/changelog-source'
+import { readRepoStats } from '../lib/repo-stats'
 
 /**
  * Drop the trace view screenshots in public/screenshots/ and they replace the
- * [SCREENSHOT] placeholder on the next build. Width and height come from the
- * file itself so the frame reserves the right height before the image loads.
+ * placeholder on the next build. Width and height come from the file itself so
+ * the frame reserves the right height before the image loads.
  */
 const shot = (name: string) => {
   const src = `/screenshots/${name}`
@@ -23,12 +25,21 @@ const shot = (name: string) => {
 
   return { src, width: head.readUInt32BE(16), height: head.readUInt32BE(20) }
 }
+
+const { releases } = await readReleases()
+const stats = await readRepoStats()
 ---
 
 <Base
-  title="Cometrace"
-  description="Traces, metrics and logs in a single container. Open source, OpenTelemetry native."
+  title="Ferristrace"
+  description="Traces, logs and metrics for your services. Open source, self-hosted, OpenTelemetry native."
   thumbnail="/thumbnail.png"
 >
-  <Landing shotLight={shot('trace-light.png')} shotDark={shot('trace-dark.png')} client:load />
+  <Landing
+    shotLight={shot('trace-light.png')}
+    shotDark={shot('trace-dark.png')}
+    releases={releases}
+    stats={stats}
+    client:load
+  />
 </Base>

@@ -5,7 +5,7 @@ import { routes } from './routes'
 
 const pages = fileURLToPath(new URL('../pages/', import.meta.url))
 const docsContent = fileURLToPath(
-  new URL('../../../docs/src/content/docs/cometrace/default/en/', import.meta.url),
+  new URL('../../../docs/src/content/docs/ferristrace/default/en/', import.meta.url),
 )
 
 /** "/changelog" -> changelog.astro or changelog/index.astro; "/" -> index.astro. */
@@ -33,7 +33,7 @@ describe('routes', () => {
 
   it('lists every docs page, so the sidebar and the suggestions cannot drift apart', () => {
     const listed = new Set(routes.filter((route) => !route.local).map((route) => route.path))
-    expect(listed.size).toBe(22)
+    expect(listed.size).toBe(21)
   })
 
   it('gives every route a title to show in the suggestion list', () => {
@@ -49,7 +49,7 @@ describe('routes', () => {
 
   it('sends docs suggestions to the docs app, not to this one', () => {
     for (const route of routes.filter((candidate) => !candidate.local)) {
-      expect(route.href).toContain('/en/cometrace')
+      expect(route.href).toContain('/en/ferristrace')
     }
   })
 })

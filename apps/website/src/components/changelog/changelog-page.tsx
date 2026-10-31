@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Button, TooltipProvider } from '@cometrace/ui'
+import { Button, TooltipProvider } from '@ferristrace/ui'
 import { ExternalLink, Rss } from 'lucide-react'
 import type { Release } from '../../lib/changelog'
-import { Container } from '../landing/shared'
+import { Column } from '../landing/frame'
 import { SiteFooter } from '../landing/site-footer'
 import { SiteHeader } from '../landing/site-header'
 import { FILTER_TYPES, FilterBar, type FilterType } from './filter-bar'
@@ -12,12 +12,14 @@ import { ReleaseArticle } from './release-article'
 const PAGE_SIZE = 10
 
 export const LEAD =
-  'Every release of Cometrace. Self-hosted and Cloud run the same versions; Cloud workspaces get each release on its publication day.'
+  'Every release of Ferristrace. Each version is tagged in the repository and published as a container image the same day.'
 
 interface ChangelogPageProps {
   releases: Release[]
   /** True when CHANGELOG.md was missing and the example fixture was read. */
   isExample?: boolean
+  /** The repository's star count, for the shared header. */
+  stars?: number
 }
 
 function isFilterType(value: string | null): value is FilterType {
@@ -36,11 +38,15 @@ function visibleReleases(releases: Release[], type: FilterType, breakingOnly: bo
           },
     )
     .filter(
-      (release) => release.groups.length > 0 || (type === 'all' && release.breaking.length > 0),
+      (release) =>
+        release.groups.length > 0 ||
+        // A breaking change is pulled out of its section, so filtering by type
+        // must not hide it: it is the whole point of the breaking switch.
+        (release.breaking.length > 0 && (type === 'all' || breakingOnly)),
     )
 }
 
-export function ChangelogPage({ releases, isExample = false }: ChangelogPageProps) {
+export function ChangelogPage({ releases, isExample = false, stars }: ChangelogPageProps) {
   const [type, setType] = useState<FilterType>('all')
   const [breakingOnly, setBreakingOnly] = useState(false)
   const [shown, setShown] = useState(PAGE_SIZE)
@@ -104,10 +110,10 @@ export function ChangelogPage({ releases, isExample = false }: ChangelogPageProp
           Skip to content
         </a>
 
-        <SiteHeader current="Changelog" />
+        <SiteHeader stars={stars} />
 
         <main id="main" className="flex-1">
-          <Container className="max-w-[1040px] pb-20 pt-12">
+          <Column className="max-w-[1040px] pb-20 pt-12">
             <div className="flex flex-wrap items-start justify-between gap-x-8 gap-y-4">
               <div>
                 <h1 className="text-[40px] font-bold leading-[48px] tracking-[-0.02em]">
@@ -177,7 +183,7 @@ export function ChangelogPage({ releases, isExample = false }: ChangelogPageProp
                 </Button>
               </div>
             ) : null}
-          </Container>
+          </Column>
         </main>
 
         <SiteFooter />

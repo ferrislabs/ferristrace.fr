@@ -1,6 +1,6 @@
 'use client'
 
-import { cn } from '@cometrace/ui'
+import { cn } from '@ferristrace/ui'
 import { Icon } from '@iconify/react'
 import { type PropsWithChildren, useEffect, useRef, useState } from 'react'
 import { languageIcons, terminalCommands } from '../../language-icons'
@@ -35,9 +35,7 @@ export function CodeGroup({ titles, children, className }: PropsWithChildren<Cod
 
     preElements.forEach((el, index) => {
       const label =
-        el.getAttribute('data-label') ||
-        el.getAttribute('data-language') ||
-        `Tab ${index + 1}`
+        el.getAttribute('data-label') || el.getAttribute('data-language') || `Tab ${index + 1}`
       const language = el.getAttribute('data-language') || 'text'
 
       let icon = getIcon(label, language)

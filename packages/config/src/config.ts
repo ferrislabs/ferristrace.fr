@@ -1,10 +1,10 @@
 import type { SiteConfig } from './contracts'
 
-const REPO = 'https://github.com/Comettrace/Cometrace'
+const REPO = 'https://github.com/ferrislabs/ferristrace'
 
 export const defaultConfig: SiteConfig = {
-  name: 'Cometrace',
-  titleTemplate: '%s · Cometrace',
+  name: 'Ferristrace',
+  titleTemplate: '%s · Ferristrace',
   favicon: '/favicon.svg',
   logo: '/logo.svg',
   thumbnail: '/thumbnail.png',
@@ -27,14 +27,17 @@ export const defaultConfig: SiteConfig = {
       documentation: [
         {
           label: 'footer.links.quickstart',
-          href: '/{locale}/cometrace/getting-started/quickstart-self-host',
+          href: '/{locale}/ferristrace/getting-started/quickstart-self-host',
         },
-        { label: 'footer.links.sendingData', href: '/{locale}/cometrace/sending-data/ingest-keys' },
+        {
+          label: 'footer.links.sendingData',
+          href: '/{locale}/ferristrace/sending-data/ingest-keys',
+        },
         {
           label: 'footer.links.administration',
-          href: '/{locale}/cometrace/administration/projects',
+          href: '/{locale}/ferristrace/administration/projects',
         },
-        { label: 'footer.links.reference', href: '/{locale}/cometrace/reference/configuration' },
+        { label: 'footer.links.reference', href: '/{locale}/ferristrace/reference/configuration' },
       ],
       resources: [
         { label: 'footer.links.github', href: REPO, external: true },

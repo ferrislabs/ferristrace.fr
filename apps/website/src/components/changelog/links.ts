@@ -6,7 +6,7 @@ import { docs, IMAGE } from '../landing/links'
  */
 export const links = {
   image: IMAGE,
-  repo: 'https://github.com/Comettrace/Cometrace',
+  repo: 'https://github.com/ferrislabs/ferristrace',
   rss: '/changelog/rss.xml',
   upgradeGuide: docs('/administration/backups-and-upgrades'),
 } as const

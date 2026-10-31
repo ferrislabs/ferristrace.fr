@@ -11,14 +11,14 @@ metadata:
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
-  project: cometrace
+  project: ferristrace
   source:
     repoURL: git@github.com:Comettrace/website.git
     targetRevision: main
     path: deploy/k8s/website
   destination:
     server: https://kubernetes.default.svc
-    namespace: cometrace
+    namespace: ferristrace
   syncPolicy:
     automated:
       prune: true
@@ -40,14 +40,14 @@ metadata:
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
-  project: cometrace
+  project: ferristrace
   source:
     repoURL: git@github.com:Comettrace/website.git
     targetRevision: main
     path: deploy/k8s/docs
   destination:
     server: https://kubernetes.default.svc
-    namespace: cometrace
+    namespace: ferristrace
   syncPolicy:
     automated:
       prune: true

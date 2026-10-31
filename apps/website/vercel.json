@@ -1,5 +1,5 @@
 {
-  "buildCommand": "cd ../.. && pnpm --filter @cometrace/website build",
+  "buildCommand": "cd ../.. && pnpm --filter @ferristrace/website build",
   "outputDirectory": "dist",
   "installCommand": "cd ../.. && pnpm install --frozen-lockfile"
 }

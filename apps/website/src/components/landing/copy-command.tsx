@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Button, Tooltip, TooltipContent, TooltipTrigger, cn } from '@cometrace/ui'
+import { Button, Tooltip, TooltipContent, TooltipTrigger, cn } from '@ferristrace/ui'
 import { Check, Copy } from 'lucide-react'
 
 interface CopyCommandProps {
