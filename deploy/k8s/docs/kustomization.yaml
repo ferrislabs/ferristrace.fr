@@ -7,5 +7,5 @@ resources:
 - ingress.yaml
 - autoscaling.yaml
 images:
-- name: ghcr.io/comettrace/docs
+- name: ghcr.io/ferrislabs/docs
   newTag: sha-89b2f8dc07c6a0131e7bc9c5d15322fd5ad6ddf4

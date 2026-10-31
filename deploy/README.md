@@ -6,21 +6,21 @@ cert-manager.
 
 | Site           | Host                                     | Image                        |
 | -------------- | ---------------------------------------- | ---------------------------- |
-| `apps/website` | `ferristrace.dev`, `www.ferristrace.dev` | `ghcr.io/comettrace/website` |
-| `apps/docs`    | `docs.ferristrace.dev`                   | `ghcr.io/comettrace/docs`    |
+| `apps/website` | `ferristrace.dev`, `www.ferristrace.dev` | `ghcr.io/ferrislabs/website` |
+| `apps/docs`    | `docs.ferristrace.dev`                   | `ghcr.io/ferrislabs/docs`    |
 
 ## How a deploy happens
 
-1. A push to `main` touching an app (or `packages/**`, `Dockerfile`,
-   `nginx.conf`, `pnpm-lock.yaml`) runs `.github/workflows/deploy-k3s.yml`.
-2. It builds that app's image and pushes it to GHCR as `sha-<commit>`.
-3. A single follow-up job rewrites `newTag` in `deploy/k8s/<app>/kustomization.yaml`
-   and commits that back to `main`.
-4. ArgoCD, which watches `main`, applies the commit.
+Nothing in this repository builds or publishes the images any more: the two
+deploy workflows were removed. What is left is the desired state.
 
-The workflow never talks to the cluster, so no kubeconfig leaves the cluster
-and the GitHub side needs no network path to the API server. The deployed
-state is exactly what `main` says it is.
+1. An image is published to GHCR under `ghcr.io/ferrislabs/<app>`.
+2. `newTag` in `deploy/k8s/<app>/kustomization.yaml` is set to it, on `main`.
+3. ArgoCD, which watches `main`, applies the commit.
+
+Nothing here talks to the cluster, so no kubeconfig leaves it and GitHub needs
+no network path to the API server. The deployed state is exactly what `main`
+says it is.
 
 **Rollback** is `git revert` on the bump commit — ArgoCD syncs the previous
 tag back. The images are kept by digest, so the rollback never rebuilds.
@@ -29,7 +29,7 @@ tag back. The images are kept by digest, so the rollback never rebuilds.
 
 ```
 deploy/
-  k8s/website/     Deployment + Service + Ingress, image tag pinned by CI
+  k8s/website/     Deployment + Service + Ingress, image tag pinned in git
   k8s/docs/        same
   argocd/          AppProject + the two Applications (applied once, by hand)
 ```
@@ -38,11 +38,10 @@ deploy/
 
 Actions variables (`gh variable list`):
 
-| Variable             | Value                                                           |
-| -------------------- | --------------------------------------------------------------- |
-| `DEPLOY_TARGET`      | `k3s` — also what keeps the Cloudflare path in `deploy.yml` off |
-| `PUBLIC_WEBSITE_URL` | `https://ferristrace.dev`                                       |
-| `PUBLIC_DOCS_URL`    | `https://docs.ferristrace.dev`                                  |
+| Variable             | Value                                               |
+| -------------------- | --------------------------------------------------- |
+| `PUBLIC_WEBSITE_URL` | `https://ferristrace.dev`                           |
+| `PUBLIC_DOCS_URL`    | `off` while the docs are unpublished, else the host |
 
 Both `PUBLIC_*` values are baked into the static output at build time
 (canonical URLs, cross-app navigation), so changing one needs a rebuild.

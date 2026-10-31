@@ -1,4 +1,4 @@
-# The project both Ferristrace sites live in. Scoped deliberately narrowly:
+# The project both FerrisTrace sites live in. Scoped deliberately narrowly:
 # this repository as the only source, the `ferristrace` namespace as the only
 # destination, and just the resource kinds the manifests actually declare.
 apiVersion: argoproj.io/v1alpha1
@@ -7,9 +7,9 @@ metadata:
   name: ferristrace
   namespace: argocd
 spec:
-  description: Ferristrace public sites (website + docs)
+  description: FerrisTrace public sites (website + docs)
   sourceRepos:
-    - git@github.com:Comettrace/website.git
+    - git@github.com:ferrislabs/ferristrace.fr.git
   destinations:
     - server: https://kubernetes.default.svc
       namespace: ferristrace

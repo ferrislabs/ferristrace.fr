@@ -13,7 +13,7 @@ metadata:
 spec:
   project: ferristrace
   source:
-    repoURL: git@github.com:Comettrace/website.git
+    repoURL: git@github.com:ferrislabs/ferristrace.fr.git
     targetRevision: main
     path: deploy/k8s/website
   destination:
@@ -42,7 +42,7 @@ metadata:
 spec:
   project: ferristrace
   source:
-    repoURL: git@github.com:Comettrace/website.git
+    repoURL: git@github.com:ferrislabs/ferristrace.fr.git
     targetRevision: main
     path: deploy/k8s/docs
   destination:

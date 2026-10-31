@@ -28,7 +28,7 @@ spec:
       containers:
         - name: nginx
           # Pinned by `kustomize edit set image` from the deploy workflow.
-          image: ghcr.io/comettrace/website:latest
+          image: ghcr.io/ferrislabs/website:latest
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
