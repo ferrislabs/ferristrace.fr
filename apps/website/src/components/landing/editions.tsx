@@ -1,12 +1,14 @@
 import type { ReactNode } from 'react'
 import { Badge, Button, Card, Separator, cn } from '@cometrace/ui'
+import { CopyCommand } from './copy-command'
 import { CheckList, Container, SectionTitle, StartOnCloudButton } from './shared'
-import { links } from './links'
+import { IMAGE, links } from './links'
 
 const selfHosted = [
-  'Setup token printed at first boot, no default password',
-  'Projects, ingest keys and api tokens per workspace',
-  'Local accounts, plus OpenID Connect when you configure it',
+  'A setup token is printed at first boot. There is no default password',
+  'Projects, ingest keys and API tokens per workspace',
+  'Local accounts, plus OpenID Connect (FerrisKey) when you configure it',
+  'Kubernetes manifests (Kustomize + ArgoCD) in deploy/k8s',
   'Retention in days, set by an admin',
 ]
 
@@ -27,7 +29,7 @@ export function Editions() {
         <SectionTitle
           id="editions-title"
           title="Run it yourself, or don't."
-          description="The cloud edition is the same codebase and the same UI. Moving between the two changes where the container runs, nothing else."
+          description="Cloud runs the same code and the same UI as self-hosted. Switching between them only changes who runs the container."
         />
 
         <div className="mt-10 grid items-stretch gap-4 md:grid-cols-2">
@@ -38,9 +40,15 @@ export function Editions() {
             body="One container, one volume. Your data stays on your server."
             items={selfHosted}
             action={
-              <Button asChild variant="outline" className="w-full font-semibold">
-                <a href={links.selfHostGuide}>Self-host guide</a>
-              </Button>
+              <div className="space-y-3">
+                <CopyCommand
+                  label="Copy the docker run command"
+                  lines={[`$ docker run -d -p 8080:8080 -p 4318:4318 -v ferristrace:/data ${IMAGE}`]}
+                />
+                <Button asChild variant="outline" className="w-full font-semibold">
+                  <a href={links.selfHostGuide}>Self-host guide</a>
+                </Button>
+              </div>
             }
           />
 
@@ -49,7 +57,7 @@ export function Editions() {
             title="Cloud"
             highlighted
             aside={<span className="text-sm font-semibold text-foreground">Free while in beta</span>}
-            body="We run, upgrade and back up the container. You get a workspace and an ingest key."
+            body="We host the container, keep it updated and handle the backups. You get a workspace and an ingest key."
             items={cloud}
             action={<StartOnCloudButton className="w-full" />}
           />

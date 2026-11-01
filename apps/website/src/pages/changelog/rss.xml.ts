@@ -2,9 +2,9 @@ import type { APIRoute } from 'astro'
 import { releaseAnchor } from '../../lib/changelog'
 import { readReleases } from '../../lib/changelog-source'
 
-const TITLE = 'Cometrace changelog'
+const TITLE = 'FerrisTrace changelog'
 const DESCRIPTION =
-  'Every release of Cometrace. Self-hosted and Cloud run the same versions; Cloud workspaces get each release on its publication day.'
+  'Every release of FerrisTrace. Self-hosted and Cloud run the same versions; Cloud workspaces get each release on its publication day.'
 
 const escapeXml = (value: string) =>
   value

@@ -1,0 +1,8 @@
+---
+import Base from '../../layouts/base.astro'
+import { InfrastructurePage } from '../../components/marketing'
+---
+
+<Base title="Infrastructure" description="See Kubernetes pods, nodes and deploys next to the services running on them." canonical="/product/infrastructure" thumbnail="/thumbnail.png">
+  <InfrastructurePage client:load />
+</Base>

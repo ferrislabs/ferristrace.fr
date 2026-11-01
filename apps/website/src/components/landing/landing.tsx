@@ -1,10 +1,10 @@
 import { TooltipProvider } from '@cometrace/ui'
 import { Editions } from './editions'
+import { Features } from './features'
 import { Hero } from './hero'
-import { Instrument } from './instrument'
-import { KeyboardFirst } from './keyboard-first'
+import { Mascot } from './mascot'
+import { Problems } from './problems'
 import { ProductShot, type Shot } from './product-shot'
-import { Signals } from './signals'
 import { Sponsors } from './sponsors'
 import { SiteFooter } from './site-footer'
 import { SiteHeader } from './site-header'
@@ -31,14 +31,14 @@ export function Landing({ shotLight, shotDark }: LandingProps) {
         <main id="main" className="flex-1">
           <Hero />
           <ProductShot light={shotLight} dark={shotDark} />
-          <Signals />
-          <KeyboardFirst />
+          <Features />
+          <Problems />
           <Editions />
-          <Instrument />
           <Sponsors />
         </main>
 
         <SiteFooter />
+        <Mascot />
       </div>
     </TooltipProvider>
   )

@@ -1,23 +1,36 @@
+import { useEffect, useState } from 'react'
 import { Button, cn } from '@cometrace/ui'
+import { Menu, X } from 'lucide-react'
+import { products, solutionsBySize, solutionsByTeam } from './catalog'
 import { CometMark } from './comet-mark'
 import { GithubMark } from './github-mark'
+import { NavMenu, NavMenuGroup } from './nav-menu'
 import { ThemeToggle } from './theme-toggle'
 import { Container, StartOnCloudButton } from './shared'
 import { links } from './links'
 
-const navLinks = [
-  { label: 'Docs', href: links.docs },
-  { label: 'Self-host', href: links.selfHost },
-  { label: 'Cloud', href: links.cloud },
-  { label: 'Changelog', href: links.changelog },
-]
+export type HeaderSection = 'products' | 'solutions' | 'docs' | 'pricing' | 'changelog'
 
 interface SiteHeaderProps {
-  /** Label of the nav link for the page being shown, e.g. "Changelog". */
-  current?: string
+  /** Section of the page being shown, so its nav entry reads as current. */
+  current?: HeaderSection
 }
 
+const plainLinks: Array<{ section: HeaderSection; label: string; href: string }> = [
+  { section: 'docs', label: 'Docs', href: links.docs },
+  { section: 'pricing', label: 'Pricing', href: links.pricing },
+]
+
 export function SiteHeader({ current }: SiteHeaderProps = {}) {
+  const [mobileOpen, setMobileOpen] = useState(false)
+
+  useEffect(() => {
+    if (!mobileOpen) return
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setMobileOpen(false)
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [mobileOpen])
+
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background">
       <Container className="flex h-16 items-center gap-6">
@@ -26,16 +39,25 @@ export function SiteHeader({ current }: SiteHeaderProps = {}) {
           className="flex items-center gap-2 rounded-md text-[15px] font-bold tracking-[-0.01em]"
         >
           <CometMark />
-          Cometrace
+          FerrisTrace
         </a>
 
-        {/* The four links need ~300 px, which only fits from md up. Below sm
-            the row keeps the logo and the primary action, nothing else. */}
         <nav aria-label="Main" className="hidden md:block">
           <ul className="flex items-center gap-1">
-            {navLinks.map((link) => {
-              const isCurrent = link.label === current
-
+            <NavMenu label="Products" active={current === 'products'} className="w-[640px]">
+              <div className="grid grid-cols-2 gap-x-1">
+                <NavMenuGroup entries={products.slice(0, 3)} />
+                <NavMenuGroup entries={products.slice(3)} />
+              </div>
+            </NavMenu>
+            <NavMenu label="Solutions" active={current === 'solutions'} className="w-[600px]">
+              <div className="grid grid-cols-2 gap-x-1">
+                <NavMenuGroup title="By company" entries={solutionsBySize} />
+                <NavMenuGroup title="By team" entries={solutionsByTeam} />
+              </div>
+            </NavMenu>
+            {plainLinks.map((link) => {
+              const isCurrent = link.section === current
               return (
                 <li key={link.label}>
                   <a
@@ -44,7 +66,7 @@ export function SiteHeader({ current }: SiteHeaderProps = {}) {
                     className={cn(
                       'rounded-md px-2.5 py-1.5 text-sm transition-colors',
                       isCurrent
-                        ? 'bg-secondary font-semibold text-secondary-foreground'
+                        ? 'font-semibold text-foreground'
                         : 'text-muted-foreground hover:bg-accent hover:text-foreground',
                     )}
                   >
@@ -73,8 +95,46 @@ export function SiteHeader({ current }: SiteHeaderProps = {}) {
             <a href={links.signIn}>Sign in</a>
           </Button>
           <StartOnCloudButton size="sm" />
+          <Button
+            variant="ghost"
+            size="sm"
+            className="md:hidden"
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-nav"
+            aria-label={mobileOpen ? 'Close the menu' : 'Open the menu'}
+            onClick={() => setMobileOpen((o) => !o)}
+          >
+            {mobileOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
+          </Button>
         </div>
       </Container>
+
+      {mobileOpen ? (
+        <nav
+          id="mobile-nav"
+          aria-label="Main"
+          className="max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-border bg-background md:hidden"
+        >
+          <Container className="space-y-4 py-4">
+            <NavMenuGroup title="Products" entries={products} />
+            <NavMenuGroup title="Solutions" entries={[...solutionsBySize, ...solutionsByTeam]} />
+            <ul className="border-t border-border pt-3">
+              {[...plainLinks, { section: 'changelog' as const, label: 'Changelog', href: links.changelog }].map(
+                (link) => (
+                  <li key={link.label}>
+                    <a
+                      href={link.href}
+                      className="block rounded-md px-3 py-2 text-sm font-semibold hover:bg-accent"
+                    >
+                      {link.label}
+                    </a>
+                  </li>
+                ),
+              )}
+            </ul>
+          </Container>
+        </nav>
+      ) : null}
     </header>
   )
 }

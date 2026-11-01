@@ -1,3 +1,4 @@
+import { useEffect, useRef, type ReactNode } from 'react'
 import { Image } from 'lucide-react'
 import { Container } from './shared'
 
@@ -14,19 +15,21 @@ interface ProductShotProps {
 }
 
 const alt =
-  "The Cometrace trace detail view: a waterfall of spans on the left, the selected span's attributes, events and resource on the right."
+  "The FerrisTrace trace detail view: a waterfall of spans on the left, the selected span's attributes, events and resource on the right."
 
 export function ProductShot({ light, dark }: ProductShotProps) {
   return (
-    <section aria-label="The trace view" className="pb-20">
+    <section id="product" aria-label="The trace view" className="scroll-mt-20 pb-20">
       <Container>
-        <div className="overflow-hidden rounded-xl border border-border shadow-lg">
-          {light ? <Shots light={light} dark={dark} /> : <Placeholder />}
-        </div>
+        <Tilt>
+          <div className="overflow-hidden rounded-xl border border-border shadow-lg">
+            {light ? <Shots light={light} dark={dark} /> : <Placeholder />}
+          </div>
+        </Tilt>
 
         <p className="mx-auto mt-4 max-w-[680px] text-center text-sm leading-6 text-faint-foreground">
-          The trace view: waterfall on the left, the selected span's attributes, events and resource
-          on the right.
+          The trace view, with the span waterfall on the left and the selected span's attributes,
+          events and resource on the right.
         </p>
       </Container>
     </section>
@@ -65,6 +68,43 @@ function Shots({ light, dark }: { light: Shot; dark?: Shot }) {
         className="shot-dark block h-auto w-full"
       />
     </>
+  )
+}
+
+/**
+ * A light 3D tilt that follows the pointer, desktop only and disabled under
+ * reduced motion. The transform is written straight to the node on pointermove.
+ */
+function Tilt({ children }: { children: ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    if (!window.matchMedia('(pointer: fine)').matches) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+    const onMove = (e: PointerEvent) => {
+      const r = el.getBoundingClientRect()
+      const px = (e.clientX - r.left) / r.width - 0.5
+      const py = (e.clientY - r.top) / r.height - 0.5
+      el.style.transform = `perspective(1400px) rotateX(${(-py * 3).toFixed(2)}deg) rotateY(${(px * 3).toFixed(2)}deg)`
+    }
+    const onLeave = () => {
+      el.style.transform = 'perspective(1400px) rotateX(0deg) rotateY(0deg)'
+    }
+    el.addEventListener('pointermove', onMove)
+    el.addEventListener('pointerleave', onLeave)
+    return () => {
+      el.removeEventListener('pointermove', onMove)
+      el.removeEventListener('pointerleave', onLeave)
+    }
+  }, [])
+
+  return (
+    <div ref={ref} className="transition-transform duration-200 ease-out will-change-transform">
+      {children}
+    </div>
   )
 }
 

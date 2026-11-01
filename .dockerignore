@@ -1,14 +1,17 @@
-# Docker matches these patterns from the build-context root only, so the
-# `**/` prefix is what keeps the workspace's nested node_modules (installed
-# on the host, with host-specific symlinks) from clobbering the ones the
-# deps stage just installed.
-**/node_modules
-**/dist
-**/.astro
-**/.turbo
-**/.vercel
-**/.output
+node_modules
+dist
 .git
+.github
+.claude
+.turbo
+.astro
+.vercel
+.output
+charts
+deploy
+apps/docs
+packages/auth
+packages/mdx
 *.log
 .DS_Store
 .env

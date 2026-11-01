@@ -1,3 +1,4 @@
+import { products, solutions } from '../components/landing/catalog'
 import { docs } from '../components/landing/links'
 
 /**
@@ -46,5 +47,7 @@ const DOCS_PAGES: Array<[path: string, title: string]> = [
 export const routes: Route[] = [
   { path: '/', href: '/', title: 'Home', local: true },
   { path: '/changelog', href: '/changelog', title: 'Changelog', local: true },
+  { path: '/pricing', href: '/pricing', title: 'Pricing', local: true },
+  ...[...products, ...solutions].map(({ href, title }) => ({ path: href, href, title, local: true })),
   ...DOCS_PAGES.map(([path, title]) => ({ path, href: docs(path), title })),
 ]

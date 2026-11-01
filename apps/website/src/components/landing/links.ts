@@ -9,10 +9,10 @@
  * What is still unknown stays a visible bracketed placeholder rather than
  * being invented: the container registry, the licence and the legal entity.
  */
-const ORG = 'https://github.com/Comettrace'
+const ORG = 'https://github.com/ferrislabs'
 
-/** Docker Hub namespace. Change it here and every command follows. */
-export const IMAGE = 'comettrace'
+/** Container image, `<registry namespace>/<image>`. Change it here and every command follows. */
+export const IMAGE = 'ferrislabs/ferristrace'
 
 /**
  * Without this, every docs link silently becomes a relative path on the
@@ -43,11 +43,13 @@ export function docs(path = ''): string {
 
 export const links = {
   docs: docs('/getting-started/introduction'),
+  features: '/#features',
+  pricing: '/pricing',
   selfHost: '/#self-host',
   cloud: '/#cloud',
   changelog: '/changelog',
   /** The core repository: what a visitor clicking "GitHub" is after. */
-  github: `${ORG}/Cometrace`,
+  github: `${ORG}/ferristrace`,
   sponsor: 'https://github.com/sponsors/Comettrace',
   signIn: '/sign-in',
   startOnCloud: '/sign-up',

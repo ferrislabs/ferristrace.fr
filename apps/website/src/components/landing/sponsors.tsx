@@ -32,8 +32,8 @@ export function Sponsors() {
       <Container>
         <SectionTitle
           id="sponsors-title"
-          title="Trusted by the teams running it in production."
-          description="Cometrace is open source. These teams run it on their own servers and fund the work."
+          title="Backed by teams who run it in production."
+          description="FerrisTrace is open source. The companies below run it on their own servers and help pay for its development."
         />
 
         <ul className="mt-10 flex flex-wrap gap-3">

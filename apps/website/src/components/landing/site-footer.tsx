@@ -1,39 +1,63 @@
+import { products, solutions } from './catalog'
 import { CometMark } from './comet-mark'
 import { Container } from './shared'
 import { links } from './links'
+import { FooterWordmark } from './footer-wordmark'
 
-const footerLinks = [
-  { label: 'Docs', href: links.docs },
-  { label: 'GitHub', href: links.github },
-  { label: 'Changelog', href: links.changelog },
-  { label: 'Status', href: links.status },
-  { label: 'Security', href: links.security },
+const columns = [
+  { title: 'Products', links: products.map(({ title, href }) => ({ label: title, href })) },
+  { title: 'Solutions', links: solutions.map(({ title, href }) => ({ label: title, href })) },
+  {
+    title: 'Resources',
+    links: [
+      { label: 'Docs', href: links.docs },
+      { label: 'Pricing', href: links.pricing },
+      { label: 'Changelog', href: links.changelog },
+      { label: 'GitHub', href: links.github },
+    ],
+  },
+  {
+    title: 'Company',
+    links: [
+      { label: 'Status', href: links.status },
+      { label: 'Security', href: links.security },
+    ],
+  },
 ]
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-border py-8">
-      <Container className="flex flex-wrap items-center justify-between gap-x-6 gap-y-4">
+    <footer className="overflow-hidden border-t border-border pb-8 pt-14">
+      <Container>
+        <nav aria-label="Footer" className="grid grid-cols-2 gap-8 md:grid-cols-4">
+          {columns.map((column) => (
+            <div key={column.title}>
+              <h2 className="text-xs font-semibold uppercase tracking-wide text-faint-foreground">
+                {column.title}
+              </h2>
+              <ul className="mt-3 space-y-2 text-sm">
+                {column.links.map((link) => (
+                  <li key={link.label}>
+                    <a
+                      href={link.href}
+                      className="rounded-sm text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </nav>
+
         {/* The copyright carries the name, so the mark goes without the wordmark. */}
-        <p className="flex items-center gap-2.5 text-sm text-muted-foreground">
+        <p className="mt-12 flex items-center gap-2.5 border-t border-border pt-6 text-sm text-muted-foreground">
           <CometMark className="size-4 shrink-0" />
-          <span>© 2025 Cometrace · Apache 2.0</span>
+          <span>© {new Date().getFullYear()} FerrisTrace · Apache 2.0</span>
         </p>
 
-        <nav aria-label="Footer">
-          <ul className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
-            {footerLinks.map((link) => (
-              <li key={link.label}>
-                <a
-                  href={link.href}
-                  className="rounded-sm text-muted-foreground transition-colors hover:text-foreground"
-                >
-                  {link.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
+        <FooterWordmark />
       </Container>
     </footer>
   )

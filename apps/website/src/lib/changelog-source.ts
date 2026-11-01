@@ -5,7 +5,7 @@ import { parseChangelog, type Release } from './changelog'
 const ROOT = new URL('../../../../', import.meta.url)
 
 /** The core repository owns the changelog: it is edited in the PR that makes the change. */
-const DEFAULT_SOURCE = 'https://raw.githubusercontent.com/Comettrace/Cometrace/main/CHANGELOG.md'
+const DEFAULT_SOURCE = 'https://raw.githubusercontent.com/ferrislabs/ferristrace/main/CHANGELOG.md'
 
 /** Set CHANGELOG_SOURCE_URL to "off" to build without touching the network. */
 const SOURCE_URL = process.env.CHANGELOG_SOURCE_URL ?? DEFAULT_SOURCE

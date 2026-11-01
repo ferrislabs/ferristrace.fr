@@ -3,3 +3,293 @@
 @import '@cometrace/ui/styles/cometrace.css';
 
 @source "../../../../packages/ui/src";
+
+/* Idle bob of the landing mascot. The follow-the-cursor motion is driven by
+   JS on the wrapper, so this only animates the svg itself. */
+@keyframes mascot-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.mascot-bob {
+  animation: mascot-bob 3.2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mascot-bob,
+  .mascot-bob-off {
+    animation: none;
+  }
+}
+
+/* Problems section: the active tab fills while it waits to rotate, and the
+   panel fades in on every change. */
+@keyframes problem-progress {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+.problem-progress {
+  animation: problem-progress linear forwards;
+}
+
+@keyframes problem-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.problem-panel {
+  animation: problem-panel-in 0.35s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .problem-panel {
+    animation: none;
+  }
+}
+
+/* Ground shadow under the mascot: shrinks while the comet bobs up. */
+@keyframes mascot-shadow {
+  0%,
+  100% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scaleX(0.75);
+    opacity: 0.6;
+  }
+}
+
+.mascot-shadow {
+  animation: mascot-shadow 3.2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mascot-shadow {
+    animation: none;
+  }
+}
+
+/* Header dropdowns open with a short fade and lift. */
+@keyframes nav-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.nav-menu-panel:not([hidden]) {
+  animation: nav-menu-in 0.16s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-menu-panel:not([hidden]) {
+    animation: none;
+  }
+}
+
+/* Marketing diagrams: bars grow in, active pipeline paths flow. */
+@keyframes ai-bar-in {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.ai-bar {
+  transform-origin: left;
+  animation: ai-bar-in 0.5s ease-out;
+}
+
+@keyframes pipeline-flow {
+  to {
+    stroke-dashoffset: -16;
+  }
+}
+
+.pipeline-flow {
+  animation: pipeline-flow 0.8s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-bar,
+  .pipeline-flow {
+    animation: none;
+  }
+}
+
+/* Problem tabs: the FerrisTrace steps arrive one after the other. */
+@keyframes problem-step-in {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.problem-step {
+  animation: problem-step-in 0.3s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .problem-step {
+    animation: none;
+  }
+}
+
+/* Footer wordmark: the letters fill with spans like a trace waterfall. */
+@keyframes wordmark-span-in {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.wordmark-span {
+  transform-box: fill-box;
+  transform-origin: left center;
+  transform: scaleX(0);
+}
+
+.is-visible .wordmark-span {
+  animation: wordmark-span-in 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+
+/* Comet asleep on the T: slow breathing and rising z's. */
+@keyframes wordmark-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.04, 0.97);
+  }
+}
+
+.wordmark-breathe {
+  transform-origin: 48% 90%;
+  animation: wordmark-breathe 3.6s ease-in-out infinite;
+}
+
+@keyframes wordmark-zzz {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0);
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(10px, -22px);
+  }
+}
+
+.wordmark-zzz {
+  opacity: 0;
+  animation: wordmark-zzz 2.7s ease-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wordmark-span,
+  .is-visible .wordmark-span {
+    transform: none;
+    animation: none;
+  }
+
+  .wordmark-breathe {
+    animation: none;
+  }
+
+  .wordmark-zzz {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+/* Ferris's comet tail: the spans flicker like a live trace, the sparks
+   drift off, and the whole tail stretches with speed (--crab-rush, 0 to 1,
+   set by the mascot while it moves). */
+.crab-tail {
+  transform-box: fill-box;
+  transform-origin: right center;
+  transform: scaleX(calc(0.75 + var(--crab-rush, 0) * 0.55));
+}
+
+@keyframes crab-tail-span {
+  0%,
+  100% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scaleX(0.62);
+    opacity: 0.7;
+  }
+}
+
+.crab-tail-span {
+  transform-box: fill-box;
+  transform-origin: right center;
+  animation: crab-tail-span 1.5s ease-in-out infinite;
+}
+
+@keyframes crab-spark {
+  0% {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+  30% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-14px);
+  }
+}
+
+.crab-spark {
+  animation: crab-spark 1.2s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .crab-tail {
+    transform: none;
+  }
+
+  .crab-tail-span,
+  .crab-spark {
+    animation: none;
+  }
+
+  .crab-spark {
+    opacity: 0.5;
+  }
+}

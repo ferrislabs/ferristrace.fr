@@ -12,7 +12,7 @@ import { ReleaseArticle } from './release-article'
 const PAGE_SIZE = 10
 
 export const LEAD =
-  'Every release of Cometrace. Self-hosted and Cloud run the same versions; Cloud workspaces get each release on its publication day.'
+  'Every release of FerrisTrace. Self-hosted and Cloud run the same versions; Cloud workspaces get each release on its publication day.'
 
 interface ChangelogPageProps {
   releases: Release[]
@@ -104,7 +104,7 @@ export function ChangelogPage({ releases, isExample = false }: ChangelogPageProp
           Skip to content
         </a>
 
-        <SiteHeader current="Changelog" />
+        <SiteHeader current="changelog" />
 
         <main id="main" className="flex-1">
           <Container className="max-w-[1040px] pb-20 pt-12">

@@ -1,54 +1,51 @@
 # syntax=docker/dockerfile:1
-#
-# Multi-stage build for any Cometrace app.
-#
-#   docker build --build-arg APP=website -t cometrace-website .
-#   docker build --build-arg APP=docs    -t cometrace-docs .
-#
-# The build stages run on Debian, not Alpine: astro's image pipeline (sharp),
-# the thumbnail package (@resvg/resvg-js) and the docs search index (pagefind)
-# all pull prebuilt native binaries, and the glibc ones are the better-tested
-# path. Only the nginx runtime ships, so the build image size is irrelevant.
 
-# --- Stage 1: install the workspace ---
-FROM node:22-bookworm-slim AS deps
-ENV PNPM_HOME=/pnpm \
-    PATH=/pnpm:$PATH \
-    COREPACK_ENABLE_DOWNLOAD_PROMPT=0
+# The Ferristace website: built with Astro, served by nginx on 8080.
+#
+#   docker build -t ferristace-website .
+#   docker run --rm -p 8080:8080 ferristace-website
+#
+# The PUBLIC_* build arguments are read at build time, not at container start:
+# the site is static.
+
+# --- Dependencies: only what the website needs ----------------------------
+FROM node:22-alpine AS deps
+# The pnpm version comes from the packageManager field of package.json.
 RUN corepack enable
 WORKDIR /app
 
-# Every manifest in the workspace, so pnpm resolves the full dependency graph.
-# Omitting one makes `workspace:*` links dangle and the build fails much later
-# with a missing module.
+# Manifests first, so this layer is reused until a dependency changes.
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY apps/docs/package.json          apps/docs/
-COPY apps/website/package.json       apps/website/
-COPY packages/auth/package.json      packages/auth/
-COPY packages/config/package.json    packages/config/
-COPY packages/mdx/package.json       packages/mdx/
-COPY packages/thumbnail/package.json packages/thumbnail/
-COPY packages/ui/package.json        packages/ui/
-RUN pnpm install --frozen-lockfile
+COPY apps/website/package.json apps/website/package.json
+COPY packages/config/package.json packages/config/package.json
+COPY packages/thumbnail/package.json packages/thumbnail/package.json
+COPY packages/ui/package.json packages/ui/package.json
 
-# --- Stage 2: build the target app ---
-# Inherits the installed node_modules in place; copying them by hand breaks
-# pnpm's symlink farm.
-FROM deps AS builder
-ARG APP=website
-# Astro bakes these into the static output (canonical URLs, cross-app nav),
-# so they have to be present at build time, not at run time.
+RUN --mount=type=cache,id=pnpm-store,target=/root/.local/share/pnpm/store \
+    pnpm install --frozen-lockfile --filter "@cometrace/website..."
+
+# --- Build -----------------------------------------------------------------
+FROM deps AS build
+# The packages extend the root tsconfig.
+COPY tsconfig.json ./
+COPY apps/website apps/website
+COPY packages/config packages/config
+COPY packages/thumbnail packages/thumbnail
+COPY packages/ui packages/ui
+
 ARG PUBLIC_WEBSITE_URL
 ARG PUBLIC_DOCS_URL
-ENV PUBLIC_WEBSITE_URL=$PUBLIC_WEBSITE_URL \
-    PUBLIC_DOCS_URL=$PUBLIC_DOCS_URL
-COPY . .
-RUN pnpm --filter @cometrace/${APP} build
+ENV PUBLIC_WEBSITE_URL=${PUBLIC_WEBSITE_URL} \
+    PUBLIC_DOCS_URL=${PUBLIC_DOCS_URL}
 
-# --- Stage 3: serve ---
+RUN pnpm --filter @cometrace/website build
+
+# --- Runtime ---------------------------------------------------------------
 FROM nginx:1.28.0-alpine3.21-slim AS runtime
-ARG APP=website
 COPY nginx.conf /etc/nginx/nginx.conf
-COPY --from=builder /app/apps/${APP}/dist /usr/share/nginx/html
-# nginx.conf listens on 8080, not 80.
+COPY --from=build /app/apps/website/dist /usr/share/nginx/html
+
+# nginx writes only under /tmp (see nginx.conf), so it runs as a plain user
+# with a read-only root filesystem.
+USER 101
 EXPOSE 8080

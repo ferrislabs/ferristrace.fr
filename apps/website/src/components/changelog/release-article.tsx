@@ -129,7 +129,7 @@ export function ReleaseArticle({ release, previousVersion, isLatest }: ReleaseAr
           <CopyCommand
             className="max-w-[520px]"
             label={`Copy the docker pull command for ${tag}`}
-            lines={[`docker pull ${links.image}/cometrace:${release.version}`]}
+            lines={[`docker pull ${links.image}:${release.version}`]}
           />
           <div className="flex flex-wrap items-center gap-1">
             <Button asChild variant="ghost" size="sm" className="px-2 font-semibold">

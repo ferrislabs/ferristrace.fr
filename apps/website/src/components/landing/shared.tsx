@@ -38,13 +38,15 @@ export function SectionTitle({
 export function StartOnCloudButton({
   size = 'default',
   className,
+  children = 'Start on Cloud',
 }: {
   size?: 'sm' | 'default' | 'lg'
   className?: string
+  children?: ReactNode
 }) {
   return (
     <Button asChild size={size} className={cn('font-semibold hover:bg-primary-hover', className)}>
-      <a href={links.startOnCloud}>Start on Cloud</a>
+      <a href={links.startOnCloud}>{children}</a>
     </Button>
   )
 }

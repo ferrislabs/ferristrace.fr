@@ -1,0 +1,8 @@
+---
+import Base from '../../layouts/base.astro'
+import { AiObservabilityPage } from '../../components/marketing'
+---
+
+<Base title="AI observability" description="See what each LLM call cost, how many tokens it used and how long it took, broken down by feature and customer." canonical="/product/ai-observability" thumbnail="/thumbnail.png">
+  <AiObservabilityPage client:load />
+</Base>
