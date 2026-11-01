@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { cn } from '@cometrace/ui'
 import { Check, Cloud, KeyRound, Lock, Server, X } from 'lucide-react'
-import { CometMark } from '../../landing/comet-mark'
+import { FerrisMark } from '../../landing/ferris-mark'
 
 type Mode = 'saas' | 'self'
 
@@ -100,7 +100,7 @@ export function Perimeter() {
               )}
             >
               <span className="flex items-center gap-1.5 rounded-md border border-primary/50 bg-primary/5 px-2 py-1.5 text-[11px] font-semibold">
-                <CometMark className="size-3.5" />
+                <FerrisMark className="size-3.5" />
                 FerrisTrace
               </span>
               <span className="flex items-center gap-1.5 rounded-md border border-primary/50 bg-primary/5 px-2 py-1.5 text-[11px] font-semibold">

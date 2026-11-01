@@ -1,5 +1,5 @@
 import { products, solutions } from './catalog'
-import { CometMark } from './comet-mark'
+import { FerrisMark } from './ferris-mark'
 import { Container } from './shared'
 import { links } from './links'
 import { FooterWordmark } from './footer-wordmark'
@@ -35,12 +35,12 @@ export function SiteFooter() {
               <h2 className="text-xs font-semibold uppercase tracking-wide text-faint-foreground">
                 {column.title}
               </h2>
-              <ul className="mt-3 space-y-2 text-sm">
+              <ul className="mt-2 text-sm">
                 {column.links.map((link) => (
                   <li key={link.label}>
                     <a
                       href={link.href}
-                      className="rounded-sm text-muted-foreground transition-colors hover:text-foreground"
+                      className="inline-block rounded-sm py-1.5 text-muted-foreground transition-colors hover:text-foreground"
                     >
                       {link.label}
                     </a>
@@ -53,7 +53,7 @@ export function SiteFooter() {
 
         {/* The copyright carries the name, so the mark goes without the wordmark. */}
         <p className="mt-12 flex items-center gap-2.5 border-t border-border pt-6 text-sm text-muted-foreground">
-          <CometMark className="size-4 shrink-0" />
+          <FerrisMark className="size-5 shrink-0" />
           <span>© {new Date().getFullYear()} FerrisTrace · Apache 2.0</span>
         </p>
 

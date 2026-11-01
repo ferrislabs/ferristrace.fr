@@ -4,40 +4,58 @@ import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-  applyTheme,
   cn,
-  getStoredTheme,
   storeTheme,
   watchSystemTheme,
-  type Theme,
 } from '@cometrace/ui'
-import { Monitor, Moon, Sun } from 'lucide-react'
+import { Moon, Sun } from 'lucide-react'
 
-/** Light, then dark, then back to following the system. */
-const cycle: Theme[] = ['light', 'dark', 'system']
+type Appearance = 'light' | 'dark'
 
-const icons = { light: Sun, dark: Moon, system: Monitor }
-const labels: Record<Theme, string> = { light: 'Light', dark: 'Dark', system: 'System' }
+/** What the page shows right now, whether it comes from a choice or from the system. */
+function currentAppearance(): Appearance {
+  return document.documentElement.classList.contains('dark') ? 'dark' : 'light'
+}
 
-export function ThemeToggle({ className }: { className?: string }) {
-  // The server cannot know the stored choice, so the first paint shows the
-  // default and the effect below corrects it.
-  const [theme, setTheme] = useState<Theme>('system')
+/**
+ * Flips what is on screen. A light -> dark -> system cycle looked broken:
+ * under a light system, the first click (system -> light) changed nothing.
+ * Until the first click the page follows the system; after it, the choice
+ * sticks in the theme cookie.
+ */
+function useAppearance() {
+  // The server cannot know the cookie or the system preference: the first
+  // paint assumes light and the effect corrects it.
+  const [appearance, setAppearance] = useState<Appearance>('light')
 
   useEffect(() => {
-    const stored = getStoredTheme()
-    setTheme(stored)
-    applyTheme(stored)
-    return watchSystemTheme()
+    setAppearance(currentAppearance())
+    const stopWatching = watchSystemTheme()
+    // The system can flip while the choice is still "system", and the inline
+    // script in base.astro re-applies the cookie after each page swap.
+    const sync = () => setAppearance(currentAppearance())
+    const observer = new MutationObserver(sync)
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
+    return () => {
+      stopWatching()
+      observer.disconnect()
+    }
   }, [])
 
-  const next = cycle[(cycle.indexOf(theme) + 1) % cycle.length] ?? 'system'
-  const Icon = icons[theme]
-
-  function select() {
-    setTheme(next)
+  const next: Appearance = appearance === 'dark' ? 'light' : 'dark'
+  const toggle = () => {
     storeTheme(next)
+    setAppearance(next)
   }
+
+  return { appearance, next, toggle }
+}
+
+const labels: Record<Appearance, string> = { light: 'light', dark: 'dark' }
+
+export function ThemeToggle({ className }: { className?: string }) {
+  const { appearance, next, toggle } = useAppearance()
+  const Icon = appearance === 'dark' ? Moon : Sun
 
   return (
     <Tooltip>
@@ -46,14 +64,34 @@ export function ThemeToggle({ className }: { className?: string }) {
           type="button"
           variant="ghost"
           size="sm"
-          onClick={select}
-          aria-label={`Theme: ${labels[theme]}. Switch to ${labels[next].toLowerCase()}.`}
+          onClick={toggle}
+          aria-label={`Switch to ${labels[next]} mode`}
           className={cn('w-9 px-0', className)}
         >
           <Icon aria-hidden="true" />
         </Button>
       </TooltipTrigger>
-      <TooltipContent>Theme: {labels[theme]}</TooltipContent>
+      <TooltipContent>Switch to {labels[next]} mode</TooltipContent>
     </Tooltip>
+  )
+}
+
+/** The same switch as a full-width row, for the mobile menu. */
+export function ThemeRow() {
+  const { appearance, next, toggle } = useAppearance()
+  const Icon = appearance === 'dark' ? Moon : Sun
+
+  return (
+    <button
+      type="button"
+      onClick={toggle}
+      className="flex w-full items-center justify-between rounded-md px-3 py-2 text-sm font-semibold hover:bg-accent"
+    >
+      Theme
+      <span className="flex items-center gap-2 text-muted-foreground">
+        <Icon className="size-4" aria-hidden="true" />
+        <span className="font-normal">Switch to {labels[next]}</span>
+      </span>
+    </button>
   )
 }

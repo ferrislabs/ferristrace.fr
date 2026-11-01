@@ -50,15 +50,11 @@ export function PageHero({ Icon, eyebrow, title, accent, lead, children }: PageH
         </p>
         <h1
           id="page-title"
-          className="mt-6 max-w-[900px] text-[clamp(2.25rem,5vw,3.75rem)] font-bold leading-[1.05] tracking-[-0.03em] text-balance"
+          className="mt-6 max-w-[900px] text-[clamp(2rem,5vw,3.75rem)] font-bold leading-[1.05] tracking-[-0.03em]"
         >
-          {title}
-          {accent ? (
-            <>
-              <br />
-              <span className="text-muted-foreground">{accent}</span>
-            </>
-          ) : null}
+          {/* One block per line, so text-balance evens out each one on phones. */}
+          <span className="block text-balance">{title}</span>
+          {accent ? <span className="block text-balance text-muted-foreground">{accent}</span> : null}
         </h1>
         <p className="mt-6 max-w-[620px] text-lg leading-8 text-muted-foreground text-pretty">
           {lead}

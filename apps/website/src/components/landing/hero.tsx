@@ -27,9 +27,9 @@ export function Hero() {
           id="hero-title"
           className="mt-7 max-w-[920px] text-[clamp(2.5rem,6vw,4.5rem)] font-bold leading-[1.04] tracking-[-0.035em] text-balance"
         >
-          Find what broke.
-          <br />
-          <span className="text-muted-foreground">Fix it and go back to bed.</span>
+          <span className="block">Find what broke.</span>
+          {/* Its own block, so text-balance splits it evenly instead of leaving "bed." alone on phones. */}
+          <span className="block text-balance text-muted-foreground">Fix it and go back to bed.</span>
         </h1>
 
         <p className="mt-6 max-w-[620px] text-lg leading-8 text-muted-foreground text-pretty">

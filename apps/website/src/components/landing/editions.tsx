@@ -32,7 +32,7 @@ export function Editions() {
           description="Cloud runs the same code and the same UI as self-hosted. Switching between them only changes who runs the container."
         />
 
-        <div className="mt-10 grid items-stretch gap-4 md:grid-cols-2">
+        <div className="mt-10 grid grid-cols-1 items-stretch gap-4 md:grid-cols-2">
           <EditionCard
             id="self-host"
             title="Self-hosted"

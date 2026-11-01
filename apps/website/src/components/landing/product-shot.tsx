@@ -1,4 +1,5 @@
 import { useEffect, useRef, type ReactNode } from 'react'
+import { cn } from '@cometrace/ui'
 import { Image } from 'lucide-react'
 import { Container } from './shared'
 
@@ -22,10 +23,17 @@ export function ProductShot({ light, dark }: ProductShotProps) {
     <section id="product" aria-label="The trace view" className="scroll-mt-20 pb-20">
       <Container>
         <Tilt>
-          <div className="overflow-hidden rounded-xl border border-border shadow-lg">
-            {light ? <Shots light={light} dark={dark} /> : <Placeholder />}
-          </div>
+          {light ? <PhoneScroller><Shots light={light} dark={dark} /></PhoneScroller> : (
+            <div className="overflow-hidden rounded-xl border border-border shadow-lg">
+              <Placeholder />
+            </div>
+          )}
         </Tilt>
+        {light ? (
+          <p className="mt-2 text-center text-[12px] text-faint-foreground sm:hidden" aria-hidden="true">
+            Swipe to see the whole view →
+          </p>
+        ) : null}
 
         <p className="mx-auto mt-4 max-w-[680px] text-center text-sm leading-6 text-faint-foreground">
           The trace view, with the span waterfall on the left and the selected span's attributes,
@@ -33,6 +41,32 @@ export function ProductShot({ light, dark }: ProductShotProps) {
         </p>
       </Container>
     </section>
+  )
+}
+
+/**
+ * On phones the full screenshot shrunk to the screen width is unreadable, so
+ * it keeps a readable size instead and scrolls sideways, starting past the
+ * app sidebar on the waterfall itself.
+ */
+const SHOT_CLASS = 'block h-auto w-[260%] max-w-none sm:w-full sm:max-w-full'
+
+function PhoneScroller({ children }: { children: ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el || window.matchMedia('(min-width: 640px)').matches) return
+    el.scrollLeft = el.scrollWidth * 0.11
+  }, [])
+
+  return (
+    <div
+      ref={ref}
+      className="overflow-x-auto overscroll-x-contain rounded-xl border border-border shadow-lg sm:overflow-hidden"
+    >
+      {children}
+    </div>
   )
 }
 
@@ -46,7 +80,7 @@ function Shots({ light, dark }: { light: Shot; dark?: Shot }) {
         width={light.width}
         height={light.height}
         alt={alt}
-        className="block h-auto w-full"
+        className={SHOT_CLASS}
       />
     )
   }
@@ -58,14 +92,14 @@ function Shots({ light, dark }: { light: Shot; dark?: Shot }) {
         width={light.width}
         height={light.height}
         alt={alt}
-        className="shot-light block h-auto w-full"
+        className={cn('shot-light', SHOT_CLASS)}
       />
       <img
         src={dark.src}
         width={dark.width}
         height={dark.height}
         alt={alt}
-        className="shot-dark block h-auto w-full"
+        className={cn('shot-dark', SHOT_CLASS)}
       />
     </>
   )

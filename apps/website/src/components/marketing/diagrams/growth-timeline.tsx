@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { cn } from '@cometrace/ui'
 import { Check, Plus } from 'lucide-react'
-import { CometMark } from '../../landing/comet-mark'
+import { FerrisMark } from '../../landing/ferris-mark'
 
 interface Stage {
   id: string
@@ -136,7 +136,7 @@ export function GrowthTimeline() {
         <div className="rounded-lg border border-primary/50 bg-primary/5 p-4">
           <div className="flex items-baseline justify-between">
             <p className="flex items-center gap-2 text-sm font-semibold">
-              <CometMark className="size-4" />
+              <FerrisMark className="size-4" />
               With FerrisTrace
             </p>
             <p className="font-mono text-[12px] text-success-text">1 tool</p>

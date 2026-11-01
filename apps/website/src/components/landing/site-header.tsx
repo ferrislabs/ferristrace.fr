@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react'
 import { Button, cn } from '@cometrace/ui'
 import { Menu, X } from 'lucide-react'
 import { products, solutionsBySize, solutionsByTeam } from './catalog'
-import { CometMark } from './comet-mark'
+import { FerrisMark } from './ferris-mark'
 import { GithubMark } from './github-mark'
 import { NavMenu, NavMenuGroup } from './nav-menu'
-import { ThemeToggle } from './theme-toggle'
+import { ThemeRow, ThemeToggle } from './theme-toggle'
 import { Container, StartOnCloudButton } from './shared'
 import { links } from './links'
 
@@ -38,7 +38,7 @@ export function SiteHeader({ current }: SiteHeaderProps = {}) {
           href="/"
           className="flex items-center gap-2 rounded-md text-[15px] font-bold tracking-[-0.01em]"
         >
-          <CometMark />
+          <FerrisMark className="size-7" />
           FerrisTrace
         </a>
 
@@ -131,6 +131,9 @@ export function SiteHeader({ current }: SiteHeaderProps = {}) {
                   </li>
                 ),
               )}
+              <li className="sm:hidden">
+                <ThemeRow />
+              </li>
             </ul>
           </Container>
         </nav>

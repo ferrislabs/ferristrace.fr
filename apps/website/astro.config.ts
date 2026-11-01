@@ -2,22 +2,19 @@ import react from '@astrojs/react'
 import { thumbnailIntegration } from '@cometrace/thumbnail/integration'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'astro/config'
+import { pages } from './src/lib/pages'
 
 export default defineConfig({
   site: process.env.PUBLIC_WEBSITE_URL || undefined,
   integrations: [
     react(),
+    // One social card per page, from the same metadata as the <head> tags.
     thumbnailIntegration({
-      appName: 'Cometrace',
+      appName: 'FerrisTrace',
+      primaryColor: '#4f46e5',
       content: {
         type: 'static',
-        pages: [
-          {
-            path: '/',
-            title: 'Cometrace',
-            description: 'Traces, metrics and logs in a single container.',
-          },
-        ],
+        pages: pages.map((page) => ({ path: page.path, headline: page.card.eyebrow, title: page.card.headline })),
       },
     }),
   ],

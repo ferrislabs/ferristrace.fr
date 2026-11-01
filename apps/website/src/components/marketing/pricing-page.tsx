@@ -139,11 +139,10 @@ export function PricingPage() {
         <Container className="flex flex-col items-center text-center">
           <h1
             id="page-title"
-            className="max-w-[820px] text-[clamp(2.25rem,5vw,3.75rem)] font-bold leading-[1.05] tracking-[-0.03em] text-balance"
+            className="max-w-[820px] text-[clamp(2rem,5vw,3.75rem)] font-bold leading-[1.05] tracking-[-0.03em]"
           >
-            Every plan gets every feature.
-            <br />
-            <span className="text-muted-foreground">You pick who runs the servers.</span>
+            <span className="block text-balance">Every plan gets every feature.</span>
+            <span className="block text-balance text-muted-foreground">You pick who runs the servers.</span>
           </h1>
           <p className="mt-6 max-w-[600px] text-lg leading-8 text-muted-foreground">
             Host it yourself for free, or let us run it on Cloud, which costs nothing while the beta lasts.
@@ -179,15 +178,18 @@ export function PricingPage() {
       <section aria-labelledby="compare-title" className="border-t border-border bg-section-alt py-24">
         <Container>
           <SectionTitle id="compare-title" title="Compare the plans." />
-          <div className="mt-10 overflow-x-auto rounded-xl border border-border bg-card">
-            <table className="w-full min-w-[640px] text-sm">
+          <p className="mt-6 text-[12px] text-faint-foreground sm:hidden" aria-hidden="true">
+            Swipe the table to see every plan →
+          </p>
+          <div className="relative mt-3 sm:mt-10 overflow-x-auto rounded-xl border border-border bg-card">
+            <table className="w-full min-w-[560px] text-sm">
               <thead>
                 <tr className="border-b border-border text-left">
-                  <th scope="col" className="p-4 font-semibold">
+                  <th scope="col" className="sticky left-0 z-10 bg-card p-3 font-semibold sm:p-4">
                     <span className="sr-only">Feature</span>
                   </th>
                   {plans.map((plan) => (
-                    <th key={plan.name} scope="col" className="w-1/5 p-4 text-center font-semibold">
+                    <th key={plan.name} scope="col" className="w-1/5 p-3 text-center font-semibold sm:p-4">
                       {plan.name}
                     </th>
                   ))}
@@ -206,11 +208,11 @@ export function PricingPage() {
                   </tr>
                   {group.rows.map(([label, ...cells]) => (
                     <tr key={label} className="border-t border-border">
-                      <th scope="row" className="p-4 text-left font-normal">
+                      <th scope="row" className="sticky left-0 z-10 bg-card p-3 text-left font-normal sm:p-4">
                         {label}
                       </th>
                       {cells.map((cell, i) => (
-                        <td key={i} className="p-4 text-center">
+                        <td key={i} className="p-3 text-center sm:p-4">
                           <CellValue value={cell} />
                         </td>
                       ))}

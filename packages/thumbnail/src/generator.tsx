@@ -5,108 +5,102 @@ import satori from 'satori'
 import { resolveColor } from './colors'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
+const asset = (name: string) => readFileSync(resolve(__dirname, 'assets', name))
 
-const interRegular = readFileSync(resolve(__dirname, 'assets/Inter-Regular.woff'))
-const interSemiBold = readFileSync(resolve(__dirname, 'assets/Inter-SemiBold.woff'))
-const interBold = readFileSync(resolve(__dirname, 'assets/Inter-Bold.woff'))
+// Source Sans 3, the font of the site (SIL Open Font License).
+const fontRegular = asset('SourceSans3-Regular.ttf')
+const fontSemiBold = asset('SourceSans3-SemiBold.ttf')
+const fontBold = asset('SourceSans3-Bold.ttf')
+
+// Ferris, rendered from apps/website/src/components/landing/mascot-body.tsx.
+// Regenerate it when the mascot changes.
+const ferris = `data:image/svg+xml;base64,${asset('ferris.svg').toString('base64')}`
+// The small mark, a copy of apps/website/public/favicon.svg.
+const mark = `data:image/svg+xml;base64,${asset('mark.svg').toString('base64')}`
+
+/** Social card size recommended by every network that reads og:image. */
+export const CARD_WIDTH = 1200
+export const CARD_HEIGHT = 630
 
 export interface ThumbnailOptions {
+  /** Small label above the title, e.g. the product or the section. */
   headline?: string
   title: string
   description?: string
   primaryColor?: string
 }
 
+/** A faint trace waterfall behind Ferris: one row per span, in service colours. */
+const waterfall: Array<{ left: number; width: number; color: string }> = [
+  { left: 0, width: 420, color: '#8b93ff' },
+  { left: 40, width: 210, color: '#2fb394' },
+  { left: 110, width: 260, color: '#e8893c' },
+  { left: 150, width: 120, color: '#e05aa8' },
+  { left: 250, width: 170, color: '#5b8cf5' },
+  { left: 290, width: 90, color: '#2fb394' },
+]
+
 export async function generateThumbnail(options: ThumbnailOptions): Promise<string> {
   const { headline, title, description } = options
   const primaryColor = resolveColor(options.primaryColor)
 
   return satori(
-    <div tw="w-full h-full flex flex-col justify-center bg-[#020420]">
-      <svg
-        tw="absolute right-0 top-0"
-        width="629"
-        height="593"
-        viewBox="0 0 629 593"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <g filter="url(#filter0_f_199_94966)">
-          <path
-            d="M628.5 -578L639.334 -94.4223L806.598 -548.281L659.827 -87.387L965.396 -462.344L676.925 -74.0787L1087.69 -329.501L688.776 -55.9396L1160.22 -164.149L694.095 -34.9354L1175.13 15.7948L692.306 -13.3422L1130.8 190.83L683.602 6.50012L1032.04 341.989L668.927 22.4412L889.557 452.891L649.872 32.7537L718.78 511.519L628.5 36.32L538.22 511.519L607.128 32.7537L367.443 452.891L588.073 22.4412L224.955 341.989L573.398 6.50012L126.198 190.83L564.694 -13.3422L81.8734 15.7948L562.905 -34.9354L96.7839 -164.149L568.224 -55.9396L169.314 -329.501L580.075 -74.0787L291.604 -462.344L597.173 -87.387L450.402 -548.281L617.666 -94.4223L628.5 -578Z"
-            fill={primaryColor}
-          />
-        </g>
-        <defs>
-          <filter
-            id="filter0_f_199_94966"
-            x="0.873535"
-            y="-659"
-            width="1255.25"
-            height="1251.52"
-            filterUnits="userSpaceOnUse"
-            color-interpolation-filters="sRGB"
-          >
-            <feFlood flood-opacity="0" result="BackgroundImageFix" />
-            <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
-            <feGaussianBlur stdDeviation="80" result="effect1_foregroundBlur_199_94966" />
-          </filter>
-        </defs>
-      </svg>
-
-      <div tw="flex flex-col w-[800px] pl-[100px]">
-        {headline && (
-          <p tw="uppercase text-[24px] mb-4" style={{ color: primaryColor, fontWeight: 600 }}>
-            {headline}
-          </p>
-        )}
-        <h1
-          tw="w-[800px] m-0 text-[75px] font-bold mb-4"
-          style={{
-            display: 'block',
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: 'vertical',
-            overflow: 'hidden',
-            color: 'white',
-            fontWeight: 700,
-          }}
-        >
-          {title}
-        </h1>
-        {description && (
-          <p
-            tw="text-[32px] text-[#E4E4E7] leading-tight"
+    <div
+      style={{
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        position: 'relative',
+        backgroundColor: '#0b0a1f',
+        backgroundImage: `radial-gradient(circle at 85% 10%, ${primaryColor}55 0%, transparent 55%)`,
+        fontFamily: 'Source Sans 3',
+        color: '#ffffff',
+      }}
+    >
+      <div style={{ position: 'absolute', right: 70, top: 92, display: 'flex', flexDirection: 'column', opacity: 0.22 }}>
+        {waterfall.map((bar, i) => (
+          <div
+            key={i}
             style={{
-              display: 'block',
-              WebkitLineClamp: 3,
-              textOverflow: 'ellipsis',
-              opacity: 0.5,
+              marginLeft: bar.left,
+              width: bar.width,
+              height: 14,
+              marginBottom: 12,
+              borderRadius: 7,
+              backgroundColor: bar.color,
             }}
-          >
-            {description}
-          </p>
-        )}
+          />
+        ))}
+      </div>
+
+      <img src={ferris} width={480} height={330} style={{ position: 'absolute', right: 40, bottom: 26 }} />
+
+      <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '64px 72px', width: '100%' }}>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <img src={mark} width={52} height={52} />
+          <span style={{ marginLeft: 14, fontSize: 36, fontWeight: 700, letterSpacing: '-0.01em' }}>FerrisTrace</span>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', maxWidth: 690 }}>
+          {headline && (
+            <span style={{ fontSize: 28, fontWeight: 600, color: '#a5abff', marginBottom: 14 }}>{headline}</span>
+          )}
+          <span style={{ fontSize: 66, fontWeight: 700, lineHeight: 1.04, letterSpacing: '-0.025em' }}>{title}</span>
+          {description && (
+            <span style={{ fontSize: 28, lineHeight: 1.3, color: '#c4c4d4', marginTop: 20 }}>{description}</span>
+          )}
+        </div>
+
+        <span style={{ fontSize: 24, color: '#9a9ab0' }}>ferristrace.dev · Open source · OpenTelemetry</span>
       </div>
     </div>,
     {
-      width: 960,
-      height: 540,
+      width: CARD_WIDTH,
+      height: CARD_HEIGHT,
       fonts: [
-        {
-          name: 'Inter',
-          data: interRegular,
-          weight: 400,
-        },
-        {
-          name: 'Inter',
-          data: interSemiBold,
-          weight: 600,
-        },
-        {
-          name: 'Inter',
-          data: interBold,
-          weight: 700,
-        },
+        { name: 'Source Sans 3', data: fontRegular, weight: 400 },
+        { name: 'Source Sans 3', data: fontSemiBold, weight: 600 },
+        { name: 'Source Sans 3', data: fontBold, weight: 700 },
       ],
     },
   )

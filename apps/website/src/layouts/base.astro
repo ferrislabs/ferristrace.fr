@@ -3,22 +3,66 @@ import '../styles/globals.css'
 import { ClientRouter } from 'astro:transitions'
 import { formatTitle } from '@cometrace/config'
 import { siteConfig } from '../config'
+import { cardPath, pageMeta } from '../lib/pages'
 
 interface Props {
-  title: string
+  /** Path of an entry in src/lib/pages.ts: title, description, canonical and card come from there. */
+  page?: string
+  /** For pages outside src/lib/pages.ts (the 404). */
+  title?: string
   description?: string
-  thumbnail?: string
-  /** Path or absolute URL of the canonical page, e.g. "/changelog". */
-  canonical?: string
   /** Robots directive, e.g. "noindex" for pages that must stay out of search. */
   robots?: string
 }
 
-const { title, description, thumbnail, canonical, robots } = Astro.props
-// Only with a configured site: a canonical pointing at localhost is worse
-// than none at all.
-const canonicalUrl = canonical && Astro.site ? new URL(canonical, Astro.site).href : undefined
-const thumbnailUrl = thumbnail ?? siteConfig.thumbnail
+const props = Astro.props
+const meta = props.page ? pageMeta(props.page) : undefined
+const title = meta?.title ?? props.title ?? siteConfig.name
+const description = meta?.description ?? props.description ?? ''
+// Absolute URLs only with a configured site: a canonical pointing at localhost
+// is worse than none, and social networks ignore relative og:image URLs.
+const absolute = (path: string) => (Astro.site ? new URL(path, Astro.site).href : path)
+const canonicalUrl = meta && Astro.site ? absolute(meta.path) : undefined
+const imageUrl = absolute(meta ? cardPath(meta.path) : siteConfig.thumbnail)
+const imageAlt = meta ? `${meta.card.eyebrow}: ${meta.card.headline}` : `${siteConfig.name}`
+const isHome = meta?.path === '/'
+// The home page leads with the brand; every other page ends with it.
+const documentTitle = isHome ? `${siteConfig.name}: ${title}` : formatTitle(siteConfig, title)
+
+// Search engines read this on the home page: who publishes the site and what
+// the product is. Only facts that are on the page.
+const structuredData = isHome && Astro.site
+  ? {
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': 'Organization',
+          '@id': absolute('/#organization'),
+          name: 'Ferrislabs',
+          url: 'https://ferrislabs.fr',
+          sameAs: ['https://github.com/ferrislabs'],
+        },
+        {
+          '@type': 'WebSite',
+          '@id': absolute('/#website'),
+          name: siteConfig.name,
+          url: absolute('/'),
+          publisher: { '@id': absolute('/#organization') },
+        },
+        {
+          '@type': 'SoftwareApplication',
+          name: siteConfig.name,
+          url: absolute('/'),
+          description,
+          applicationCategory: 'DeveloperApplication',
+          operatingSystem: 'Linux, Kubernetes, Docker',
+          license: 'https://www.apache.org/licenses/LICENSE-2.0',
+          offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+          publisher: { '@id': absolute('/#organization') },
+        },
+      ],
+    }
+  : undefined
 ---
 
 <!doctype html>
@@ -26,19 +70,33 @@ const thumbnailUrl = thumbnail ?? siteConfig.thumbnail
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href={siteConfig.favicon} />
+    <title>{documentTitle}</title>
+    <meta name="description" content={description} />
     {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
-    <meta name="description" content={description ?? siteConfig.description} />
-    {robots && <meta name="robots" content={robots} />}
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description ?? siteConfig.description} />
-    <meta property="og:image" content={thumbnailUrl} />
+    {props.robots && <meta name="robots" content={props.robots} />}
+    <link rel="icon" type="image/svg+xml" href={siteConfig.favicon} />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="sitemap" href="/sitemap.xml" />
+    <link rel="alternate" type="application/rss+xml" title="FerrisTrace changelog" href="/changelog/rss.xml" />
+    <meta name="theme-color" content="#4f46e5" />
+
+    <meta property="og:site_name" content={siteConfig.name} />
     <meta property="og:type" content={siteConfig.ogType} />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:title" content={documentTitle} />
+    <meta property="og:description" content={description} />
+    {canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
+    <meta property="og:image" content={imageUrl} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={imageAlt} />
     <meta name="twitter:card" content={siteConfig.twitterCard} />
-    <meta name="twitter:title" content={title} />
-    <meta name="twitter:description" content={description ?? siteConfig.description} />
-    <meta name="twitter:image" content={thumbnailUrl} />
-    <title>{formatTitle(siteConfig, title)}</title>
+    <meta name="twitter:title" content={documentTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={imageUrl} />
+    <meta name="twitter:image:alt" content={imageAlt} />
+    {structuredData && <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />}
     <ClientRouter />
     <script is:inline>
       (function () {

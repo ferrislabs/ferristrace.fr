@@ -12,7 +12,7 @@ export interface ThumbnailConfig {
     | { type: 'collection'; dir: string }
     | {
         type: 'static'
-        pages: Array<{ path: string; title: string; description?: string }>
+        pages: Array<{ path: string; headline?: string; title: string; description?: string }>
       }
 }
 
@@ -152,6 +152,7 @@ export function thumbnailIntegration(config: ThumbnailConfig): AstroIntegration 
           for (const page of config.content.pages) {
             try {
               const svg = await generateThumbnail({
+                headline: page.headline,
                 title: page.title,
                 description: page.description,
                 primaryColor: config.primaryColor,
@@ -212,9 +213,12 @@ function resolvePageMeta(
   index: Map<string, ContentEntry>,
 ): PageMeta {
   if (config.content.type === 'static') {
-    const pagePath = url.replace(/\/thumbnail\.png$/, '') || '/'
-    const page = config.content.pages.find((p) => p.path === pagePath)
+    // Config paths may or may not end with a slash; compare without it.
+    const trim = (path: string) => path.replace(/\/+$/, '') || '/'
+    const pagePath = trim(url.replace(/\/thumbnail\.png$/, ''))
+    const page = config.content.pages.find((p) => trim(p.path) === pagePath)
     return {
+      headline: page?.headline,
       title: page?.title ?? config.appName,
       description: page?.description,
     }

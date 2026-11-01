@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { cn } from '@cometrace/ui'
 import { ArrowRight, Bot, Check, KeyRound, ShieldCheck, X } from 'lucide-react'
-import { CometMark } from '../../landing/comet-mark'
+import { FerrisMark } from '../../landing/ferris-mark'
 
 const scopes = [
   { id: 'telemetry:read', label: 'Read traces, logs and metrics' },
@@ -142,7 +142,7 @@ function Actor({
       )}
     >
       <span className="flex size-8 shrink-0 items-center justify-center rounded-md border border-border bg-card">
-        {mark ? <CometMark className="size-4" /> : Icon ? <Icon className="size-4 text-primary" aria-hidden="true" /> : null}
+        {mark ? <FerrisMark className="size-4" /> : Icon ? <Icon className="size-4 text-primary" aria-hidden="true" /> : null}
       </span>
       <span>
         <span className="flex items-center gap-1.5 text-sm font-semibold">
