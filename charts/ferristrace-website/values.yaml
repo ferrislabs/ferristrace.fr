@@ -1,0 +1,110 @@
+# Defaults are safe for a development cluster. Production overrides live in
+# values-production.yaml.
+
+nameOverride: ""
+fullnameOverride: ""
+
+image:
+  repository: ghcr.io/ferrislabs/ferristrace-website
+  # REQUIRED. Pin an immutable tag such as sha-<commit>. There is no default on
+  # purpose: a chart that quietly falls back to a tag can ship the wrong site.
+  tag: ""
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+
+replicaCount: 1
+
+# The nginx in the image listens on this port (see nginx.conf at the repo root).
+containerPort: 8080
+
+service:
+  type: ClusterIP
+  port: 80
+
+# Exposure through Gateway API. No Ingress.
+gatewayApi:
+  enabled: true
+  # Hostnames served by the route, e.g. ["ferristrace.dev"].
+  hostnames: []
+  # The Gateway(s) the route attaches to. Required when enabled, for example:
+  #   - name: public
+  #     namespace: envoy-gateway-system
+  #     sectionName: https
+  parentRefs: []
+  annotations: {}
+  # Added to every response by the route, so they do not depend on nginx.
+  responseHeaders:
+    X-Content-Type-Options: nosniff
+    Referrer-Policy: strict-origin-when-cross-origin
+    X-Frame-Options: DENY
+    Permissions-Policy: camera=(), microphone=(), geolocation=()
+  # Hashed build assets under /_astro/ never change, so they can be cached forever.
+  immutableAssets:
+    enabled: true
+    pathPrefix: /_astro/
+  # Redirect other hostnames (www, an old domain) to the main one with a 301.
+  redirect:
+    enabled: false
+    from: []
+    to: ""
+    # Where the redirect route attaches. Defaults to parentRefs. Set it when the
+    # redirected hosts match a different listener than the main host does.
+    parentRefs: []
+
+resources:
+  requests:
+    cpu: 20m
+    memory: 32Mi
+  limits:
+    memory: 96Mi
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 101
+  runAsGroup: 101
+  fsGroup: 101
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop: ["ALL"]
+
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}
+
+podAnnotations: {}
+podLabels: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+# Spread replicas across nodes. Ignored with a single replica.
+topologySpread:
+  enabled: true
+  maxSkew: 1
+
+podDisruptionBudget:
+  # Created only when more than one replica can run.
+  enabled: true
+  minAvailable: 1
+
+autoscaling:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 70
+
+# Default deny for ingress, then allow the Gateway's namespace on the container port.
+networkPolicy:
+  enabled: false
+  gatewayNamespaceSelector:
+    matchLabels:
+      kubernetes.io/metadata.name: envoy-gateway-system
+
+terminationGracePeriodSeconds: 30

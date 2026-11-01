@@ -1,0 +1,20 @@
+# What the website's Application may deploy, and where: this repository only,
+# into the `ferristrace` namespace only.
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: ferristrace-website
+  namespace: argocd
+spec:
+  description: The FerrisTrace marketing website.
+  sourceRepos:
+    - https://github.com/ferrislabs/ferristrace.fr
+  destinations:
+    - namespace: ferristrace
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace
+  namespaceResourceWhitelist:
+    - group: "*"
+      kind: "*"

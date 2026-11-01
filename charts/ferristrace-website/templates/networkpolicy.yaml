@@ -1,0 +1,23 @@
+{{- if .Values.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "ferristrace-website.fullname" . }}
+  labels:
+    {{- include "ferristrace-website.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "ferristrace-website.selectorLabels" . | nindent 6 }}
+  policyTypes:
+    - Ingress
+  # Only the Gateway's namespace may reach the pod. Nothing else needs to: the
+  # site is static and makes no outbound calls.
+  ingress:
+    - from:
+        - namespaceSelector:
+            {{- toYaml .Values.networkPolicy.gatewayNamespaceSelector | nindent 12 }}
+      ports:
+        - port: {{ .Values.containerPort }}
+          protocol: TCP
+{{- end }}

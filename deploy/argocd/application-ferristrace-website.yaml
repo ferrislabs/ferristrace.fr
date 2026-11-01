@@ -1,0 +1,36 @@
+# GitOps for the website. The docker workflow commits the new image tag to
+# charts/ferristrace-website/values-production.yaml on every push to main, and
+# ArgoCD syncs it. Apply this manifest once, by a human, after the first image
+# has been built (the chart refuses an empty image.tag).
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ferristrace-website
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: ferristrace-website
+  source:
+    repoURL: https://github.com/ferrislabs/ferristrace.fr
+    targetRevision: main
+    path: charts/ferristrace-website
+    helm:
+      releaseName: ferristrace-website
+      valueFiles:
+        - values-production.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ferristrace
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 3m

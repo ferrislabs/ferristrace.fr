@@ -1,0 +1,211 @@
+name: docker
+
+# main push      -> ghcr.io/ferrislabs/ferristrace-website:sha-<7 chars>
+# tag v0.1.0     -> ghcr.io/ferrislabs/ferristrace-website:0.1.0 and :latest
+# tag v0.1.0-rc1 -> :0.1.0-rc1 only
+# `latest` is never put on a sha build.
+#
+# After a main push the new sha tag is written to the chart's production values
+# and ArgoCD syncs it.
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*.*.*"
+    paths:
+      - .github/workflows/docker.yaml
+      - apps/website/**
+      - packages/**
+      - CHANGELOG.md
+      - Dockerfile
+      - nginx.conf
+      - package.json
+      - pnpm-lock.yaml
+      - pnpm-workspace.yaml
+      - "!**/*.md"
+  pull_request:
+    paths:
+      - .github/workflows/docker.yaml
+      - apps/website/**
+      - packages/**
+      - CHANGELOG.md
+      - Dockerfile
+      - nginx.conf
+      - package.json
+      - pnpm-lock.yaml
+      - pnpm-workspace.yaml
+      - "!**/*.md"
+  workflow_dispatch:
+    inputs:
+      push:
+        type: boolean
+        default: false
+        description: "Whether to push the image"
+
+# A tag build publishes a release: let it finish.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref_type != 'tag' }}
+
+permissions:
+  contents: read
+
+env:
+  IMAGE: ghcr.io/ferrislabs/ferristrace-website
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    outputs:
+      push: ${{ steps.decide.outputs.push }}
+    steps:
+      - name: decide whether to push
+        id: decide
+        run: |
+          if [ "${{ inputs.push }}" = "true" ] \
+            || [ "${{ github.ref_type }}" = "tag" ] \
+            || { [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref_name }}" = "${{ github.event.repository.default_branch }}" ]; }; then
+            echo "push=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "push=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  build:
+    needs: gate
+    runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-24.04
+            platform: linux/amd64
+          - runner: ubuntu-24.04-arm
+            platform: linux/arm64
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: log in to ghcr
+        if: needs.gate.outputs.push == 'true'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: image metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE }}
+
+      - name: build
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: ${{ matrix.platform }}
+          # Baked into the static output (canonical URLs, links to the docs):
+          # changing one of them needs a new build.
+          build-args: |
+            PUBLIC_WEBSITE_URL=${{ vars.PUBLIC_WEBSITE_URL || 'https://ferristrace.dev' }}
+            PUBLIC_DOCS_URL=${{ vars.PUBLIC_DOCS_URL || 'https://docs.ferristrace.dev' }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=website-${{ matrix.platform }}
+          cache-to: type=gha,scope=website-${{ matrix.platform }},mode=max
+          outputs: type=image,name=${{ env.IMAGE }},push-by-digest=true,name-canonical=true,push=${{ needs.gate.outputs.push }}
+
+      - name: keep the digest
+        if: needs.gate.outputs.push == 'true'
+        run: |
+          mkdir -p "${{ runner.temp }}/digests"
+          digest="${{ steps.build.outputs.digest }}"
+          touch "${{ runner.temp }}/digests/${digest#sha256:}"
+
+      - name: upload the digest
+        if: needs.gate.outputs.push == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: digests-${{ strategy.job-index }}
+          path: ${{ runner.temp }}/digests/*
+          if-no-files-found: error
+          retention-days: 1
+
+  push-manifest:
+    needs: [gate, build]
+    if: needs.gate.outputs.push == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: ${{ runner.temp }}/digests
+          pattern: digests-*
+          merge-multiple: true
+
+      - name: log in to ghcr
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: image tags
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE }}
+          # No automatic `latest`: it is set below, on release tags only.
+          flavor: latest=false
+          tags: |
+            type=sha,format=short,prefix=sha-,enable=${{ github.ref_type == 'branch' }}
+            type=semver,pattern={{version}}
+            type=raw,value=latest,enable=${{ github.ref_type == 'tag' && !contains(github.ref_name, '-') }}
+
+      - name: push the multi-arch manifest
+        working-directory: ${{ runner.temp }}/digests
+        run: |
+          docker buildx imagetools create \
+            $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
+            $(printf '${{ env.IMAGE }}@sha256:%s ' *)
+
+      - name: show what was published
+        run: docker buildx imagetools inspect "${{ env.IMAGE }}:${{ steps.meta.outputs.version }}"
+
+  # GitOps: the commit that ArgoCD reacts to. Only for main, never for tags.
+  update-values:
+    needs: [gate, push-manifest]
+    if: github.event_name == 'push' && github.ref_type == 'branch' && github.ref_name == github.event.repository.default_branch
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+
+      - name: write the new tag in the production values
+        run: |
+          TAG="sha-${GITHUB_SHA::7}"
+          yq -i ".image.tag = \"${TAG}\"" charts/ferristrace-website/values-production.yaml
+          grep -n "tag:" charts/ferristrace-website/values-production.yaml
+
+      - name: commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add charts/ferristrace-website/values-production.yaml
+          git diff --staged --quiet && exit 0
+          git commit -m "chore(website): deploy sha-${GITHUB_SHA::7} [skip ci]"
+          git pull --rebase origin "${{ github.event.repository.default_branch }}"
+          git push origin "HEAD:${{ github.event.repository.default_branch }}"

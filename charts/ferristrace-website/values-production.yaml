@@ -1,0 +1,40 @@
+# Production overrides only. Everything not listed here uses values.yaml.
+# Host, replicas, resources and image tag are what differ between environments.
+
+replicaCount: 2
+image:
+  # Written by the docker workflow on every push to main. Empty until the first
+  # image is built, which is why the Application is applied after that.
+  tag: ""
+gatewayApi:
+  hostnames:
+    - ferristrace.dev
+  # The shared `public` Gateway (cluster/gateway.yaml in the infra repo). Each
+  # host has its own HTTPS listener there, and cert-manager issues its
+  # certificate over HTTP-01. The listeners must exist before the routes attach.
+  parentRefs:
+    - name: public
+      namespace: envoy-gateway-system
+      sectionName: ferristrace-https
+  responseHeaders:
+    Strict-Transport-Security: max-age=31536000; includeSubDomains
+    X-Content-Type-Options: nosniff
+    Referrer-Policy: strict-origin-when-cross-origin
+    X-Frame-Options: DENY
+    Permissions-Policy: camera=(), microphone=(), geolocation=()
+  redirect:
+    enabled: true
+    from:
+      - www.ferristrace.dev
+    to: ferristrace.dev
+    # www has its own listener, so its own certificate.
+    parentRefs:
+      - name: public
+        namespace: envoy-gateway-system
+        sectionName: ferristrace-www-https
+networkPolicy:
+  enabled: true
+  # The Envoy proxy pods run in the controller's namespace.
+  gatewayNamespaceSelector:
+    matchLabels:
+      kubernetes.io/metadata.name: envoy-gateway-system

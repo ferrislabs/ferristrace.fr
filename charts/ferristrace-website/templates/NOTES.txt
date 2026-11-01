@@ -1,0 +1,10 @@
+{{ include "ferristrace-website.fullname" . }} is deployed.
+{{- if .Values.gatewayApi.enabled }}
+
+Served through Gateway API on:
+{{- range .Values.gatewayApi.hostnames }}
+  https://{{ . }}
+{{- end }}
+{{- end }}
+
+Image: {{ include "ferristrace-website.image" . }}
