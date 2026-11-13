@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
-import { Button, cn } from '@cometrace/ui'
+import { cn } from '@cometrace/ui'
 import { Menu, X } from 'lucide-react'
+import { PixelSprite } from '../pixel/pixel-sprite'
+import { cometCrab } from '../pixel/sprites'
 import { products, solutionsBySize, solutionsByTeam } from './catalog'
-import { FerrisMark } from './ferris-mark'
 import { GithubMark } from './github-mark'
 import { NavMenu, NavMenuGroup } from './nav-menu'
 import { ThemeRow, ThemeToggle } from './theme-toggle'
-import { Container, StartOnCloudButton } from './shared'
 import { links } from './links'
 
 export type HeaderSection = 'products' | 'solutions' | 'docs' | 'pricing' | 'changelog'
@@ -19,7 +19,12 @@ interface SiteHeaderProps {
 const plainLinks: Array<{ section: HeaderSection; label: string; href: string }> = [
   { section: 'docs', label: 'Docs', href: links.docs },
   { section: 'pricing', label: 'Pricing', href: links.pricing },
+  { section: 'changelog', label: 'Changelog', href: links.changelog },
 ]
+
+/** One cell of the bar: full height, a rule on its right. */
+const cell =
+  'flex items-center border-r border-border px-4 text-[13px] font-medium transition-colors hover:bg-foreground/[0.04] hover:text-foreground'
 
 export function SiteHeader({ current }: SiteHeaderProps = {}) {
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -32,42 +37,46 @@ export function SiteHeader({ current }: SiteHeaderProps = {}) {
   }, [mobileOpen])
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-background">
-      <Container className="flex h-16 items-center gap-6">
+    <header className="sticky top-0 z-40 w-full border-b border-border bg-background/85 backdrop-blur">
+      <div className="mx-auto flex h-12 max-w-6xl items-stretch border-x border-border">
         <a
           href="/"
-          className="flex items-center gap-2 rounded-md text-[15px] font-bold tracking-[-0.01em]"
+          className="flex shrink-0 items-center gap-2.5 border-r border-border px-4 text-[15px] font-semibold tracking-tight"
         >
-          <FerrisMark className="size-7" />
+          <PixelSprite sprite={cometCrab} className="h-[18px] w-[29px]" />
           FerrisTrace
         </a>
 
-        <nav aria-label="Main" className="hidden md:block">
-          <ul className="flex items-center gap-1">
-            <NavMenu label="Products" active={current === 'products'} className="w-[640px]">
-              <div className="grid grid-cols-2 gap-x-1">
-                <NavMenuGroup entries={products.slice(0, 3)} />
+        <nav aria-label="Main" className="hidden md:flex">
+          <ul className="flex items-stretch">
+            <NavMenu label="Products" active={current === 'products'} className="w-[36rem]">
+              <div className="grid grid-cols-2">
+                <NavMenuGroup entries={products.slice(0, 3)} className="border-r border-border" />
                 <NavMenuGroup entries={products.slice(3)} />
               </div>
             </NavMenu>
-            <NavMenu label="Solutions" active={current === 'solutions'} className="w-[600px]">
-              <div className="grid grid-cols-2 gap-x-1">
-                <NavMenuGroup title="By company" entries={solutionsBySize} />
+            <NavMenu label="Solutions" active={current === 'solutions'} className="w-[34rem]">
+              <div className="grid grid-cols-2">
+                <NavMenuGroup
+                  title="By company"
+                  entries={solutionsBySize}
+                  className="border-r border-border"
+                />
                 <NavMenuGroup title="By team" entries={solutionsByTeam} />
               </div>
             </NavMenu>
             {plainLinks.map((link) => {
               const isCurrent = link.section === current
               return (
-                <li key={link.label}>
+                <li key={link.label} className="flex">
                   <a
                     href={link.href}
                     aria-current={isCurrent ? 'page' : undefined}
                     className={cn(
-                      'rounded-md px-2.5 py-1.5 text-sm transition-colors',
+                      cell,
                       isCurrent
-                        ? 'font-semibold text-foreground'
-                        : 'text-muted-foreground hover:bg-accent hover:text-foreground',
+                        ? 'text-foreground shadow-[inset_0_-2px_0_var(--primary)]'
+                        : 'text-muted-foreground',
                     )}
                   >
                     {link.label}
@@ -78,64 +87,85 @@ export function SiteHeader({ current }: SiteHeaderProps = {}) {
           </ul>
         </nav>
 
-        <div className="ml-auto flex items-center gap-2">
-          <ThemeToggle className="hidden sm:inline-flex" />
-          <Button asChild variant="ghost" size="sm" className="hidden font-semibold sm:inline-flex">
-            <a href={links.github} target="_blank" rel="noreferrer noopener" aria-label="GitHub">
-              <GithubMark />
-              <span className="hidden lg:inline">GitHub</span>
-            </a>
-          </Button>
-          <Button
-            asChild
-            variant="outline"
-            size="sm"
-            className="hidden font-semibold sm:inline-flex"
+        <div className="ml-auto flex items-stretch">
+          <a
+            href={links.github}
+            target="_blank"
+            rel="noreferrer noopener"
+            className="hidden items-center gap-2 border-l border-border px-4 text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground lg:flex"
           >
-            <a href={links.signIn}>Sign in</a>
-          </Button>
-          <StartOnCloudButton size="sm" />
-          <Button
-            variant="ghost"
-            size="sm"
-            className="md:hidden"
+            <GithubMark />
+            GitHub
+          </a>
+          <div className="hidden items-center border-l border-border px-1.5 sm:flex">
+            <ThemeToggle />
+          </div>
+          <a
+            href={links.signIn}
+            className="hidden items-center border-l border-border px-4 text-[13px] font-medium text-muted-foreground transition-colors hover:bg-foreground/[0.04] hover:text-foreground sm:flex"
+          >
+            Sign in
+          </a>
+          <a
+            href={links.startOnCloud}
+            className="flex items-center bg-primary px-4 text-[13px] font-semibold text-primary-foreground transition-colors hover:bg-primary-hover"
+          >
+            Start on Cloud
+          </a>
+          <button
+            type="button"
+            className="flex w-12 cursor-pointer items-center justify-center border-l border-border md:hidden"
             aria-expanded={mobileOpen}
             aria-controls="mobile-nav"
             aria-label={mobileOpen ? 'Close the menu' : 'Open the menu'}
             onClick={() => setMobileOpen((o) => !o)}
           >
-            {mobileOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
-          </Button>
+            {mobileOpen ? (
+              <X className="size-5" aria-hidden="true" />
+            ) : (
+              <Menu className="size-5" aria-hidden="true" />
+            )}
+          </button>
         </div>
-      </Container>
+      </div>
 
       {mobileOpen ? (
         <nav
           id="mobile-nav"
           aria-label="Main"
-          className="max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-border bg-background md:hidden"
+          className="max-h-[calc(100dvh-3rem)] overflow-y-auto border-t border-border bg-background md:hidden"
         >
-          <Container className="space-y-4 py-4">
-            <NavMenuGroup title="Products" entries={products} />
-            <NavMenuGroup title="Solutions" entries={[...solutionsBySize, ...solutionsByTeam]} />
-            <ul className="border-t border-border pt-3">
-              {[...plainLinks, { section: 'changelog' as const, label: 'Changelog', href: links.changelog }].map(
-                (link) => (
-                  <li key={link.label}>
-                    <a
-                      href={link.href}
-                      className="block rounded-md px-3 py-2 text-sm font-semibold hover:bg-accent"
-                    >
-                      {link.label}
-                    </a>
-                  </li>
-                ),
-              )}
-              <li className="sm:hidden">
-                <ThemeRow />
-              </li>
-            </ul>
-          </Container>
+          <NavMenuGroup title="Products" entries={products} className="border-b border-border" />
+          <NavMenuGroup
+            title="Solutions"
+            entries={[...solutionsBySize, ...solutionsByTeam]}
+            className="border-b border-border"
+          />
+          <ul>
+            {[...plainLinks, { section: 'docs' as const, label: 'GitHub', href: links.github }].map(
+              (link) => (
+                <li key={link.label}>
+                  <a
+                    href={link.href}
+                    className="block border-b border-border px-5 py-3 text-sm font-semibold"
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ),
+            )}
+            <li className="sm:hidden">
+              <a
+                href={links.signIn}
+                className="block border-b border-border px-5 py-3 text-sm font-semibold"
+              >
+                Sign in
+              </a>
+            </li>
+            <li className="sm:hidden">
+              <ThemeRow />
+            </li>
+          </ul>
         </nav>
       ) : null}
     </header>

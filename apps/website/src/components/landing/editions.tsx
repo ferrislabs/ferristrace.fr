@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
-import { Badge, Button, Card, Separator, cn } from '@cometrace/ui'
+import { cn } from '@cometrace/ui'
 import { CopyCommand } from './copy-command'
-import { CheckList, Container, SectionTitle, StartOnCloudButton } from './shared'
+import { CheckList, Frame, SectionTitle } from './shared'
 import { IMAGE, links } from './links'
 
 const selfHosted = [
@@ -19,55 +19,72 @@ const cloud = [
   'Export your data and move to self-hosted any time',
 ]
 
+const pixelLabel = 'font-pixel text-[10px] uppercase tracking-[0.08em]'
+
 export function Editions() {
   return (
-    <section
-      aria-labelledby="editions-title"
-      className="border-t border-border bg-section-alt py-20"
-    >
-      <Container>
+    <Frame labelledBy="editions-title" innerClassName="overflow-hidden">
+      <div className="border-b border-border px-5 py-20 sm:px-8 sm:py-28">
         <SectionTitle
           id="editions-title"
+          kicker="Editions"
           title="Run it yourself, or don't."
           description="Cloud runs the same code and the same UI as self-hosted. Switching between them only changes who runs the container."
         />
+      </div>
 
-        <div className="mt-10 grid grid-cols-1 items-stretch gap-4 md:grid-cols-2">
-          <EditionCard
-            id="self-host"
-            title="Self-hosted"
-            aside={<Badge variant="outline">Apache 2.0</Badge>}
-            body="One container, one volume. Your data stays on your server."
-            items={selfHosted}
-            action={
-              <div className="space-y-3">
-                <CopyCommand
-                  label="Copy the docker run command"
-                  lines={[`$ docker run -d -p 8080:8080 -p 4318:4318 -v ferristrace:/data ${IMAGE}`]}
-                />
-                <Button asChild variant="outline" className="w-full font-semibold">
-                  <a href={links.selfHostGuide}>Self-host guide</a>
-                </Button>
-              </div>
-            }
-          />
+      <div className="-mr-px grid grid-cols-1 md:grid-cols-2">
+        <EditionCell
+          id="self-host"
+          title="Self-hosted"
+          aside={
+            <span
+              className={cn(pixelLabel, 'border border-border px-2 py-1 text-muted-foreground')}
+            >
+              Apache 2.0
+            </span>
+          }
+          body="One container, one volume. Your data stays on your server."
+          items={selfHosted}
+          action={
+            <div className="space-y-3">
+              <CopyCommand
+                label="Copy the docker run command"
+                lines={[`$ docker run -d -p 8080:8080 -p 4318:4318 -v ferristrace:/data ${IMAGE}`]}
+              />
+              <a
+                href={links.selfHostGuide}
+                className="flex w-full items-center justify-center gap-2 border border-border bg-card px-5 py-3 text-sm font-semibold transition-colors hover:bg-foreground/[0.04]"
+              >
+                Self-host guide
+              </a>
+            </div>
+          }
+        />
 
-          <EditionCard
-            id="cloud"
-            title="Cloud"
-            highlighted
-            aside={<span className="text-sm font-semibold text-foreground">Free while in beta</span>}
-            body="We host the container, keep it updated and handle the backups. You get a workspace and an ingest key."
-            items={cloud}
-            action={<StartOnCloudButton className="w-full" />}
-          />
-        </div>
-      </Container>
-    </section>
+        <EditionCell
+          id="cloud"
+          title="Cloud"
+          highlighted
+          aside={<span className={cn(pixelLabel, 'text-accent-text')}>Free while in beta</span>}
+          body="We host the container, keep it updated and handle the backups. You get a workspace and an ingest key."
+          items={cloud}
+          action={
+            <a
+              href={links.startOnCloud}
+              className="flex w-full items-center justify-center gap-2 bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-hover"
+            >
+              Start on Cloud
+              <span aria-hidden="true">→</span>
+            </a>
+          }
+        />
+      </div>
+    </Frame>
   )
 }
 
-interface EditionCardProps {
+interface EditionCellProps {
   id: string
   title: string
   aside: ReactNode
@@ -77,7 +94,7 @@ interface EditionCardProps {
   highlighted?: boolean
 }
 
-function EditionCard({
+function EditionCell({
   id,
   title,
   aside,
@@ -85,27 +102,27 @@ function EditionCard({
   items,
   action,
   highlighted = false,
-}: EditionCardProps) {
+}: EditionCellProps) {
   return (
-    <Card
+    <div
       id={id}
       className={cn(
-        'flex scroll-mt-20 flex-col p-5',
-        highlighted && 'border-primary ring-1 ring-primary',
+        'flex scroll-mt-20 flex-col border-b border-r border-border px-6 py-10 sm:px-8 sm:py-12',
+        highlighted && 'bg-surface-tint',
       )}
     >
       <div className="flex items-center justify-between gap-4">
-        <h3 className="text-[15px] font-semibold">{title}</h3>
+        <h3 className="text-xl font-medium tracking-[-0.01em]">{title}</h3>
         {aside}
       </div>
 
-      <p className="mt-3 text-sm leading-6 text-muted-foreground">{body}</p>
+      <p className="mt-4 text-sm leading-7 text-muted-foreground">{body}</p>
 
-      <Separator className="my-5" />
+      <div className="my-7 border-t border-border" />
 
       <CheckList items={items} />
 
-      <div className="mt-auto pt-6">{action}</div>
-    </Card>
+      <div className="mt-auto pt-8">{action}</div>
+    </div>
   )
 }

@@ -25,62 +25,69 @@ const ok = (budget: number, deploys: number, pods: number): Cell => ({
   note: 'Within its SLO. Nobody needs to look at it today.',
 })
 
-const absent: Cell = { health: 'absent', budget: 0, deploys: 0, pods: 0, note: 'Not deployed on this cluster.' }
+const absent: Cell = {
+  health: 'absent',
+  budget: 0,
+  deploys: 0,
+  pods: 0,
+  note: 'Not deployed on this cluster.',
+}
 
-const fleet: Array<{ team: string; namespace: string; slo: string; cells: Record<Cluster, Cell> }> = [
-  {
-    team: 'checkout',
-    namespace: 'checkout',
-    slo: '99.9 % of requests under 400 ms',
-    cells: {
-      'prod-eu-1': {
-        health: 'burning',
-        budget: 8,
-        deploys: 3,
-        pods: 12,
-        incident: 'INC-212',
-        note: 'Since the 14:02 sync it has burned error budget 6× faster than allowed. INC-212 paged the checkout on-call, so you can stay asleep.',
+const fleet: Array<{ team: string; namespace: string; slo: string; cells: Record<Cluster, Cell> }> =
+  [
+    {
+      team: 'checkout',
+      namespace: 'checkout',
+      slo: '99.9 % of requests under 400 ms',
+      cells: {
+        'prod-eu-1': {
+          health: 'burning',
+          budget: 8,
+          deploys: 3,
+          pods: 12,
+          incident: 'INC-212',
+          note: 'Since the 14:02 sync it has burned error budget 6× faster than allowed. INC-212 paged the checkout on-call, so you can stay asleep.',
+        },
+        'prod-us-1': ok(71, 1, 9),
+        staging: ok(100, 7, 3),
       },
-      'prod-us-1': ok(71, 1, 9),
-      staging: ok(100, 7, 3),
     },
-  },
-  {
-    team: 'payments',
-    namespace: 'payments',
-    slo: '99.95 % of charges succeed',
-    cells: { 'prod-eu-1': ok(64, 0, 8), 'prod-us-1': ok(58, 0, 8), staging: ok(100, 2, 2) },
-  },
-  {
-    team: 'search',
-    namespace: 'search',
-    slo: '99 % of queries under 250 ms',
-    cells: {
-      'prod-eu-1': ok(42, 1, 6),
-      'prod-us-1': {
-        health: 'down',
-        budget: 0,
-        deploys: 1,
-        pods: 6,
-        incident: 'INC-209',
-        note: 'Budget gone. Two of the six pods were OOMKilled on node pool spot-b. INC-209 belongs to the search team, but the node pool is your problem.',
+    {
+      team: 'payments',
+      namespace: 'payments',
+      slo: '99.95 % of charges succeed',
+      cells: { 'prod-eu-1': ok(64, 0, 8), 'prod-us-1': ok(58, 0, 8), staging: ok(100, 2, 2) },
+    },
+    {
+      team: 'search',
+      namespace: 'search',
+      slo: '99 % of queries under 250 ms',
+      cells: {
+        'prod-eu-1': ok(42, 1, 6),
+        'prod-us-1': {
+          health: 'down',
+          budget: 0,
+          deploys: 1,
+          pods: 6,
+          incident: 'INC-209',
+          note: 'Budget gone. Two of the six pods were OOMKilled on node pool spot-b. INC-209 belongs to the search team, but the node pool is your problem.',
+        },
+        staging: absent,
       },
-      staging: absent,
     },
-  },
-  {
-    team: 'identity',
-    namespace: 'identity',
-    slo: '99.99 % of sign-ins succeed',
-    cells: { 'prod-eu-1': ok(93, 0, 4), 'prod-us-1': ok(90, 0, 4), staging: ok(100, 1, 1) },
-  },
-  {
-    team: 'ml-platform',
-    namespace: 'inference',
-    slo: '95 % of predictions under 1 s',
-    cells: { 'prod-eu-1': absent, 'prod-us-1': ok(27, 2, 5), staging: ok(100, 4, 2) },
-  },
-]
+    {
+      team: 'identity',
+      namespace: 'identity',
+      slo: '99.99 % of sign-ins succeed',
+      cells: { 'prod-eu-1': ok(93, 0, 4), 'prod-us-1': ok(90, 0, 4), staging: ok(100, 1, 1) },
+    },
+    {
+      team: 'ml-platform',
+      namespace: 'inference',
+      slo: '95 % of predictions under 1 s',
+      cells: { 'prod-eu-1': absent, 'prod-us-1': ok(27, 2, 5), staging: ok(100, 4, 2) },
+    },
+  ]
 
 const views = [
   { id: 'health', label: 'Health' },
@@ -96,7 +103,12 @@ const healthStyle: Record<Health, string> = {
   absent: 'border-dashed border-border bg-transparent text-faint-foreground',
 }
 
-const healthLabel: Record<Health, string> = { ok: 'healthy', burning: 'burning', down: 'exhausted', absent: 'none' }
+const healthLabel: Record<Health, string> = {
+  ok: 'healthy',
+  burning: 'burning',
+  down: 'exhausted',
+  absent: 'none',
+}
 
 /**
  * The fleet as a platform team sees it: every team on every cluster, with
@@ -104,21 +116,31 @@ const healthLabel: Record<Health, string> = { ok: 'healthy', burning: 'burning',
  */
 export function FleetMatrix() {
   const [view, setView] = useState<View>('health')
-  const [selected, setSelected] = useState<{ team: string; cluster: Cluster }>({ team: 'checkout', cluster: 'prod-eu-1' })
+  const [selected, setSelected] = useState<{ team: string; cluster: Cluster }>({
+    team: 'checkout',
+    cluster: 'prod-eu-1',
+  })
   const row = fleet.find((r) => r.team === selected.team)!
   const cell = row.cells[selected.cluster]
 
   return (
-    <div className="overflow-hidden rounded-xl border border-border bg-card">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-section-alt px-4 py-3">
+    <div className="overflow-hidden border border-border bg-card">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-surface-tint px-4 py-3">
         <p className="flex min-w-0 items-center gap-2 font-mono text-[12px]">
           <Terminal className="size-3.5 shrink-0 text-faint-foreground" aria-hidden="true" />
           <span className="truncate">
-            <span className="text-faint-foreground">$ </span>kubectl apply -k deploy/ferristrace-collector
+            <span className="text-faint-foreground">$ </span>kubectl apply -k
+            deploy/ferristrace-collector
           </span>
-          <span className="hidden shrink-0 text-success-text sm:inline">✓ 3 clusters · 13 namespaces</span>
+          <span className="hidden shrink-0 text-success-text sm:inline">
+            ✓ 3 clusters · 13 namespaces
+          </span>
         </p>
-        <div className="flex items-center gap-1 rounded-lg border border-border bg-card p-0.5" role="group" aria-label="What the cells show">
+        <div
+          className="flex items-center gap-1 border border-border bg-card p-0.5"
+          role="group"
+          aria-label="What the cells show"
+        >
           {views.map((v) => (
             <button
               key={v.id}
@@ -126,8 +148,10 @@ export function FleetMatrix() {
               aria-pressed={view === v.id}
               onClick={() => setView(v.id)}
               className={cn(
-                'rounded-md px-2.5 py-1 text-[12px] font-medium transition-colors',
-                view === v.id ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-accent',
+                'px-2.5 py-1 text-[12px] font-medium transition-colors',
+                view === v.id
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-muted-foreground hover:bg-accent',
               )}
             >
               {v.label}
@@ -145,7 +169,11 @@ export function FleetMatrix() {
                   team
                 </th>
                 {clusters.map((c) => (
-                  <th key={c} scope="col" className="text-left text-[11px] font-normal text-faint-foreground">
+                  <th
+                    key={c}
+                    scope="col"
+                    className="text-left text-[11px] font-normal text-faint-foreground"
+                  >
                     {c}
                   </th>
                 ))}
@@ -168,7 +196,7 @@ export function FleetMatrix() {
                           aria-label={`${r.team} on ${c}: ${healthLabel[cl.health]}`}
                           onClick={() => setSelected({ team: r.team, cluster: c })}
                           className={cn(
-                            'flex h-10 w-full items-center gap-2 rounded-md border px-2 text-left transition-all',
+                            'flex h-10 w-full items-center gap-2 border px-2 text-left transition-all',
                             healthStyle[cl.health],
                             active && 'ring-2 ring-primary',
                           )}
@@ -187,7 +215,7 @@ export function FleetMatrix() {
         <div
           key={`${selected.team}-${selected.cluster}`}
           aria-live="polite"
-          className="problem-panel border-t border-border bg-section-alt p-5 lg:border-l lg:border-t-0"
+          className="problem-panel border-t border-border bg-surface-tint p-5 lg:border-l lg:border-t-0"
         >
           <p className="font-mono text-[11px] text-faint-foreground">
             {selected.cluster} · ns/{row.namespace}
@@ -200,21 +228,26 @@ export function FleetMatrix() {
               <div className="mt-4">
                 <div className="flex justify-between font-mono text-[11px]">
                   <span className="text-faint-foreground">error budget left</span>
-                  <span className={cn(cell.budget < 15 && 'text-destructive')}>{cell.budget} %</span>
+                  <span className={cn(cell.budget < 15 && 'text-destructive')}>
+                    {cell.budget} %
+                  </span>
                 </div>
-                <span className="mt-1 block h-1.5 rounded-full bg-muted">
+                <span className="mt-1 block h-1.5 bg-muted">
                   <span
-                    className={cn('block h-full rounded-full transition-all duration-500', cell.budget < 15 ? 'bg-destructive' : 'bg-primary')}
+                    className={cn(
+                      'block h-full transition-all duration-500',
+                      cell.budget < 15 ? 'bg-destructive' : 'bg-primary',
+                    )}
                     style={{ width: `${cell.budget}%` }}
                   />
                 </span>
               </div>
               <dl className="mt-4 grid grid-cols-2 gap-2 font-mono text-[12px]">
-                <div className="rounded-md border border-border bg-card p-2">
+                <div className="border border-border bg-card p-2">
                   <dt className="text-[10px] text-faint-foreground">pods</dt>
                   <dd className="mt-0.5">{cell.pods}</dd>
                 </div>
-                <div className="rounded-md border border-border bg-card p-2">
+                <div className="border border-border bg-card p-2">
                   <dt className="flex items-center gap-1 text-[10px] text-faint-foreground">
                     <GitCommitHorizontal className="size-3" aria-hidden="true" />
                     deploys today
@@ -226,13 +259,15 @@ export function FleetMatrix() {
           )}
 
           {cell.incident ? (
-            <p className="mt-4 flex items-center gap-2 rounded-md border border-severity-error-border bg-severity-error-background px-3 py-2 text-[12px] text-severity-error-foreground">
+            <p className="mt-4 flex items-center gap-2 border border-severity-error-border bg-severity-error-background px-3 py-2 text-[12px] text-severity-error-foreground">
               <BellRing className="size-3.5 shrink-0" aria-hidden="true" />
               {cell.incident} · paged @{row.team}-oncall
             </p>
           ) : null}
 
-          <p className="mt-4 rounded-md border border-primary/30 bg-primary/5 p-3 text-sm leading-6">{cell.note}</p>
+          <p className="mt-4 border border-primary/30 bg-primary/5 p-3 text-sm leading-6">
+            {cell.note}
+          </p>
         </div>
       </div>
     </div>
@@ -244,9 +279,9 @@ function CellContent({ cell, view }: { cell: Cell; view: View }) {
   if (view === 'budget')
     return (
       <span className="flex w-full items-center gap-2">
-        <span className="h-1 flex-1 rounded-full bg-foreground/10">
+        <span className="h-1 flex-1 bg-foreground/10">
           <span
-            className={cn('block h-full rounded-full', cell.budget < 15 ? 'bg-destructive' : 'bg-success-text')}
+            className={cn('block h-full', cell.budget < 15 ? 'bg-destructive' : 'bg-success-text')}
             style={{ width: `${cell.budget}%` }}
           />
         </span>
@@ -259,7 +294,9 @@ function CellContent({ cell, view }: { cell: Cell; view: View }) {
         {cell.deploys === 0 ? (
           <span className="text-[11px] text-faint-foreground">0</span>
         ) : (
-          Array.from({ length: cell.deploys }, (_, i) => <span key={i} className="size-1.5 rounded-full bg-primary" />)
+          Array.from({ length: cell.deploys }, (_, i) => (
+            <span key={i} className="size-1.5 bg-primary" />
+          ))
         )}
       </span>
     )
@@ -267,7 +304,7 @@ function CellContent({ cell, view }: { cell: Cell; view: View }) {
     <>
       <span
         className={cn(
-          'size-1.5 shrink-0 rounded-full',
+          'size-1.5 shrink-0',
           cell.health === 'ok' && 'bg-success-text',
           cell.health === 'burning' && 'animate-pulse bg-severity-warn-foreground',
           cell.health === 'down' && 'animate-pulse bg-destructive',

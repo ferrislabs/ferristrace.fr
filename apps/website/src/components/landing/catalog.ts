@@ -10,6 +10,18 @@ import {
   Sparkles,
   type LucideIcon,
 } from 'lucide-react'
+import {
+  agentSprite,
+  aiObsSprite,
+  bubbleSprite,
+  buildingSprite,
+  incidentSprite,
+  infraSprite,
+  rackSprite,
+  rocketSprite,
+  tracesSprite,
+  type Sprite,
+} from '../pixel/sprites'
 
 /**
  * Every product and solution page, in one place. The header menus, the
@@ -23,6 +35,8 @@ export interface CatalogEntry {
   /** One line, shown under the title in the menus. */
   summary: string
   Icon: LucideIcon
+  /** The pixel sprite drawn next to the entry in menus and grids. */
+  sprite: Sprite
 }
 
 export const products: CatalogEntry[] = [
@@ -32,6 +46,7 @@ export const products: CatalogEntry[] = [
     title: 'Traces, logs & metrics',
     summary: 'Follow one request from the click to the database.',
     Icon: ChartGantt,
+    sprite: tracesSprite,
   },
   {
     slug: 'infrastructure',
@@ -39,6 +54,7 @@ export const products: CatalogEntry[] = [
     title: 'Infrastructure',
     summary: 'Your Kubernetes cluster, next to the services it runs.',
     Icon: Boxes,
+    sprite: infraSprite,
   },
   {
     slug: 'incidents',
@@ -46,6 +62,7 @@ export const products: CatalogEntry[] = [
     title: 'Incident response',
     summary: 'From the first alert to the postmortem, on one timeline.',
     Icon: Siren,
+    sprite: incidentSprite,
   },
   {
     slug: 'ai-observability',
@@ -53,6 +70,7 @@ export const products: CatalogEntry[] = [
     title: 'AI observability',
     summary: 'What each LLM call cost, and how long it took.',
     Icon: Sparkles,
+    sprite: aiObsSprite,
   },
   {
     slug: 'ai-agents',
@@ -60,6 +78,7 @@ export const products: CatalogEntry[] = [
     title: 'AI agents',
     summary: 'Agents investigate with scoped FerrisKey tokens.',
     Icon: Bot,
+    sprite: agentSprite,
   },
 ]
 
@@ -70,6 +89,7 @@ export const solutionsBySize: CatalogEntry[] = [
     title: 'Startups',
     summary: 'See what production is doing before you hire a platform team.',
     Icon: Rocket,
+    sprite: rocketSprite,
   },
   {
     slug: 'enterprises',
@@ -77,6 +97,7 @@ export const solutionsBySize: CatalogEntry[] = [
     title: 'Enterprises',
     summary: 'Self-hosted with SSO and audit, so your data stays with you.',
     Icon: Building2,
+    sprite: buildingSprite,
   },
 ]
 
@@ -87,6 +108,7 @@ export const solutionsByTeam: CatalogEntry[] = [
     title: 'Platform & SRE teams',
     summary: 'One tool for the clusters you run and the pages you answer.',
     Icon: ServerCog,
+    sprite: rackSprite,
   },
   {
     slug: 'ai-teams',
@@ -94,6 +116,7 @@ export const solutionsByTeam: CatalogEntry[] = [
     title: 'AI product teams',
     summary: 'Ship LLM features and keep their cost under control.',
     Icon: BrainCircuit,
+    sprite: bubbleSprite,
   },
 ]
 

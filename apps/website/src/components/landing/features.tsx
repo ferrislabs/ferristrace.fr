@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react'
-import { Button, cn } from '@cometrace/ui'
-import { ArrowRight } from 'lucide-react'
-import { Container } from './shared'
+import { cn } from '@cometrace/ui'
+import { Frame, SectionTitle } from './shared'
 import { links } from './links'
 import {
   AgentPreview,
@@ -14,7 +13,7 @@ import {
 } from './feature-previews'
 
 interface Feature {
-  /** Anchor used by the header and the mascot tour. */
+  /** Anchor used by the header. */
   id: string
   title: string
   body: string
@@ -75,54 +74,53 @@ const features: Feature[] = [
  */
 export function Features() {
   return (
-    <section id="features" aria-labelledby="features-title" className="scroll-mt-20 py-24">
-      <Container>
-        <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-          <h2
-            id="features-title"
-            className="max-w-[620px] text-[clamp(2rem,4vw,3rem)] font-bold leading-[1.08] tracking-[-0.03em] text-balance"
-          >
-            Built for the bad nights.
-            <span className="text-muted-foreground"> Handy on the quiet days too.</span>
-          </h2>
-          <div className="max-w-[360px] md:text-right">
-            <p className="text-[15px] leading-6 text-muted-foreground">
-              Take an incident from the first alert to the postmortem without opening another tool.
-            </p>
-            <Button asChild variant="outline" size="sm" className="mt-4 font-semibold">
-              <a href={links.docs}>
-                Explore the docs <ArrowRight aria-hidden="true" />
-              </a>
-            </Button>
-          </div>
-        </div>
+    <Frame
+      id="features"
+      labelledBy="features-title"
+      className="scroll-mt-20"
+      innerClassName="overflow-hidden"
+    >
+      <div className="flex flex-col gap-8 border-b border-border px-5 py-20 sm:px-8 sm:py-28 md:flex-row md:items-end md:justify-between">
+        <SectionTitle
+          id="features-title"
+          kicker="Features"
+          title="Built for the bad nights. Handy on the quiet days too."
+          description="Take an incident from the first alert to the postmortem without opening another tool."
+        />
+        <a
+          href={links.docs}
+          className="inline-flex shrink-0 items-center gap-2 self-start border border-border bg-card px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-foreground/[0.04] md:self-auto"
+        >
+          Explore the docs
+          <span aria-hidden="true">→</span>
+        </a>
+      </div>
 
-        <div className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {features.map((feature) => (
-            <article
-              key={feature.id}
-              id={feature.id}
-              aria-labelledby={`feature-${feature.id}`}
-              className={cn(
-                'group flex scroll-mt-24 flex-col overflow-hidden rounded-xl border border-border bg-card transition-colors hover:border-primary/40',
-                feature.wide && 'md:col-span-2',
-              )}
-            >
-              <p className="p-6 pb-0 text-[17px] leading-7 text-muted-foreground">
-                <span id={`feature-${feature.id}`} className="font-semibold text-foreground">
-                  {feature.title}
-                </span>{' '}
-                {feature.body}
-              </p>
-              <div className="mt-auto px-6 pb-6 pt-8">
-                <div className="transition-transform duration-300 ease-out group-hover:-translate-y-1">
-                  {feature.preview}
-                </div>
-              </div>
-            </article>
-          ))}
-        </div>
-      </Container>
-    </section>
+      <div className="-mr-px grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        {features.map((feature) => (
+          <article
+            key={feature.id}
+            id={feature.id}
+            aria-labelledby={`feature-${feature.id}`}
+            className={cn(
+              'group relative flex scroll-mt-24 flex-col border-b border-r border-border transition-colors hover:bg-foreground/[0.03]',
+              feature.wide && 'md:col-span-2',
+            )}
+          >
+            <p className="p-6 pb-0 text-[15px] leading-7 text-muted-foreground sm:p-8 sm:pb-0">
+              <span id={`feature-${feature.id}`} className="font-medium text-foreground">
+                {feature.title}
+              </span>{' '}
+              {feature.body}
+            </p>
+            <div className="mt-auto px-6 pb-6 pt-8 sm:px-8 sm:pb-8">{feature.preview}</div>
+            <span
+              className="absolute inset-x-0 bottom-0 h-0.5 origin-left scale-x-0 bg-primary transition-transform duration-300 group-hover:scale-x-100"
+              aria-hidden="true"
+            />
+          </article>
+        ))}
+      </div>
+    </Frame>
   )
 }

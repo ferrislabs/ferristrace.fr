@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
-import { Button, Separator, TooltipProvider } from '@cometrace/ui'
+import { TooltipProvider } from '@cometrace/ui'
 import { routes } from '../../lib/routes'
 import { searchTermFromPath, suggestRoutes, type Suggestion } from '../../lib/suggest'
-import { Container } from '../landing/shared'
+import { Frame } from '../landing/shared'
 import { links } from '../landing/links'
 import { SiteFooter } from '../landing/site-footer'
 import { SiteHeader } from '../landing/site-header'
+import { PixelSprite } from '../pixel/pixel-sprite'
+import { cometCrab } from '../pixel/sprites'
 import { DocsSearch } from './docs-search'
 import { PathChip } from './path-chip'
 import { report404 } from './report'
@@ -29,39 +31,65 @@ export function NotFoundPage() {
       <div className="flex min-h-dvh flex-col">
         <SiteHeader />
 
-        <main id="main" className="flex flex-1 items-center">
-          <Container className="py-16">
-            <div className="mx-auto flex w-full max-w-[560px] flex-col gap-5">
+        <main id="main" className="flex-1">
+          <Frame labelledBy="page-title">
+            <div className="bg-ink-grid flex flex-col items-center border-b border-border px-5 pb-10 pt-16 sm:pt-24">
+              <div className="reveal relative">
+                <PixelSprite
+                  sprite={cometCrab}
+                  className="absolute -top-2 left-1/2 block h-[clamp(2.5rem,7vw,5rem)] w-[clamp(4rem,11vw,8rem)] -translate-x-1/2 -translate-y-full -rotate-6"
+                />
+                <p
+                  aria-hidden="true"
+                  className="select-none font-pixel text-[clamp(6rem,24vw,15rem)] leading-[0.9] tracking-[0.02em] text-accent-text"
+                >
+                  404
+                </p>
+                <span
+                  className="absolute -right-2 -top-4 font-pixel text-[clamp(1.5rem,4vw,3rem)] leading-none text-accent-text sm:-right-8"
+                  aria-hidden="true"
+                >
+                  ?
+                </span>
+              </div>
+            </div>
+
+            <div className="mx-auto flex w-full max-w-xl flex-col items-center gap-6 px-5 py-16 text-center sm:py-20">
               <PathChip path={path} />
 
-              <h1 className="text-[36px] font-bold leading-[44px] tracking-[-0.02em]">
+              <h1
+                id="page-title"
+                className="text-[clamp(2rem,4.5vw,3.25rem)] font-medium leading-[1.05] tracking-[-0.035em]"
+              >
                 Page not found
               </h1>
 
-              <p className="text-[17px] leading-[26px] text-muted-foreground">
+              <p className="text-pretty text-[15px] leading-7 text-muted-foreground">
                 Nothing lives at this address. It may have moved when the docs were reorganised, or
                 the link has a typo.
               </p>
 
               <DocsSearch term={path ? searchTermFromPath(path) : ''} />
 
-              <div className="flex flex-wrap items-center gap-3">
-                <Button asChild className="px-5 font-semibold hover:bg-primary-hover">
-                  <a href="/">Back to home</a>
-                </Button>
-                <Button asChild variant="outline" className="px-5 font-semibold">
-                  <a href={links.docs}>Open the docs</a>
-                </Button>
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                <a
+                  href="/"
+                  className="inline-flex items-center gap-2 bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-hover"
+                >
+                  Back to home
+                  <span aria-hidden="true">→</span>
+                </a>
+                <a
+                  href={links.docs}
+                  className="inline-flex items-center gap-2 border border-border bg-card px-5 py-3 text-sm font-semibold transition-colors hover:bg-foreground/[0.04]"
+                >
+                  Open the docs
+                </a>
               </div>
-
-              {suggestions.length > 0 ? (
-                <>
-                  <Separator />
-                  <Suggestions suggestions={suggestions} />
-                </>
-              ) : null}
             </div>
-          </Container>
+          </Frame>
+
+          {suggestions.length > 0 ? <Suggestions suggestions={suggestions} /> : null}
         </main>
 
         <SiteFooter />

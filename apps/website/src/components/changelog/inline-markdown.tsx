@@ -30,7 +30,7 @@ function render(text: string, keyPrefix: string): ReactNode[] {
       nodes.push(
         <code
           key={key}
-          className="rounded-sm border border-border bg-muted px-1 py-0.5 font-mono text-[0.85em]"
+          className="border border-border bg-muted px-1 py-0.5 font-mono text-[0.85em]"
         >
           {match[1]}
         </code>,
@@ -43,7 +43,7 @@ function render(text: string, keyPrefix: string): ReactNode[] {
           <a
             key={key}
             href={href}
-            className="rounded-sm text-accent-text underline underline-offset-2 hover:no-underline"
+            className="text-accent-text underline underline-offset-2 hover:no-underline"
             {...(href.startsWith('http') ? { target: '_blank', rel: 'noreferrer noopener' } : {})}
           >
             {label}

@@ -38,6 +38,13 @@ import { IncidentPlayer } from './diagrams/incident-player'
 import { ConnectTerminal } from './diagrams/connect-terminal'
 import { TraceExplorer } from './diagrams/trace-explorer'
 import { ProblemTabs } from './problem-tabs'
+import {
+  agentSprite,
+  aiObsSprite,
+  incidentSprite,
+  infraSprite,
+  tracesSprite,
+} from '../pixel/sprites'
 
 const others = (slug: string) => products.filter((p) => p.slug !== slug)
 
@@ -51,7 +58,7 @@ export function ObservabilityPage() {
   return (
     <PageShell current="products">
       <PageHero
-        Icon={ChartGantt}
+        sprite={tracesSprite}
         eyebrow="Traces, logs & metrics"
         title="Stop guessing why it's slow."
         accent="Look at the request."
@@ -128,16 +135,43 @@ export function ObservabilityPage() {
       <Capabilities
         title="What you get."
         items={[
-          { Icon: ChartGantt, title: 'Waterfall by service', body: 'See where the time went, coloured by service, with each error on the span that threw it.' },
-          { Icon: Search, title: 'Search any attribute', body: 'Attributes keep their types. Filter on status, duration, user, version or anything else you send.' },
-          { Icon: Logs, title: 'Logs with a trace id', body: 'Filter by severity, text or trace, and click a line to open the request behind it.' },
-          { Icon: ChartLine, title: 'Metrics that open traces', body: 'A chart per attribute set, linked to the traces recorded in the same minute.' },
-          { Icon: Keyboard, title: 'Keyboard-first', body: 'G T, J K, Enter and / get you around. Handy on your tenth visit of the day.' },
-          { Icon: Layers, title: 'OpenTelemetry only', body: 'There is no FerrisTrace SDK. Your instrumentation keeps working if you ever switch backends.' },
+          {
+            Icon: ChartGantt,
+            title: 'Waterfall by service',
+            body: 'See where the time went, coloured by service, with each error on the span that threw it.',
+          },
+          {
+            Icon: Search,
+            title: 'Search any attribute',
+            body: 'Attributes keep their types. Filter on status, duration, user, version or anything else you send.',
+          },
+          {
+            Icon: Logs,
+            title: 'Logs with a trace id',
+            body: 'Filter by severity, text or trace, and click a line to open the request behind it.',
+          },
+          {
+            Icon: ChartLine,
+            title: 'Metrics that open traces',
+            body: 'A chart per attribute set, linked to the traces recorded in the same minute.',
+          },
+          {
+            Icon: Keyboard,
+            title: 'Keyboard-first',
+            body: 'G T, J K, Enter and / get you around. Handy on your tenth visit of the day.',
+          },
+          {
+            Icon: Layers,
+            title: 'OpenTelemetry only',
+            body: 'There is no FerrisTrace SDK. Your instrumentation keeps working if you ever switch backends.',
+          },
         ]}
       />
       <ExploreGrid title="The rest of FerrisTrace." entries={others('observability')} />
-      <CtaBand title="Find your slowest request in the next ten minutes." body="Cloud is free while we are in beta. Self-hosting takes one docker run." />
+      <CtaBand
+        title="Find your slowest request in the next ten minutes."
+        body="Cloud is free while we are in beta. Self-hosting takes one docker run."
+      />
     </PageShell>
   )
 }
@@ -146,7 +180,7 @@ export function InfrastructurePage() {
   return (
     <PageShell current="products">
       <PageHero
-        Icon={Boxes}
+        sprite={infraSprite}
         eyebrow="Infrastructure"
         title="Know which pod broke it,"
         accent="and which deploy shipped it."
@@ -205,7 +239,9 @@ export function InfrastructurePage() {
               ['Grafana', 'correlate memory with latency by eye'],
               ['APM', 'check which services slowed down'],
             ],
-            after: [['FerrisTrace', 'open the node to see usage per pod beside each service\'s latency']],
+            after: [
+              ['FerrisTrace', "open the node to see usage per pod beside each service's latency"],
+            ],
             result: 'The pod hogging the node is usually obvious at a glance.',
           },
         ]}
@@ -214,16 +250,43 @@ export function InfrastructurePage() {
       <Capabilities
         title="What the cluster view shows."
         items={[
-          { Icon: Server, title: 'Pods by node and service', body: 'State, restarts, CPU and memory, with unhealthy pods in red and amber.' },
-          { Icon: Tags, title: 'Version on every pod', body: 'Put two deploys side by side and see which one the errors follow.' },
-          { Icon: ChartGantt, title: 'Pod in every trace', body: 'Spans carry the pod, node and deployment, so you can filter traces by any of them.' },
-          { Icon: Bell, title: 'Alerts that name the pod', body: 'Alerts name the pod and the deploy involved, next to the metric that fired.' },
-          { Icon: Boxes, title: 'Any cluster', body: 'Managed or on-premise, it works wherever the OpenTelemetry Collector runs.' },
-          { Icon: GitBranch, title: 'GitOps ready', body: 'Self-host it from the Kustomize manifests and let ArgoCD deploy it with your apps.' },
+          {
+            Icon: Server,
+            title: 'Pods by node and service',
+            body: 'State, restarts, CPU and memory, with unhealthy pods in red and amber.',
+          },
+          {
+            Icon: Tags,
+            title: 'Version on every pod',
+            body: 'Put two deploys side by side and see which one the errors follow.',
+          },
+          {
+            Icon: ChartGantt,
+            title: 'Pod in every trace',
+            body: 'Spans carry the pod, node and deployment, so you can filter traces by any of them.',
+          },
+          {
+            Icon: Bell,
+            title: 'Alerts that name the pod',
+            body: 'Alerts name the pod and the deploy involved, next to the metric that fired.',
+          },
+          {
+            Icon: Boxes,
+            title: 'Any cluster',
+            body: 'Managed or on-premise, it works wherever the OpenTelemetry Collector runs.',
+          },
+          {
+            Icon: GitBranch,
+            title: 'GitOps ready',
+            body: 'Self-host it from the Kustomize manifests and let ArgoCD deploy it with your apps.',
+          },
         ]}
       />
       <ExploreGrid title="The rest of FerrisTrace." entries={others('infrastructure')} />
-      <CtaBand title="Put your pods next to your traces." body="Point an OpenTelemetry Collector at FerrisTrace and your pods show up on the map." />
+      <CtaBand
+        title="Put your pods next to your traces."
+        body="Point an OpenTelemetry Collector at FerrisTrace and your pods show up on the map."
+      />
     </PageShell>
   )
 }
@@ -232,7 +295,7 @@ export function IncidentsPage() {
   return (
     <PageShell current="products">
       <PageHero
-        Icon={Siren}
+        sprite={incidentSprite}
         eyebrow="Incident response"
         title="Run the incident"
         accent="where the evidence already is."
@@ -240,7 +303,8 @@ export function IncidentsPage() {
       >
         <IncidentPlayer />
         <p className="mt-4 text-center text-sm text-faint-foreground">
-          Press play or click through the steps to follow one incident from the first alert to the postmortem.
+          Press play or click through the steps to follow one incident from the first alert to the
+          postmortem.
         </p>
       </PageHero>
 
@@ -300,16 +364,43 @@ export function IncidentsPage() {
       <Capabilities
         title="From the page to the postmortem."
         items={[
-          { Icon: Bell, title: 'Alerts with evidence', body: 'Set thresholds on any signal. The alert arrives with the traces that crossed them.' },
-          { Icon: UserCheck, title: 'Severity and ownership', body: 'Severity, owner and on-call are set the moment you open the incident.' },
-          { Icon: History, title: 'Automatic timeline', body: 'Alerts, deploys, comments and status changes are added in order as they happen.' },
-          { Icon: Layers, title: 'Telemetry in place', body: 'The traces, logs and metrics you attach stay on the incident for whoever joins late.' },
-          { Icon: FileText, title: 'Postmortem drafts', body: 'The timeline turns into a first draft, so you edit instead of starting from nothing.' },
-          { Icon: Bot, title: 'Agent summaries', body: 'An AI agent with its own FerrisKey identity can post the first summary.' },
+          {
+            Icon: Bell,
+            title: 'Alerts with evidence',
+            body: 'Set thresholds on any signal. The alert arrives with the traces that crossed them.',
+          },
+          {
+            Icon: UserCheck,
+            title: 'Severity and ownership',
+            body: 'Severity, owner and on-call are set the moment you open the incident.',
+          },
+          {
+            Icon: History,
+            title: 'Automatic timeline',
+            body: 'Alerts, deploys, comments and status changes are added in order as they happen.',
+          },
+          {
+            Icon: Layers,
+            title: 'Telemetry in place',
+            body: 'The traces, logs and metrics you attach stay on the incident for whoever joins late.',
+          },
+          {
+            Icon: FileText,
+            title: 'Postmortem drafts',
+            body: 'The timeline turns into a first draft, so you edit instead of starting from nothing.',
+          },
+          {
+            Icon: Bot,
+            title: 'Agent summaries',
+            body: 'An AI agent with its own FerrisKey identity can post the first summary.',
+          },
         ]}
       />
       <ExploreGrid title="The rest of FerrisTrace." entries={others('incidents')} />
-      <CtaBand title="Spend your next incident on the fix." body="Alerts, on-call and postmortems live in the same tool as your traces." />
+      <CtaBand
+        title="Spend your next incident on the fix."
+        body="Alerts, on-call and postmortems live in the same tool as your traces."
+      />
     </PageShell>
   )
 }
@@ -318,7 +409,7 @@ export function AiObservabilityPage() {
   return (
     <PageShell current="products">
       <PageHero
-        Icon={Sparkles}
+        sprite={aiObsSprite}
         eyebrow="AI observability"
         title="Know what every LLM call"
         accent="costs, and why."
@@ -360,7 +451,12 @@ export function AiObservabilityPage() {
               ['deploy', 'ship them and wait for traffic'],
               ['logs', 'compare model time with total time'],
             ],
-            after: [['FerrisTrace', 'open the request: retrieval, model and your code, timed side by side']],
+            after: [
+              [
+                'FerrisTrace',
+                'open the request: retrieval, model and your code, timed side by side',
+              ],
+            ],
             result: 'You know which part to speed up before you touch the prompt.',
           },
           {
@@ -372,7 +468,9 @@ export function AiObservabilityPage() {
               ['logs', 'search around that time'],
               ['provider console', 'guess the model version used'],
             ],
-            after: [['FerrisTrace', 'find the call by user: model, parameters and tokens on the span']],
+            after: [
+              ['FerrisTrace', 'find the call by user: model, parameters and tokens on the span'],
+            ],
             result: 'You can tell support which model answered, and with which parameters.',
           },
         ]}
@@ -381,16 +479,43 @@ export function AiObservabilityPage() {
       <Capabilities
         title="Recorded on every call."
         items={[
-          { Icon: DollarSign, title: 'Cost per call', body: 'Worked out from prompt and completion tokens, at each model\'s rate.' },
-          { Icon: Layers, title: 'Spend by any dimension', body: 'Group by feature, model, customer or environment.' },
-          { Icon: Gauge, title: 'Latency in context', body: 'See model time inside the request, next to retrieval and your own code.' },
-          { Icon: Bell, title: 'Spend alerts', body: 'Get an alert when a feature or a customer goes over the threshold you set.' },
-          { Icon: Sparkles, title: 'Any provider', body: 'Built on the OpenTelemetry GenAI conventions, so you can change model vendors.' },
-          { Icon: Search, title: 'Find any call', body: 'Look a call up by user, trace id, model or prompt version.' },
+          {
+            Icon: DollarSign,
+            title: 'Cost per call',
+            body: "Worked out from prompt and completion tokens, at each model's rate.",
+          },
+          {
+            Icon: Layers,
+            title: 'Spend by any dimension',
+            body: 'Group by feature, model, customer or environment.',
+          },
+          {
+            Icon: Gauge,
+            title: 'Latency in context',
+            body: 'See model time inside the request, next to retrieval and your own code.',
+          },
+          {
+            Icon: Bell,
+            title: 'Spend alerts',
+            body: 'Get an alert when a feature or a customer goes over the threshold you set.',
+          },
+          {
+            Icon: Sparkles,
+            title: 'Any provider',
+            body: 'Built on the OpenTelemetry GenAI conventions, so you can change model vendors.',
+          },
+          {
+            Icon: Search,
+            title: 'Find any call',
+            body: 'Look a call up by user, trace id, model or prompt version.',
+          },
         ]}
       />
       <ExploreGrid title="The rest of FerrisTrace." entries={others('ai-observability')} />
-      <CtaBand title="Put a number on every AI feature." body="Send your LLM calls over OpenTelemetry and the cost and latency come with them." />
+      <CtaBand
+        title="Put a number on every AI feature."
+        body="Send your LLM calls over OpenTelemetry and the cost and latency come with them."
+      />
     </PageShell>
   )
 }
@@ -399,7 +524,7 @@ export function AiAgentsPage() {
   return (
     <PageShell current="products">
       <PageHero
-        Icon={Bot}
+        sprite={agentSprite}
         eyebrow="AI agents · secured by FerrisKey"
         title="Let AI agents investigate."
         accent="Keep the keys to production."
@@ -442,7 +567,7 @@ export function AiAgentsPage() {
               ['Slack', 'write a first summary'],
             ],
             after: [
-              ['agent', 'reads the incident\'s traces and logs'],
+              ['agent', "reads the incident's traces and logs"],
               ['FerrisTrace', 'you open a summary already posted on the incident'],
             ],
             result: 'You wake up to a first summary instead of an empty channel.',
@@ -452,7 +577,7 @@ export function AiAgentsPage() {
             Icon: ListChecks,
             title: '"What did the agent do?"',
             before: [
-              ['logs', 'grep the agent\'s own logs, if any'],
+              ['logs', "grep the agent's own logs, if any"],
               ['API gateway', 'search requests by token'],
               ['Slack', 'ask who configured it'],
             ],
@@ -465,16 +590,43 @@ export function AiAgentsPage() {
       <Capabilities
         title="Guardrails included."
         items={[
-          { Icon: KeyRound, title: 'One identity per agent', body: 'Agents sign in over OpenID Connect through FerrisKey, the same way your team does.' },
-          { Icon: ShieldCheck, title: 'Scoped permissions', body: 'Scopes are set per agent and per project. Admin scopes can never be granted to an agent.' },
-          { Icon: Clock, title: 'Short-lived tokens', body: 'Tokens expire and renew on their own, and you can revoke an agent with one click.' },
-          { Icon: ListChecks, title: 'Audit log', body: 'Each read and write is recorded with the agent and the token that allowed it.' },
-          { Icon: Search, title: 'Query API', body: 'Agents read traces, logs and metrics through the same API as your scripts.' },
-          { Icon: MessageSquare, title: 'Incident comments', body: 'Agents post what they found on the incident, and a human decides what to do with it.' },
+          {
+            Icon: KeyRound,
+            title: 'One identity per agent',
+            body: 'Agents sign in over OpenID Connect through FerrisKey, the same way your team does.',
+          },
+          {
+            Icon: ShieldCheck,
+            title: 'Scoped permissions',
+            body: 'Scopes are set per agent and per project. Admin scopes can never be granted to an agent.',
+          },
+          {
+            Icon: Clock,
+            title: 'Short-lived tokens',
+            body: 'Tokens expire and renew on their own, and you can revoke an agent with one click.',
+          },
+          {
+            Icon: ListChecks,
+            title: 'Audit log',
+            body: 'Each read and write is recorded with the agent and the token that allowed it.',
+          },
+          {
+            Icon: Search,
+            title: 'Query API',
+            body: 'Agents read traces, logs and metrics through the same API as your scripts.',
+          },
+          {
+            Icon: MessageSquare,
+            title: 'Incident comments',
+            body: 'Agents post what they found on the incident, and a human decides what to do with it.',
+          },
         ]}
       />
       <ExploreGrid title="The rest of FerrisTrace." entries={others('ai-agents')} />
-      <CtaBand title="Give your agents a job, not your passwords." body="Register an agent in FerrisKey and let it take the first look at your next incident." />
+      <CtaBand
+        title="Give your agents a job, not your passwords."
+        body="Register an agent in FerrisKey and let it take the first look at your next incident."
+      />
     </PageShell>
   )
 }

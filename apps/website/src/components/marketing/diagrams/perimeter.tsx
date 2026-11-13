@@ -9,14 +9,14 @@ const questions: Array<{ id: string; q: string; saas: string; self: string }> = 
   {
     id: 'where',
     q: 'Where is our telemetry stored?',
-    saas: 'In the vendor\'s cloud, in a region they pick, kept as long as they decide.',
+    saas: "In the vendor's cloud, in a region they pick, kept as long as they decide.",
     self: 'On your servers, in your network, under the retention you set.',
   },
   {
     id: 'who',
     q: 'Who can sign in?',
-    saas: 'Anyone with an account in the vendor\'s user base. SSO is often a paid add-on.',
-    self: 'Only identities from your provider, over OpenID Connect. Disable a leaver\'s account and their access goes with it.',
+    saas: "Anyone with an account in the vendor's user base. SSO is often a paid add-on.",
+    self: "Only identities from your provider, over OpenID Connect. Disable a leaver's account and their access goes with it.",
   },
   {
     id: 'audit',
@@ -52,10 +52,14 @@ export function Perimeter() {
   const saas = mode === 'saas'
 
   return (
-    <div className="overflow-hidden rounded-xl border border-border bg-card">
+    <div className="overflow-hidden border border-border bg-card">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-3">
         <p className="text-sm font-semibold">Where does your telemetry go?</p>
-        <div className="flex items-center gap-1 rounded-lg border border-border p-0.5" role="group" aria-label="Deployment model">
+        <div
+          className="flex items-center gap-1 border border-border p-0.5"
+          role="group"
+          aria-label="Deployment model"
+        >
           {(
             [
               ['saas', 'Typical SaaS'],
@@ -68,8 +72,10 @@ export function Perimeter() {
               aria-pressed={mode === id}
               onClick={() => setMode(id)}
               className={cn(
-                'rounded-md px-2.5 py-1 text-[12px] font-medium transition-colors',
-                mode === id ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-accent',
+                'px-2.5 py-1 text-[12px] font-medium transition-colors',
+                mode === id
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-muted-foreground hover:bg-accent',
               )}
             >
               {label}
@@ -80,14 +86,17 @@ export function Perimeter() {
 
       <div className="grid lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
         <div className="grid items-center gap-3 p-5 sm:grid-cols-[minmax(0,1fr)_72px_minmax(0,0.8fr)]">
-          <div className="rounded-xl border-2 border-dashed border-primary/40 p-4">
+          <div className="border-2 border-dashed border-primary/40 p-4">
             <p className="flex items-center gap-1.5 font-mono text-[11px] text-faint-foreground">
               <Lock className="size-3" aria-hidden="true" />
               your network
             </p>
             <ul className="mt-3 space-y-1.5">
               {services.map((s) => (
-                <li key={s} className="flex items-center gap-2 rounded-md border border-border bg-section-alt px-2 py-1.5 font-mono text-[11px]">
+                <li
+                  key={s}
+                  className="flex items-center gap-2 border border-border bg-surface-tint px-2 py-1.5 font-mono text-[11px]"
+                >
                   <Server className="size-3 text-faint-foreground" aria-hidden="true" />
                   {s}
                 </li>
@@ -99,16 +108,21 @@ export function Perimeter() {
                 saas ? 'opacity-30' : 'opacity-100',
               )}
             >
-              <span className="flex items-center gap-1.5 rounded-md border border-primary/50 bg-primary/5 px-2 py-1.5 text-[11px] font-semibold">
+              <span className="flex items-center gap-1.5 border border-primary/50 bg-primary/5 px-2 py-1.5 text-[11px] font-semibold">
                 <FerrisMark className="size-3.5" />
                 FerrisTrace
               </span>
-              <span className="flex items-center gap-1.5 rounded-md border border-primary/50 bg-primary/5 px-2 py-1.5 text-[11px] font-semibold">
+              <span className="flex items-center gap-1.5 border border-primary/50 bg-primary/5 px-2 py-1.5 text-[11px] font-semibold">
                 <KeyRound className="size-3.5 text-primary" aria-hidden="true" />
                 FerrisKey
               </span>
             </div>
-            <p className={cn('mt-2 text-[11px]', saas ? 'text-faint-foreground' : 'text-success-text')}>
+            <p
+              className={cn(
+                'mt-2 text-[11px]',
+                saas ? 'text-faint-foreground' : 'text-success-text',
+              )}
+            >
               {saas ? 'nothing kept here' : 'telemetry stored and read here'}
             </p>
           </div>
@@ -128,7 +142,12 @@ export function Perimeter() {
                     className={cn(saas && 'pipeline-flow')}
                   />
                 </svg>
-                <span className={cn('font-mono text-[10px]', saas ? 'text-destructive' : 'text-faint-foreground line-through')}>
+                <span
+                  className={cn(
+                    'font-mono text-[10px]',
+                    saas ? 'text-destructive' : 'text-faint-foreground line-through',
+                  )}
+                >
                   {label}
                 </span>
               </div>
@@ -137,8 +156,10 @@ export function Perimeter() {
 
           <div
             className={cn(
-              'rounded-xl border p-4 transition-all duration-300',
-              saas ? 'border-severity-error-border bg-severity-error-background' : 'border-border opacity-40',
+              'border p-4 transition-all duration-300',
+              saas
+                ? 'border-severity-error-border bg-severity-error-background'
+                : 'border-border opacity-40',
             )}
           >
             <p className="flex items-center gap-1.5 font-mono text-[11px] text-faint-foreground">
@@ -153,8 +174,10 @@ export function Perimeter() {
           </div>
         </div>
 
-        <div className="border-t border-border bg-section-alt p-5 lg:border-l lg:border-t-0">
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-faint-foreground">Security review</p>
+        <div className="border-t border-border bg-surface-tint p-5 lg:border-l lg:border-t-0">
+          <p className="font-pixel text-[10px] uppercase tracking-[0.08em] text-faint-foreground">
+            Security review
+          </p>
           <ul className="mt-3 space-y-1">
             {questions.map((q) => (
               <li key={q.id}>
@@ -163,8 +186,10 @@ export function Perimeter() {
                   aria-pressed={q.id === question.id}
                   onClick={() => setQuestionId(q.id)}
                   className={cn(
-                    'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-[13px] transition-colors',
-                    q.id === question.id ? 'bg-card font-semibold shadow-sm' : 'text-muted-foreground hover:bg-card/60',
+                    'flex w-full items-center gap-2 px-2 py-1.5 text-left text-[13px] transition-colors',
+                    q.id === question.id
+                      ? 'bg-card font-semibold'
+                      : 'text-muted-foreground hover:bg-card/60',
                   )}
                 >
                   {saas ? (
@@ -181,7 +206,7 @@ export function Perimeter() {
             key={`${mode}-${question.id}`}
             aria-live="polite"
             className={cn(
-              'problem-panel mt-4 rounded-md border p-3 text-sm leading-6',
+              'problem-panel mt-4 border p-3 text-sm leading-6',
               saas ? 'border-severity-error-border bg-card' : 'border-primary/30 bg-primary/5',
             )}
           >

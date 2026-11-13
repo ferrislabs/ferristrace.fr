@@ -36,7 +36,7 @@ export function CopyCommand({ lines, label, className }: CopyCommandProps) {
   }
 
   return (
-    <div className={cn('relative min-w-0 rounded-md border border-border bg-card', className)}>
+    <div className={cn('relative min-w-0 border border-border bg-background', className)}>
       <pre className="overflow-x-auto px-4 py-3.5 pr-28 font-mono text-[13px] leading-6 text-foreground">
         <code>
           {lines.map((line) => (
@@ -47,7 +47,7 @@ export function CopyCommand({ lines, label, className }: CopyCommandProps) {
         </code>
       </pre>
 
-      <div className="absolute right-2 top-2 rounded-md bg-card">
+      <div className="absolute right-2 top-2 bg-background">
         <Tooltip>
           <TooltipTrigger asChild>
             <Button

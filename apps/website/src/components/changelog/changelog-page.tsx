@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Button, TooltipProvider } from '@cometrace/ui'
+import { TooltipProvider } from '@cometrace/ui'
 import { ExternalLink, Rss } from 'lucide-react'
 import type { Release } from '../../lib/changelog'
-import { Container } from '../landing/shared'
+import { Frame, Kicker } from '../landing/shared'
 import { SiteFooter } from '../landing/site-footer'
 import { SiteHeader } from '../landing/site-header'
 import { FILTER_TYPES, FilterBar, type FilterType } from './filter-bar'
@@ -99,7 +99,7 @@ export function ChangelogPage({ releases, isExample = false }: ChangelogPageProp
       <div className="flex min-h-dvh flex-col">
         <a
           href="#main"
-          className="sr-only focus:not-sr-only focus:absolute focus:left-6 focus:top-3 focus:z-50 focus:rounded-md focus:border focus:border-border focus:bg-card focus:px-3 focus:py-2 focus:text-sm focus:font-semibold"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-6 focus:top-3 focus:z-50 focus:border focus:border-border focus:bg-card focus:px-3 focus:py-2 focus:text-sm focus:font-semibold"
         >
           Skip to content
         </a>
@@ -107,77 +107,86 @@ export function ChangelogPage({ releases, isExample = false }: ChangelogPageProp
         <SiteHeader current="changelog" />
 
         <main id="main" className="flex-1">
-          <Container className="max-w-[1040px] pb-20 pt-12">
-            <div className="flex flex-wrap items-start justify-between gap-x-8 gap-y-4">
+          <Frame labelledBy="page-title">
+            <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-8 px-5 py-16 sm:px-8 sm:py-24">
               <div>
-                <h1 className="text-[40px] font-bold leading-[48px] tracking-[-0.02em]">
+                <Kicker className="mb-6">Release notes</Kicker>
+                <h1
+                  id="page-title"
+                  className="text-[clamp(2.25rem,5vw,3.75rem)] font-medium leading-[1.03] tracking-[-0.04em]"
+                >
                   Changelog
                 </h1>
-                <p className="mt-3 max-w-[640px] text-[17px] leading-[26px] text-muted-foreground">
+                <p className="mt-6 max-w-xl text-pretty text-[15px] leading-7 text-muted-foreground">
                   {LEAD}
                 </p>
               </div>
 
-              <div className="flex flex-wrap items-center gap-2">
-                <Button asChild variant="outline" size="sm" className="font-semibold">
-                  <a href={links.rss}>
-                    <Rss aria-hidden="true" />
-                    RSS
-                  </a>
-                </Button>
-                <Button asChild variant="outline" size="sm" className="font-semibold">
-                  <a href={`${links.repo}/releases`} target="_blank" rel="noreferrer noopener">
-                    <ExternalLink aria-hidden="true" />
-                    GitHub releases
-                  </a>
-                </Button>
+              <div className="flex flex-wrap items-center gap-3">
+                <a
+                  href={links.rss}
+                  className="inline-flex items-center gap-2 border border-border bg-card px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-foreground/[0.04]"
+                >
+                  <Rss className="size-4" aria-hidden="true" />
+                  RSS
+                </a>
+                <a
+                  href={`${links.repo}/releases`}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="inline-flex items-center gap-2 border border-border bg-card px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-foreground/[0.04]"
+                >
+                  <ExternalLink className="size-4" aria-hidden="true" />
+                  GitHub releases
+                </a>
               </div>
             </div>
 
             {isExample ? (
-              <p className="mt-6 rounded-md border border-severity-warn-border bg-severity-warn-background px-4 py-3 text-sm text-severity-warn-foreground">
+              <p className="border-t border-severity-warn-border bg-severity-warn-background px-5 py-3 text-sm text-severity-warn-foreground sm:px-8">
                 Example data. No CHANGELOG.md was found at the repository root, so this page is
                 rendering CHANGELOG.example.md. Add the real file to replace it.
               </p>
             ) : null}
 
-            <div className="mt-8">
-              <FilterBar
-                type={type}
-                breakingOnly={breakingOnly}
-                onTypeChange={onTypeChange}
-                onBreakingChange={onBreakingChange}
-              />
-            </div>
+            <FilterBar
+              type={type}
+              breakingOnly={breakingOnly}
+              onTypeChange={onTypeChange}
+              onBreakingChange={onBreakingChange}
+            />
+          </Frame>
 
+          <Frame innerClassName="min-h-[320px]">
             {page.length === 0 ? (
-              <p className="py-12 text-[15px] text-muted-foreground">
+              <p className="px-5 py-16 text-[15px] text-muted-foreground sm:px-8">
                 No release matches these filters.
               </p>
             ) : (
-              page.map((release, index) => (
-                <ReleaseArticle
-                  key={release.version}
-                  release={release}
-                  previousVersion={previousOf(release.version)}
-                  isLatest={index === 0 && releases[0]?.version === release.version}
-                />
-              ))
+              <div className="divide-y divide-border">
+                {page.map((release, index) => (
+                  <ReleaseArticle
+                    key={release.version}
+                    release={release}
+                    previousVersion={previousOf(release.version)}
+                    isLatest={index === 0 && releases[0]?.version === release.version}
+                  />
+                ))}
+              </div>
             )}
 
             {remaining > 0 ? (
-              <div className="pt-8">
-                <Button
+              <div className="border-t border-border px-5 py-8 sm:px-8">
+                <button
                   type="button"
-                  variant="outline"
-                  className="font-semibold"
+                  className="inline-flex items-center gap-2 border border-border bg-card px-5 py-3 text-sm font-semibold transition-colors hover:bg-foreground/[0.04]"
                   onClick={() => setShown((current) => current + PAGE_SIZE)}
                 >
                   Load older releases
-                </Button>
+                </button>
               </div>
             ) : null}
-          </Container>
+          </Frame>
         </main>
 
         <SiteFooter />

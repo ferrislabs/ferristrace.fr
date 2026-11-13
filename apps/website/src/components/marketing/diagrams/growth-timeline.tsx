@@ -37,7 +37,8 @@ const stages: Stage[] = [
     moment: 'Saturday night, checkout is down.',
     need: 'Someone has to get paged, pull people in and explain it on Monday.',
     adds: ['Paging tool', 'Incident tracker'],
-    covered: 'The alert opens an incident with the evidence attached, and the timeline becomes your postmortem draft.',
+    covered:
+      'The alert opens an incident with the evidence attached, and the timeline becomes your postmortem draft.',
   },
   {
     id: 'ai',
@@ -64,10 +65,12 @@ const stages: Stage[] = [
 export function GrowthTimeline() {
   const [index, setIndex] = useState(0)
   const stage = stages[index]
-  const stack = stages.slice(0, index + 1).flatMap((s) => s.adds.map((tool) => ({ tool, fresh: s.id === stage.id })))
+  const stack = stages
+    .slice(0, index + 1)
+    .flatMap((s) => s.adds.map((tool) => ({ tool, fresh: s.id === stage.id })))
 
   return (
-    <div className="rounded-xl border border-border bg-card p-5 sm:p-6">
+    <div className="border border-border bg-card p-5 sm:p-6">
       <ol className="relative grid grid-cols-5 gap-1" aria-label="Stages">
         <span className="absolute inset-x-[10%] top-[13px] h-px bg-border" aria-hidden="true" />
         <span
@@ -85,15 +88,21 @@ export function GrowthTimeline() {
             >
               <span
                 className={cn(
-                  'flex size-7 items-center justify-center rounded-full border text-[11px] font-semibold transition-all',
+                  'flex size-7 items-center justify-center border text-[11px] font-semibold transition-all',
                   i < index && 'border-primary bg-primary text-primary-foreground',
                   i === index && 'border-primary bg-card text-primary ring-4 ring-primary/15',
-                  i > index && 'border-border bg-card text-faint-foreground group-hover:border-primary/50',
+                  i > index &&
+                    'border-border bg-card text-faint-foreground group-hover:border-primary/50',
                 )}
               >
                 {i < index ? <Check className="size-3.5" aria-hidden="true" /> : i + 1}
               </span>
-              <span className={cn('text-[12px] leading-tight', i === index ? 'font-semibold' : 'text-muted-foreground')}>
+              <span
+                className={cn(
+                  'text-[12px] leading-tight',
+                  i === index ? 'font-semibold' : 'text-muted-foreground',
+                )}
+              >
                 {s.label}
               </span>
             </button>
@@ -107,7 +116,7 @@ export function GrowthTimeline() {
       </div>
 
       <div className="mt-6 grid gap-4 md:grid-cols-2">
-        <div className="rounded-lg border border-dashed border-border p-4">
+        <div className="border border-dashed border-border p-4">
           <div className="flex items-baseline justify-between">
             <p className="text-sm font-semibold">Assembling it yourself</p>
             <p className="font-mono text-[12px] text-destructive">{stack.length} tools</p>
@@ -117,10 +126,10 @@ export function GrowthTimeline() {
               <li
                 key={tool}
                 className={cn(
-                  'flex items-center gap-1 rounded-md border px-2 py-1 font-mono text-[11px]',
+                  'flex items-center gap-1 border px-2 py-1 font-mono text-[11px]',
                   fresh
                     ? 'problem-step border-severity-error-border bg-severity-error-background text-severity-error-foreground'
-                    : 'border-border bg-section-alt text-muted-foreground',
+                    : 'border-border bg-surface-tint text-muted-foreground',
                 )}
               >
                 {fresh ? <Plus className="size-3" aria-hidden="true" /> : null}
@@ -133,7 +142,7 @@ export function GrowthTimeline() {
           </p>
         </div>
 
-        <div className="rounded-lg border border-primary/50 bg-primary/5 p-4">
+        <div className="border border-primary/50 bg-primary/5 p-4">
           <div className="flex items-baseline justify-between">
             <p className="flex items-center gap-2 text-sm font-semibold">
               <FerrisMark className="size-4" />
@@ -145,7 +154,9 @@ export function GrowthTimeline() {
             <Check className="mt-1 size-4 shrink-0 text-success-text" aria-hidden="true" />
             {stage.covered}
           </p>
-          <p className="mt-3 text-[12px] text-muted-foreground">It was already there, so there is nothing to install.</p>
+          <p className="mt-3 text-[12px] text-muted-foreground">
+            It was already there, so there is nothing to install.
+          </p>
         </div>
       </div>
 
@@ -153,7 +164,7 @@ export function GrowthTimeline() {
         <button
           type="button"
           onClick={() => setIndex((i) => (i + 1) % stages.length)}
-          className="rounded-md border border-border px-3 py-1.5 text-[13px] font-medium transition-colors hover:bg-accent"
+          className="border border-border px-3 py-1.5 text-[13px] font-medium transition-colors hover:bg-accent"
         >
           {index === stages.length - 1 ? 'Start over' : `Next: ${stages[index + 1].label}`}
         </button>

@@ -1,4 +1,4 @@
-import { Alert, AlertDescription, Badge, Button, cn } from '@cometrace/ui'
+import { Alert, AlertDescription, cn } from '@cometrace/ui'
 import {
   ArrowRight,
   Check,
@@ -19,19 +19,25 @@ interface GroupStyle {
   className: string
 }
 
-/** Every badge pairs an icon with the word, so the type never rests on colour. */
+const pixelTag =
+  'inline-flex items-center gap-1.5 border px-2 py-1 font-pixel text-[10px] uppercase tracking-[0.08em] [&>svg]:size-3'
+
+/** Every tag pairs an icon with the word, so the type never rests on colour. */
 const GROUP_STYLES: Record<GroupType, GroupStyle> = {
-  Added: { Icon: Plus, className: 'border-success-text/35 bg-transparent text-success-text' },
-  Changed: { Icon: ArrowRight, className: 'border-transparent bg-secondary text-foreground' },
-  Deprecated: { Icon: Clock, className: '' },
-  Removed: { Icon: Minus, className: '' },
-  Fixed: { Icon: Check, className: '' },
+  Added: { Icon: Plus, className: 'border-success-text/35 text-success-text' },
+  Changed: { Icon: ArrowRight, className: 'border-border bg-card text-foreground' },
+  Deprecated: { Icon: Clock, className: 'border-border text-muted-foreground' },
+  Removed: { Icon: Minus, className: 'border-border text-muted-foreground' },
+  Fixed: { Icon: Check, className: 'border-border text-muted-foreground' },
   Security: {
     Icon: ShieldAlert,
     className:
       'border-severity-error-border bg-severity-error-background text-severity-error-foreground',
   },
 }
+
+const ghostLink =
+  'inline-flex items-center border border-border bg-card px-3 py-2 text-[13px] font-semibold transition-colors hover:bg-foreground/[0.04]'
 
 interface ReleaseArticleProps {
   release: Release
@@ -49,29 +55,36 @@ export function ReleaseArticle({ release, previousVersion, isLatest }: ReleaseAr
     <article
       id={anchor}
       aria-labelledby={titleId}
-      className="grid scroll-mt-24 gap-6 border-b border-border py-8 md:grid-cols-[200px_1fr] md:gap-10"
+      className="grid scroll-mt-24 md:grid-cols-[220px_1fr]"
     >
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col items-start gap-3 border-b border-border px-5 py-6 sm:px-8 md:border-b-0 md:border-r md:py-10">
         <a
           href={`#${anchor}`}
-          className="rounded-sm font-mono text-[15px] font-semibold text-foreground"
+          className="font-pixel text-[15px] uppercase tracking-[0.06em] text-foreground"
         >
           {tag}
         </a>
-        <time dateTime={release.date} className="text-sm text-muted-foreground">
+        <time
+          dateTime={release.date}
+          className="font-pixel text-[10px] uppercase tracking-[0.08em] text-muted-foreground"
+        >
           {formatReleaseDate(release.date)}
         </time>
-        <div className="mt-1 flex flex-wrap items-center gap-2">
-          {isLatest ? <Badge>Latest</Badge> : null}
-          <Badge variant="outline" className="border-success-text/35 text-success-text">
+        <div className="flex flex-wrap items-center gap-2">
+          {isLatest ? (
+            <span className="bg-primary px-2 py-1 font-pixel text-[10px] uppercase tracking-[0.08em] text-primary-foreground">
+              Latest
+            </span>
+          ) : null}
+          <span className={cn(pixelTag, 'border-success-text/35 text-success-text')}>
             <Check aria-hidden="true" />
             Live on Cloud
-          </Badge>
+          </span>
         </div>
       </div>
 
-      <div className="min-w-0">
-        <h2 id={titleId} className="text-[22px] font-semibold leading-[30px] tracking-[-0.01em]">
+      <div className="min-w-0 px-5 py-8 sm:px-8 md:py-10">
+        <h2 id={titleId} className="text-2xl font-medium leading-[1.2] tracking-[-0.02em]">
           {release.title ?? `Release ${tag}`}
         </h2>
 
@@ -101,10 +114,10 @@ export function ReleaseArticle({ release, previousVersion, isLatest }: ReleaseAr
 
             return (
               <div key={`${anchor}-${group.type}`}>
-                <Badge variant="outline" className={cn(className)}>
+                <span className={cn(pixelTag, className)}>
                   <Icon aria-hidden="true" />
                   {group.type}
-                </Badge>
+                </span>
                 <ul className="mt-2.5 space-y-1.5">
                   {group.items.map((item, index) => (
                     <li
@@ -131,26 +144,24 @@ export function ReleaseArticle({ release, previousVersion, isLatest }: ReleaseAr
             label={`Copy the docker pull command for ${tag}`}
             lines={[`docker pull ${links.image}:${release.version}`]}
           />
-          <div className="flex flex-wrap items-center gap-1">
-            <Button asChild variant="ghost" size="sm" className="px-2 font-semibold">
+          <div className="flex flex-wrap items-center gap-2">
+            <a
+              href={`${links.repo}/releases/tag/${tag}`}
+              target="_blank"
+              rel="noreferrer noopener"
+              className={ghostLink}
+            >
+              Release notes on GitHub
+            </a>
+            {previousVersion ? (
               <a
-                href={`${links.repo}/releases/tag/${tag}`}
+                href={`${links.repo}/compare/v${previousVersion}...${tag}`}
                 target="_blank"
                 rel="noreferrer noopener"
+                className={ghostLink}
               >
-                Release notes on GitHub
+                Compare v{previousVersion}&hellip;{tag}
               </a>
-            </Button>
-            {previousVersion ? (
-              <Button asChild variant="ghost" size="sm" className="px-2 font-semibold">
-                <a
-                  href={`${links.repo}/compare/v${previousVersion}...${tag}`}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                >
-                  Compare v{previousVersion}&hellip;{tag}
-                </a>
-              </Button>
             ) : null}
           </div>
         </div>
