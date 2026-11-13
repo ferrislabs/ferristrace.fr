@@ -131,8 +131,12 @@ export function ConnectTerminal() {
   const done = arrived === stack.signals.length
 
   return (
-    <div className="overflow-hidden rounded-xl border border-border bg-card">
-      <div className="flex flex-wrap items-center gap-1 border-b border-border p-2" role="group" aria-label="Your stack">
+    <div className="overflow-hidden border border-border bg-card">
+      <div
+        className="flex flex-wrap items-center gap-1 border-b border-border p-2"
+        role="group"
+        aria-label="Your stack"
+      >
         {stacks.map((s) => (
           <button
             key={s.id}
@@ -140,8 +144,10 @@ export function ConnectTerminal() {
             aria-pressed={s.id === stack.id}
             onClick={() => pick(s.id)}
             className={cn(
-              'rounded-md px-3 py-1.5 text-[13px] font-medium transition-colors',
-              s.id === stack.id ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-accent',
+              'px-3 py-1.5 text-[13px] font-medium transition-colors',
+              s.id === stack.id
+                ? 'bg-primary text-primary-foreground'
+                : 'text-muted-foreground hover:bg-accent',
             )}
           >
             {s.label}
@@ -150,11 +156,16 @@ export function ConnectTerminal() {
       </div>
 
       <div className="grid lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
-        <div className="flex min-w-0 flex-col bg-section-alt p-4">
-          <pre key={stack.id} className="problem-panel min-w-0 flex-1 overflow-x-auto font-mono text-[12px] leading-6">
+        <div className="flex min-w-0 flex-col bg-surface-tint p-4">
+          <pre
+            key={stack.id}
+            className="problem-panel min-w-0 flex-1 overflow-x-auto font-mono text-[12px] leading-6"
+          >
             {stack.lines.map((line) => (
               <div key={line} className="whitespace-pre">
-                {stack.id === 'collector' ? null : <span className="select-none text-faint-foreground">$ </span>}
+                {stack.id === 'collector' ? null : (
+                  <span className="select-none text-faint-foreground">$ </span>
+                )}
                 {line}
               </div>
             ))}
@@ -164,12 +175,18 @@ export function ConnectTerminal() {
               type="button"
               onClick={run}
               disabled={running}
-              className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-[13px] font-semibold text-primary-foreground transition-colors hover:bg-primary-hover disabled:opacity-60"
+              className="inline-flex items-center gap-1.5 bg-primary px-3 py-1.5 text-[13px] font-semibold text-primary-foreground transition-colors hover:bg-primary-hover disabled:opacity-60"
             >
-              {done ? <RotateCcw className="size-3.5" aria-hidden="true" /> : <Play className="size-3.5" aria-hidden="true" />}
+              {done ? (
+                <RotateCcw className="size-3.5" aria-hidden="true" />
+              ) : (
+                <Play className="size-3.5" aria-hidden="true" />
+              )}
               {done ? 'Run again' : running ? 'Starting…' : 'Run it'}
             </button>
-            <span className="text-[12px] text-muted-foreground">Stock OpenTelemetry. Your code stays as it is.</span>
+            <span className="text-[12px] text-muted-foreground">
+              Stock OpenTelemetry. Your code stays as it is.
+            </span>
           </div>
         </div>
 
@@ -177,24 +194,37 @@ export function ConnectTerminal() {
           <p className="flex items-center justify-between font-mono text-[11px] text-faint-foreground">
             <span>FerrisTrace · live</span>
             <span className={cn('flex items-center gap-1.5', arrived > 0 && 'text-success-text')}>
-              <span className={cn('size-1.5 rounded-full', arrived > 0 ? 'animate-pulse bg-success-text' : 'bg-faint-foreground/50')} />
+              <span
+                className={cn(
+                  'size-1.5',
+                  arrived > 0 ? 'animate-pulse bg-success-text' : 'bg-faint-foreground/50',
+                )}
+              />
               {arrived > 0 ? 'receiving' : 'waiting for data'}
             </span>
           </p>
           <ul className="mt-3 space-y-1.5" aria-live="polite">
             {stack.signals.slice(0, arrived).map(([kind, text]) => (
-              <li key={text} className="problem-step flex items-center gap-2 rounded-md border border-border px-2 py-1.5 font-mono text-[11px]">
-                <span className={cn('w-12 shrink-0 rounded px-1 text-center text-[10px]', kindStyle[kind])}>{kind}</span>
+              <li
+                key={text}
+                className="problem-step flex items-center gap-2 border border-border px-2 py-1.5 font-mono text-[11px]"
+              >
+                <span className={cn('w-12 shrink-0 px-1 text-center text-[10px]', kindStyle[kind])}>
+                  {kind}
+                </span>
                 <span className="truncate">{text}</span>
               </li>
             ))}
           </ul>
           {arrived === 0 ? (
-            <p className="mt-6 text-center text-[13px] text-muted-foreground">Press &quot;Run it&quot; to start the service.</p>
+            <p className="mt-6 text-center text-[13px] text-muted-foreground">
+              Press &quot;Run it&quot; to start the service.
+            </p>
           ) : null}
           {done ? (
-            <p className="problem-step mt-4 rounded-md border border-primary/30 bg-primary/5 p-3 text-sm leading-6">
-              That took under a minute. The traces, logs and metrics arrive already linked by trace id.
+            <p className="problem-step mt-4 border border-primary/30 bg-primary/5 p-3 text-sm leading-6">
+              That took under a minute. The traces, logs and metrics arrive already linked by trace
+              id.
             </p>
           ) : null}
         </div>

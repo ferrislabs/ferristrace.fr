@@ -41,18 +41,24 @@ export function AgentAccess() {
   const scopeText = granted.size ? [...granted].join(' ') : '(none)'
 
   return (
-    <div className="overflow-hidden rounded-xl border border-border bg-card">
+    <div className="overflow-hidden border border-border bg-card">
       <div className="grid items-center gap-3 border-b border-border p-5 sm:grid-cols-[1fr_auto_1fr_auto_1fr]">
         <Actor Icon={Bot} title="triage-agent" sub="your AI agent" />
-        <ArrowRight className="mx-auto size-4 rotate-90 text-faint-foreground sm:rotate-0" aria-hidden="true" />
+        <ArrowRight
+          className="mx-auto size-4 rotate-90 text-faint-foreground sm:rotate-0"
+          aria-hidden="true"
+        />
         <Actor Icon={KeyRound} title="FerrisKey" sub="issues a scoped token" highlight />
-        <ArrowRight className="mx-auto size-4 rotate-90 text-faint-foreground sm:rotate-0" aria-hidden="true" />
+        <ArrowRight
+          className="mx-auto size-4 rotate-90 text-faint-foreground sm:rotate-0"
+          aria-hidden="true"
+        />
         <Actor mark title="FerrisTrace" sub="checks every call" />
       </div>
 
       <div className="grid lg:grid-cols-2">
         <fieldset className="p-5">
-          <legend className="text-xs font-semibold uppercase tracking-wide text-faint-foreground">
+          <legend className="font-pixel text-[10px] uppercase tracking-[0.08em] text-faint-foreground">
             Token scopes
           </legend>
           <div className="mt-3 space-y-2">
@@ -62,7 +68,7 @@ export function AgentAccess() {
                 <label
                   key={scope.id}
                   className={cn(
-                    'flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition-colors',
+                    'flex cursor-pointer items-center gap-3 border p-3 transition-colors',
                     on ? 'border-primary/50 bg-primary/5' : 'border-border hover:bg-accent/60',
                   )}
                 >
@@ -80,13 +86,13 @@ export function AgentAccess() {
               )
             })}
           </div>
-          <p className="mt-4 rounded-md bg-muted px-3 py-2 font-mono text-[11px] text-muted-foreground">
+          <p className="mt-4 bg-muted px-3 py-2 font-mono text-[11px] text-muted-foreground">
             scope=&quot;{scopeText}&quot; · expires in 12h
           </p>
         </fieldset>
 
-        <div className="border-t border-border bg-section-alt p-5 lg:border-l lg:border-t-0">
-          <p className="text-xs font-semibold uppercase tracking-wide text-faint-foreground">
+        <div className="border-t border-border bg-surface-tint p-5 lg:border-l lg:border-t-0">
+          <p className="font-pixel text-[10px] uppercase tracking-[0.08em] text-faint-foreground">
             What the agent tries
           </p>
           <ul className="mt-3 space-y-2" aria-live="polite">
@@ -96,19 +102,28 @@ export function AgentAccess() {
                 <li
                   key={action.text}
                   className={cn(
-                    'flex items-start gap-3 rounded-lg border p-3 text-[13px] transition-colors',
-                    ok ? 'border-success-text/40 bg-success-text/5' : 'border-severity-error-border bg-severity-error-background',
+                    'flex items-start gap-3 border p-3 text-[13px] transition-colors',
+                    ok
+                      ? 'border-success-text/40 bg-success-text/5'
+                      : 'border-severity-error-border bg-severity-error-background',
                   )}
                 >
                   {ok ? (
-                    <Check className="mt-0.5 size-4 shrink-0 text-success-text" aria-hidden="true" />
+                    <Check
+                      className="mt-0.5 size-4 shrink-0 text-success-text"
+                      aria-hidden="true"
+                    />
                   ) : (
                     <X className="mt-0.5 size-4 shrink-0 text-destructive" aria-hidden="true" />
                   )}
                   <span className="flex-1">
                     {action.text}
                     <span className="mt-0.5 block font-mono text-[11px] text-faint-foreground">
-                      {ok ? 'allowed · logged in audit' : action.needs === 'admin' ? 'denied · never grantable to an agent' : `denied · needs ${action.needs}`}
+                      {ok
+                        ? 'allowed · logged in audit'
+                        : action.needs === 'admin'
+                          ? 'denied · never grantable to an agent'
+                          : `denied · needs ${action.needs}`}
                     </span>
                   </span>
                 </li>
@@ -137,17 +152,23 @@ function Actor({
   return (
     <div
       className={cn(
-        'flex items-center gap-3 rounded-lg border p-3',
+        'flex items-center gap-3 border p-3',
         highlight ? 'border-primary/50 bg-primary/5' : 'border-border bg-background',
       )}
     >
-      <span className="flex size-8 shrink-0 items-center justify-center rounded-md border border-border bg-card">
-        {mark ? <FerrisMark className="size-4" /> : Icon ? <Icon className="size-4 text-primary" aria-hidden="true" /> : null}
+      <span className="flex size-8 shrink-0 items-center justify-center border border-border bg-card">
+        {mark ? (
+          <FerrisMark className="size-4" />
+        ) : Icon ? (
+          <Icon className="size-4 text-primary" aria-hidden="true" />
+        ) : null}
       </span>
       <span>
         <span className="flex items-center gap-1.5 text-sm font-semibold">
           {title}
-          {highlight ? <ShieldCheck className="size-3.5 text-success-text" aria-hidden="true" /> : null}
+          {highlight ? (
+            <ShieldCheck className="size-3.5 text-success-text" aria-hidden="true" />
+          ) : null}
         </span>
         <span className="block text-[12px] text-muted-foreground">{sub}</span>
       </span>

@@ -7,7 +7,7 @@ import { truncateMiddle } from '../../lib/suggest'
  */
 export function PathChip({ path }: { path: string | null }) {
   return (
-    <p className="inline-flex max-w-full items-center gap-2 self-start rounded-md border border-border bg-muted px-2.5 py-1 font-mono text-xs">
+    <p className="inline-flex max-w-full items-center gap-2 self-center border border-border bg-card px-3 py-1.5 font-pixel text-[10px] uppercase tracking-[0.08em]">
       <span className="font-semibold text-muted-foreground">HTTP 404</span>
       {path ? (
         <>

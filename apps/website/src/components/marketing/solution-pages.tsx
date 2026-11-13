@@ -14,7 +14,6 @@ import {
   Sparkles,
   Users,
   Wrench,
-  type LucideIcon,
 } from 'lucide-react'
 import { products } from '../landing/catalog'
 import { CtaBand, DiagramSection, ExploreGrid, PageHero, PageShell } from './blocks'
@@ -23,11 +22,18 @@ import { GrowthTimeline } from './diagrams/growth-timeline'
 import { Perimeter } from './diagrams/perimeter'
 import { ReleaseCompare } from './diagrams/release-compare'
 import { ProblemTabs, type Problem } from './problem-tabs'
+import {
+  bubbleSprite,
+  buildingSprite,
+  rackSprite,
+  rocketSprite,
+  type Sprite,
+} from '../pixel/sprites'
 
 export type SolutionSlug = 'startups' | 'enterprises' | 'platform-teams' | 'ai-teams'
 
 interface Solution {
-  Icon: LucideIcon
+  sprite: Sprite
   eyebrow: string
   title: string
   accent: string
@@ -41,14 +47,15 @@ interface Solution {
 
 const solutionData: Record<SolutionSlug, Solution> = {
   startups: {
-    Icon: Rocket,
+    sprite: rocketSprite,
     eyebrow: 'For startups',
     title: 'Watch production properly',
     accent: 'before you can afford an SRE.',
     lead: 'Run one container and you have traces, logs, metrics and incidents on day one. Your engineers keep building the product instead of gluing five monitoring tools together.',
     diagram: {
       title: 'Year one, tool by tool.',
-      description: 'Most teams add a tool every time something new goes wrong. Click through a typical first year and see where FerrisTrace already has it covered.',
+      description:
+        'Most teams add a tool every time something new goes wrong. Click through a typical first year and see where FerrisTrace already has it covered.',
       Diagram: GrowthTimeline,
     },
     problems: [
@@ -78,7 +85,12 @@ const solutionData: Record<SolutionSlug, Solution> = {
           ['admin', 'ration who gets access'],
           ['Slack', 'paste screenshots for everyone else'],
         ],
-        after: [['FerrisTrace', 'self-host free with unlimited users, or use Cloud while the beta is free']],
+        after: [
+          [
+            'FerrisTrace',
+            'self-host free with unlimited users, or use Cloud while the beta is free',
+          ],
+        ],
         result: 'Anyone who ships code gets to look at production.',
       },
       {
@@ -98,17 +110,21 @@ const solutionData: Record<SolutionSlug, Solution> = {
       },
     ],
     recommended: ['observability', 'incidents', 'ai-observability', 'infrastructure'],
-    cta: { title: 'Set it up before your next release goes out.', body: 'Cloud is free during the beta, and signing up takes a minute without a credit card.' },
+    cta: {
+      title: 'Set it up before your next release goes out.',
+      body: 'Cloud is free during the beta, and signing up takes a minute without a credit card.',
+    },
   },
   enterprises: {
-    Icon: Building2,
+    sprite: buildingSprite,
     eyebrow: 'For enterprises',
     title: 'Observability you run',
     accent: 'inside your own perimeter.',
     lead: 'Install FerrisTrace on infrastructure you control and connect it to your identity provider. The audit log records what each person, API token and AI agent looked at.',
     diagram: {
       title: 'Answers for your security review.',
-      description: 'Toggle between a typical SaaS tool and self-hosted FerrisTrace, then pick a question to see how each one answers it.',
+      description:
+        'Toggle between a typical SaaS tool and self-hosted FerrisTrace, then pick a question to see how each one answers it.',
       Diagram: Perimeter,
     },
     problems: [
@@ -151,17 +167,21 @@ const solutionData: Record<SolutionSlug, Solution> = {
       },
     ],
     recommended: ['observability', 'infrastructure', 'incidents', 'ai-agents'],
-    cta: { title: 'Try it on your own infrastructure.', body: 'Start with the self-host guide, or evaluate on Cloud first. Both run the same product with the same interface.' },
+    cta: {
+      title: 'Try it on your own infrastructure.',
+      body: 'Start with the self-host guide, or evaluate on Cloud first. Both run the same product with the same interface.',
+    },
   },
   'platform-teams': {
-    Icon: ServerCog,
+    sprite: rackSprite,
     eyebrow: 'For platform & SRE teams',
     title: 'Stop being the help desk',
     accent: 'for every dashboard request.',
     lead: 'Product teams get traces, logs and metrics without filing a ticket. You get the Kubernetes fleet next to their services, and incidents run in the same tool.',
     diagram: {
       title: 'Every team on every cluster.',
-      description: 'You deploy one Collector per cluster. Each team owns its SLO and gets its own pages, and you see the whole grid. Click a cell to see who gets woken up.',
+      description:
+        'You deploy one Collector per cluster. Each team owns its SLO and gets its own pages, and you see the whole grid. Click a cell to see who gets woken up.',
       Diagram: FleetMatrix,
     },
     problems: [
@@ -208,17 +228,21 @@ const solutionData: Record<SolutionSlug, Solution> = {
       },
     ],
     recommended: ['infrastructure', 'observability', 'incidents', 'ai-agents'],
-    cta: { title: 'Give every team observability and keep your queue short.', body: 'Deploy it with our Kustomize manifests through ArgoCD, or try it on Cloud first.' },
+    cta: {
+      title: 'Give every team observability and keep your queue short.',
+      body: 'Deploy it with our Kustomize manifests through ArgoCD, or try it on Cloud first.',
+    },
   },
   'ai-teams': {
-    Icon: Sparkles,
+    sprite: bubbleSprite,
     eyebrow: 'For AI product teams',
     title: 'Ship LLM features',
     accent: 'knowing what each call costs.',
     lead: 'Every model call shows up inside the request that made it, with its tokens, cost and latency. When agents dig through your telemetry, FerrisKey decides what they can touch.',
     diagram: {
       title: 'Did that prompt change help?',
-      description: 'Pick a change and compare cost, tokens, latency and user feedback, measured on real requests before and after.',
+      description:
+        'Pick a change and compare cost, tokens, latency and user feedback, measured on real requests before and after.',
       Diagram: ReleaseCompare,
     },
     problems: [
@@ -263,7 +287,10 @@ const solutionData: Record<SolutionSlug, Solution> = {
       },
     ],
     recommended: ['ai-observability', 'ai-agents', 'observability', 'incidents'],
-    cta: { title: 'Find out what your AI features cost to run.', body: 'Send your LLM calls over OpenTelemetry and their cost and latency show up next to the rest of your traces.' },
+    cta: {
+      title: 'Find out what your AI features cost to run.',
+      body: 'Send your LLM calls over OpenTelemetry and their cost and latency show up next to the rest of your traces.',
+    },
   },
 }
 
@@ -275,8 +302,19 @@ export function SolutionPage({ slug }: { slug: SolutionSlug }) {
 
   return (
     <PageShell current="solutions">
-      <PageHero Icon={data.Icon} eyebrow={data.eyebrow} title={data.title} accent={data.accent} lead={data.lead} />
-      <DiagramSection id={`${slug}-diagram`} alt title={data.diagram.title} description={data.diagram.description}>
+      <PageHero
+        sprite={data.sprite}
+        eyebrow={data.eyebrow}
+        title={data.title}
+        accent={data.accent}
+        lead={data.lead}
+      />
+      <DiagramSection
+        id={`${slug}-diagram`}
+        alt
+        title={data.diagram.title}
+        description={data.diagram.description}
+      >
         <data.diagram.Diagram />
       </DiagramSection>
       <ProblemTabs

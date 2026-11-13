@@ -1,32 +1,89 @@
-@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
 @import 'tailwindcss';
 @import '@cometrace/ui/styles/cometrace.css';
+@import '@fontsource-variable/space-grotesk';
+@import '@fontsource/silkscreen/400.css';
+@import '@fontsource/silkscreen/700.css';
 
 @source "../../../../packages/ui/src";
 
-/* Idle bob of the landing mascot. The follow-the-cursor motion is driven by
-   JS on the wrapper, so this only animates the svg itself. */
-@keyframes mascot-bob {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-4px);
+/* Square corners everywhere, as on ferrislabs.fr and ferriskey.rs. A global
+   rule also catches the radii set by the cva variants of the UI package. */
+*,
+*::before,
+*::after {
+  border-radius: 0 !important;
+}
+
+/* ---------------------------------------------------------------------------
+   The "pixel" system of ferrislabs.fr and ferriskey.rs.
+
+   Same grammar as the two other sites: Space Grotesk for text, Silkscreen for
+   labels, a bordered grid, square corners. The colour is the one FerrisTrace
+   wears on ferrislabs.fr: the indigo of the comet crab. Scoped to the site:
+   the docs keep the tokens of packages/ui.
+   --------------------------------------------------------------------------- */
+@theme {
+  --font-sans: 'Space Grotesk Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-pixel: 'Silkscreen', ui-monospace, monospace;
+
+  --color-indigo-950: #0b0a1f;
+  --color-indigo-900: #1e1b4b;
+  --color-indigo-800: #312e81;
+  --color-indigo-700: #3730a3;
+  --color-indigo-600: #4f46e5;
+  --color-indigo-500: #6366f1;
+  --color-indigo-300: #a5b4fc;
+
+  --color-surface-tint: #f6f6fd;
+}
+
+.dark {
+  --color-surface-tint: #101016;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    --color-surface-tint: #101016;
   }
 }
 
-.mascot-bob {
-  animation: mascot-bob 3.2s ease-in-out infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .mascot-bob,
-  .mascot-bob-off {
-    animation: none;
+@layer base {
+  html,
+  body {
+    overflow-x: clip;
   }
 }
 
+/* Brand surface: the comet crab's indigo gradient, with the pixel grid on top. */
+.surface-brand {
+  background:
+    radial-gradient(120% 120% at 0% 0%, var(--color-indigo-500) 0%, transparent 55%),
+    linear-gradient(135deg, var(--color-indigo-700) 0%, var(--color-indigo-950) 100%);
+}
+
+.bg-pixel-grid {
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+
+/* The same grid in ink, for light and dark backgrounds alike. */
+.bg-ink-grid {
+  background-image:
+    linear-gradient(
+      to right,
+      color-mix(in srgb, var(--foreground) 6%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--foreground) 6%, transparent) 1px,
+      transparent 1px
+    );
+  background-size: 44px 44px;
+}
 /* Problems section: the active tab fills while it waits to rotate, and the
    panel fades in on every change. */
 @keyframes problem-progress {
@@ -59,29 +116,6 @@
 
 @media (prefers-reduced-motion: reduce) {
   .problem-panel {
-    animation: none;
-  }
-}
-
-/* Ground shadow under the mascot: shrinks while the comet bobs up. */
-@keyframes mascot-shadow {
-  0%,
-  100% {
-    transform: scaleX(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scaleX(0.75);
-    opacity: 0.6;
-  }
-}
-
-.mascot-shadow {
-  animation: mascot-shadow 3.2s ease-in-out infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .mascot-shadow {
     animation: none;
   }
 }
@@ -234,62 +268,111 @@
   }
 }
 
-/* Ferris's comet tail: the spans flicker like a live trace, the sparks
-   drift off, and the whole tail stretches with speed (--crab-rush, 0 to 1,
-   set by the mascot while it moves). */
-.crab-tail {
-  transform-box: fill-box;
-  transform-origin: right center;
-  transform: scaleX(calc(0.75 + var(--crab-rush, 0) * 0.55));
-}
-
-@keyframes crab-tail-span {
-  0%,
-  100% {
-    transform: scaleX(1);
+/* Entrance of the hero lines, one after the other. */
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
     opacity: 1;
-  }
-  50% {
-    transform: scaleX(0.62);
-    opacity: 0.7;
+    transform: translateY(0);
   }
 }
 
-.crab-tail-span {
-  transform-box: fill-box;
-  transform-origin: right center;
-  animation: crab-tail-span 1.5s ease-in-out infinite;
+.reveal {
+  opacity: 0;
+  animation: reveal-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-@keyframes crab-spark {
-  0% {
-    opacity: 0;
-    transform: translateX(10px);
+/* The second title line rolls up one place at a time: four places, then a
+   copy of the first so the jump back is invisible. */
+.hero-roll {
+  --line: 1.14em;
+  height: var(--line);
+  overflow: hidden;
+}
+
+.hero-roll-track {
+  display: block;
+  animation: hero-roll 12s cubic-bezier(0.7, 0, 0.2, 1) infinite;
+}
+
+.hero-roll-item {
+  height: var(--line);
+  line-height: var(--line);
+  white-space: nowrap;
+}
+
+@keyframes hero-roll {
+  0%,
+  20% {
+    transform: translateY(0);
   }
-  30% {
-    opacity: 0.7;
+  25%,
+  45% {
+    transform: translateY(calc(var(--line) * -1));
+  }
+  50%,
+  70% {
+    transform: translateY(calc(var(--line) * -2));
+  }
+  75%,
+  95% {
+    transform: translateY(calc(var(--line) * -3));
   }
   100% {
-    opacity: 0;
-    transform: translateX(-14px);
+    transform: translateY(calc(var(--line) * -4));
   }
 }
 
-.crab-spark {
-  animation: crab-spark 1.2s linear infinite;
+/* Pixel band: a lighter column sweeps the blocks, then rests. It moves in
+   whole blocks, like everything else drawn in pixels. */
+.pixel-band-wave {
+  transform: translateX(-100px);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .crab-tail {
-    transform: none;
+@media (prefers-reduced-motion: no-preference) {
+  .pixel-band-wave {
+    animation: pixel-band-wave 9s steps(104, end) infinite;
   }
+}
 
-  .crab-tail-span,
-  .crab-spark {
-    animation: none;
-  }
+@keyframes pixel-band-wave {
+  0% { transform: translateX(0); }
+  55%, 100% { transform: translateX(calc(var(--cols) * 1px)); }
+}
 
-  .crab-spark {
-    opacity: 0.5;
+/* The loose blocks on top of the band sink and rise column by column, so a
+   swell rolls across the surface. They sink into the solid rows below, so no
+   hole ever opens under them. Whole blocks only: 1px is one block here. */
+@media (prefers-reduced-motion: no-preference) {
+  .pixel-band-swell {
+    animation: pixel-band-swell 2.4s steps(1, end) infinite;
   }
+}
+
+@keyframes pixel-band-swell {
+  0%, 100% { transform: translateY(0); }
+  25% { transform: translateY(1px); }
+  50% { transform: translateY(2px); }
+  75% { transform: translateY(1px); }
+}
+
+/* The failing row of the hero screenshot breathes, so the eye lands on it. */
+.hero-error-halo {
+  outline: 2px solid rgb(225 29 72 / 0.7);
+  outline-offset: 1px;
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-error-halo {
+    animation: hero-error-halo 2.8s ease-in-out infinite;
+  }
+}
+
+@keyframes hero-error-halo {
+  0%, 100% { opacity: 0; box-shadow: 0 0 0 0 rgb(225 29 72 / 0); }
+  50% { opacity: 1; box-shadow: 0 0 0 6px rgb(225 29 72 / 0.14); }
 }

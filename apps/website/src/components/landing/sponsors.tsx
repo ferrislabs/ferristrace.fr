@@ -1,6 +1,5 @@
-import { Button } from '@cometrace/ui'
 import { Image } from 'lucide-react'
-import { Container, SectionTitle } from './shared'
+import { Frame, Kicker } from './shared'
 import { links } from './links'
 
 interface Sponsor {
@@ -25,43 +24,64 @@ const sponsors: Sponsor[] = [
 
 export function Sponsors() {
   return (
-    <section
-      aria-labelledby="sponsors-title"
-      className="border-t border-border bg-section-alt py-20"
-    >
-      <Container>
-        <SectionTitle
-          id="sponsors-title"
-          title="Backed by teams who run it in production."
-          description="FerrisTrace is open source. The companies below run it on their own servers and help pay for its development."
-        />
-
-        <ul className="mt-10 flex flex-wrap gap-3">
-          {sponsors.map((sponsor, index) => (
-            <li key={`${sponsor.name}-${index}`}>
-              <SponsorTile sponsor={sponsor} />
-            </li>
-          ))}
-        </ul>
-
-        <div className="mt-8">
-          <Button asChild variant="outline" className="px-5 font-semibold">
-            <a href={links.sponsor} target="_blank" rel="noreferrer noopener">
-              Become a sponsor
-            </a>
-          </Button>
+    <Frame labelledBy="sponsors-title" innerClassName="overflow-hidden">
+      <div className="flex flex-wrap items-end justify-between gap-4 border-b border-border px-5 py-12 sm:px-8 sm:py-14">
+        <div>
+          <Kicker>Sponsoring</Kicker>
+          <h2
+            id="sponsors-title"
+            className="mt-3 max-w-xl text-balance text-2xl font-medium tracking-[-0.02em] sm:text-3xl"
+          >
+            Backed by teams who run it in production.
+          </h2>
         </div>
-      </Container>
-    </section>
+        <a
+          href={links.sponsor}
+          target="_blank"
+          rel="noreferrer noopener"
+          className="inline-flex items-center gap-2 border border-border bg-card px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-foreground/[0.04]"
+        >
+          Become a sponsor
+          <span aria-hidden="true">→</span>
+        </a>
+      </div>
+
+      <div className="border-b border-border px-5 py-9 sm:px-8">
+        <p className="max-w-2xl text-sm leading-7 text-muted-foreground">
+          FerrisTrace is open source. The companies below run it on their own servers and help pay
+          for its development.
+        </p>
+      </div>
+
+      <ul className="-mr-px grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
+        {sponsors.map((sponsor, index) => (
+          <li key={`${sponsor.name}-${index}`} className="border-b border-r border-border">
+            <SponsorTile sponsor={sponsor} />
+          </li>
+        ))}
+        <li className="border-b border-r border-border">
+          <a
+            href={links.sponsor}
+            target="_blank"
+            rel="noreferrer noopener"
+            className="flex h-36 items-center justify-center px-4 transition-colors hover:bg-foreground/[0.03]"
+          >
+            <span className="font-pixel text-[10px] uppercase tracking-[0.08em] text-muted-foreground">
+              Your logo
+            </span>
+          </a>
+        </li>
+      </ul>
+    </Frame>
   )
 }
 
 function tileClass(sponsor: Sponsor) {
   return [
-    'flex h-16 w-[180px] items-center justify-center rounded-md border border-border px-4',
-    // #111114 is the dark theme's card colour, so the chip only reads as a
-    // chip in the light theme and is seamless in the dark one.
-    sponsor.logoOnDark ? 'bg-[#111114]' : 'bg-card',
+    'flex h-36 w-full items-center justify-center px-4 transition-colors',
+    // #111114 is the dark theme's card colour, so the tile only reads as a
+    // tile in the light theme and is seamless in the dark one.
+    sponsor.logoOnDark ? 'bg-[#111114]' : 'hover:bg-foreground/[0.03]',
   ].join(' ')
 }
 
@@ -77,7 +97,7 @@ function SponsorTile({ sponsor }: { sponsor: Sponsor }) {
       <img
         src={sponsor.logoSrc}
         alt={sponsor.name}
-        className="max-h-10 w-auto max-w-full object-contain"
+        className="max-h-10 w-auto max-w-[140px] object-contain"
       />
     </picture>
   ) : (
@@ -94,12 +114,7 @@ function SponsorTile({ sponsor }: { sponsor: Sponsor }) {
   }
 
   return (
-    <a
-      href={sponsor.href}
-      target="_blank"
-      rel="noreferrer noopener"
-      className={`${tileClass(sponsor)} transition-colors hover:border-input`}
-    >
+    <a href={sponsor.href} target="_blank" rel="noreferrer noopener" className={tileClass(sponsor)}>
       {logo}
     </a>
   )

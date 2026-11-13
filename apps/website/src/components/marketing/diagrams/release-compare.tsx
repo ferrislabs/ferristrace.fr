@@ -35,7 +35,8 @@ const releases: Release[] = [
       { label: 'p95 latency', unit: 's', before: 2.1, after: 2.3 },
       { label: 'thumbs up', unit: '%', before: 81, after: 82, higherIsBetter: true },
     ],
-    verdict: 'v13 costs 68 % more and buys one point of satisfaction. The extra 1,900 tokens come from the new examples block, so trim that before rolling out.',
+    verdict:
+      'v13 costs 68 % more and buys one point of satisfaction. The extra 1,900 tokens come from the new examples block, so trim that before rolling out.',
     good: false,
   },
   {
@@ -50,7 +51,8 @@ const releases: Release[] = [
       { label: 'p95 latency', unit: 's', before: 3.4, after: 1.1 },
       { label: 'thumbs up', unit: '%', before: 77, after: 76, higherIsBetter: true },
     ],
-    verdict: 'About five times cheaper and three times faster, for one point less satisfaction. Ship it.',
+    verdict:
+      'About five times cheaper and three times faster, for one point less satisfaction. Ship it.',
     good: true,
   },
   {
@@ -65,7 +67,8 @@ const releases: Release[] = [
       { label: 'p95 latency', unit: 's', before: 1.9, after: 4.6 },
       { label: 'thumbs up', unit: '%', before: 70, after: 71, higherIsBetter: true },
     ],
-    verdict: 'Four times the chunks bought one point of satisfaction and more than doubled p95. The retrieval span shows most of them are near-duplicates.',
+    verdict:
+      'Four times the chunks bought one point of satisfaction and more than doubled p95. The retrieval span shows most of them are near-duplicates.',
     good: false,
   },
 ]
@@ -87,8 +90,12 @@ export function ReleaseCompare() {
   const release = releases.find((r) => r.id === releaseId)!
 
   return (
-    <div className="overflow-hidden rounded-xl border border-border bg-card">
-      <div className="flex flex-wrap items-center gap-1 border-b border-border p-3" role="group" aria-label="Pick a change">
+    <div className="overflow-hidden border border-border bg-card">
+      <div
+        className="flex flex-wrap items-center gap-1 border-b border-border p-3"
+        role="group"
+        aria-label="Pick a change"
+      >
         {releases.map((r) => (
           <button
             key={r.id}
@@ -96,7 +103,7 @@ export function ReleaseCompare() {
             aria-pressed={r.id === release.id}
             onClick={() => setReleaseId(r.id)}
             className={cn(
-              'rounded-md px-3 py-1.5 text-left transition-colors',
+              'px-3 py-1.5 text-left transition-colors',
               r.id === release.id ? 'bg-primary/10 ring-1 ring-primary/40' : 'hover:bg-accent',
             )}
           >
@@ -109,9 +116,9 @@ export function ReleaseCompare() {
       <div key={release.id} className="problem-panel p-5">
         <p className="flex flex-wrap items-center gap-2 font-mono text-[12px]">
           <GitCompareArrows className="size-3.5 text-faint-foreground" aria-hidden="true" />
-          <span className="rounded border border-border bg-section-alt px-1.5 py-0.5">{release.from}</span>
+          <span className="border border-border bg-surface-tint px-1.5 py-0.5">{release.from}</span>
           <span className="text-faint-foreground">→</span>
-          <span className="rounded border border-primary/40 bg-primary/5 px-1.5 py-0.5">{release.to}</span>
+          <span className="border border-primary/40 bg-primary/5 px-1.5 py-0.5">{release.to}</span>
           <span className="text-faint-foreground">· last 24 h, 18k requests each</span>
         </p>
 
@@ -137,7 +144,10 @@ export function ReleaseCompare() {
               const better = m.higherIsBetter ? delta > 2 : delta < -2
               return (
                 <tr key={m.label} className="border-t border-border">
-                  <th scope="row" className="w-[28%] py-2.5 pr-3 text-left font-mono text-[12px] font-normal">
+                  <th
+                    scope="row"
+                    className="w-[28%] py-2.5 pr-3 text-left font-mono text-[12px] font-normal"
+                  >
                     {m.label}
                   </th>
                   <td className="py-2.5">
@@ -170,8 +180,10 @@ export function ReleaseCompare() {
         <p
           aria-live="polite"
           className={cn(
-            'mt-5 rounded-md border p-3 text-sm leading-6',
-            release.good ? 'border-success-text/30 bg-success-text/10' : 'border-primary/30 bg-primary/5',
+            'mt-5 border p-3 text-sm leading-6',
+            release.good
+              ? 'border-success-text/30 bg-success-text/10'
+              : 'border-primary/30 bg-primary/5',
           )}
         >
           {release.verdict}
@@ -181,16 +193,28 @@ export function ReleaseCompare() {
   )
 }
 
-function Bar({ value, max, label, muted }: { value: number; max: number; label: string; muted?: boolean }) {
+function Bar({
+  value,
+  max,
+  label,
+  muted,
+}: {
+  value: number
+  max: number
+  label: string
+  muted?: boolean
+}) {
   return (
     <span className="flex items-center gap-2 py-0.5">
-      <span className="h-1.5 flex-1 rounded-full bg-muted">
+      <span className="h-1.5 flex-1 bg-muted">
         <span
-          className={cn('ai-bar block h-full rounded-full', muted ? 'bg-faint-foreground/50' : 'bg-primary')}
+          className={cn('ai-bar block h-full', muted ? 'bg-faint-foreground/50' : 'bg-primary')}
           style={{ width: `${(value / max) * 100}%` }}
         />
       </span>
-      <span className={cn('w-16 font-mono text-[11px]', muted && 'text-muted-foreground')}>{label}</span>
+      <span className={cn('w-16 font-mono text-[11px]', muted && 'text-muted-foreground')}>
+        {label}
+      </span>
     </span>
   )
 }

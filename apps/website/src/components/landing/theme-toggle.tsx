@@ -85,7 +85,7 @@ export function ThemeRow() {
     <button
       type="button"
       onClick={toggle}
-      className="flex w-full items-center justify-between rounded-md px-3 py-2 text-sm font-semibold hover:bg-accent"
+      className="flex w-full items-center justify-between border-b border-border px-5 py-3 text-sm font-semibold hover:bg-foreground/[0.04]"
     >
       Theme
       <span className="flex items-center gap-2 text-muted-foreground">

@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import { cn } from '@cometrace/ui'
 import { ChevronDown } from 'lucide-react'
+import { PixelSprite } from '../pixel/pixel-sprite'
 import type { CatalogEntry } from './catalog'
 
 interface NavMenuProps {
@@ -61,7 +62,7 @@ export function NavMenu({ label, active = false, children, className }: NavMenuP
   return (
     <li
       ref={rootRef}
-      className="relative"
+      className="relative flex"
       onPointerEnter={(e) => {
         if (e.pointerType !== 'mouse') return
         cancelClose()
@@ -87,11 +88,11 @@ export function NavMenu({ label, active = false, children, className }: NavMenuP
           lastPointer.current = ''
         }}
         className={cn(
-          'flex items-center gap-1 rounded-md px-2.5 py-1.5 text-sm transition-colors',
-          open || active
-            ? 'text-foreground'
-            : 'text-muted-foreground hover:bg-accent hover:text-foreground',
-          active && 'font-semibold',
+          'flex cursor-pointer items-center gap-1.5 border-r border-border px-4 text-[13px] font-medium transition-colors',
+          open
+            ? 'bg-foreground/[0.04] text-foreground'
+            : 'text-muted-foreground hover:bg-foreground/[0.04] hover:text-foreground',
+          active && 'text-foreground shadow-[inset_0_-2px_0_var(--primary)]',
         )}
       >
         {label}
@@ -104,12 +105,9 @@ export function NavMenu({ label, active = false, children, className }: NavMenuP
       <div
         id={panelId}
         hidden={!open}
-        className={cn(
-          'nav-menu-panel absolute -left-2 top-full z-50 pt-3',
-          className,
-        )}
+        className={cn('nav-menu-panel absolute left-0 top-full z-50', className)}
       >
-        <div className="rounded-xl border border-border bg-popover p-2 text-popover-foreground shadow-[var(--elevation-lg)]">
+        <div className="border border-t-2 border-border border-t-primary bg-popover text-popover-foreground shadow-[4px_4px_0_0_rgba(0,0,0,0.1)] dark:shadow-[4px_4px_0_0_rgba(0,0,0,0.45)]">
           {children}
         </div>
       </div>
@@ -117,25 +115,34 @@ export function NavMenu({ label, active = false, children, className }: NavMenuP
   )
 }
 
-export function NavMenuGroup({ title, entries }: { title?: string; entries: CatalogEntry[] }) {
+export function NavMenuGroup({
+  title,
+  entries,
+  className,
+}: {
+  title?: string
+  entries: CatalogEntry[]
+  className?: string
+}) {
   return (
-    <div>
+    <div className={className}>
       {title ? (
-        <p className="px-3 pb-1 pt-2 text-[11px] font-semibold uppercase tracking-wide text-faint-foreground">
+        <p className="px-4 pb-1 pt-4 font-pixel text-[10px] uppercase tracking-[0.08em] text-faint-foreground">
           {title}
         </p>
       ) : null}
       <ul>
-        {entries.map(({ href, title: name, summary, Icon }) => (
+        {entries.map(({ href, title: name, summary, sprite }) => (
           <li key={href}>
             <a
               href={href}
-              className="group flex items-start gap-3 rounded-lg p-3 transition-colors hover:bg-accent"
+              className="group flex items-start gap-3 px-4 py-3.5 transition-colors hover:bg-foreground/[0.04]"
             >
-              <span className="flex size-8 shrink-0 items-center justify-center rounded-md border border-border bg-card transition-colors group-hover:border-primary/40">
-                <Icon className="size-4 text-primary" aria-hidden="true" />
-              </span>
-              <span>
+              <PixelSprite
+                sprite={sprite}
+                className="mt-0.5 block size-7 shrink-0 transition-transform group-hover:-translate-y-0.5"
+              />
+              <span className="min-w-0">
                 <span className="block text-sm font-semibold text-foreground">{name}</span>
                 <span className="mt-0.5 block text-[13px] leading-5 text-muted-foreground">
                   {summary}

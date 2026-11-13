@@ -21,8 +21,9 @@ interface FilterBarProps {
 
 export function FilterBar({ type, breakingOnly, onTypeChange, onBreakingChange }: FilterBarProps) {
   return (
-    <div className="flex flex-wrap items-center gap-x-6 gap-y-4 border-b border-border py-4">
+    <div className="flex flex-wrap items-center gap-x-6 gap-y-4 border-t border-border px-5 py-4 sm:px-8">
       <ToggleGroup
+        className="max-w-full flex-wrap gap-0"
         type="single"
         value={type}
         aria-label="Filter by change type"
@@ -30,7 +31,12 @@ export function FilterBar({ type, breakingOnly, onTypeChange, onBreakingChange }
         onValueChange={(next) => onTypeChange((next || 'all') as FilterType)}
       >
         {FILTER_TYPES.map((value) => (
-          <ToggleGroupItem key={value} value={value} aria-pressed={type === value}>
+          <ToggleGroupItem
+            key={value}
+            value={value}
+            aria-pressed={type === value}
+            className="-ml-px -mt-px h-9 border border-border bg-card px-3.5 font-pixel text-[10px] font-normal uppercase tracking-[0.08em] first:ml-0 hover:bg-foreground/[0.04] data-[state=on]:border-primary data-[state=on]:bg-primary data-[state=on]:text-primary-foreground data-[state=on]:relative"
+          >
             {LABELS[value]}
           </ToggleGroupItem>
         ))}
@@ -47,7 +53,7 @@ export function FilterBar({ type, breakingOnly, onTypeChange, onBreakingChange }
         Running an older version?{' '}
         <a
           href={links.upgradeGuide}
-          className="rounded-sm text-accent-text underline underline-offset-2 hover:no-underline"
+          className="text-accent-text underline underline-offset-2 hover:no-underline"
         >
           Upgrade guide
         </a>

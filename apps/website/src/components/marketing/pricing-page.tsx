@@ -1,9 +1,16 @@
 import type { ReactNode } from 'react'
-import { Badge, Button, cn } from '@cometrace/ui'
-import { Check, ChevronDown, Minus } from 'lucide-react'
+import { cn } from '@cometrace/ui'
+import { Check, Minus } from 'lucide-react'
 import { links } from '../landing/links'
-import { CheckList, Container, SectionTitle, StartOnCloudButton } from '../landing/shared'
+import { CheckList, Frame, SectionTitle } from '../landing/shared'
+import { PixelSprite } from '../pixel/pixel-sprite'
+import { cometCrab } from '../pixel/sprites'
 import { CtaBand, PageShell } from './blocks'
+
+const primaryAction =
+  'inline-flex w-full items-center justify-center gap-2 bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-hover'
+const secondaryAction =
+  'inline-flex w-full items-center justify-center gap-2 border border-border bg-card px-5 py-3 text-sm font-semibold transition-colors hover:bg-foreground/[0.04]'
 
 interface Plan {
   name: string
@@ -34,9 +41,9 @@ const plans: Plan[] = [
       'Community support on GitHub',
     ],
     action: (
-      <Button asChild variant="outline" className="w-full font-semibold">
-        <a href={links.selfHostGuide}>Read the self-host guide</a>
-      </Button>
+      <a href={links.selfHostGuide} className={secondaryAction}>
+        Read the self-host guide
+      </a>
     ),
   },
   {
@@ -51,7 +58,12 @@ const plans: Plan[] = [
       'Retention up to 90 days',
       'Export your data and move to self-hosted any time',
     ],
-    action: <StartOnCloudButton className="w-full">Get started for free</StartOnCloudButton>,
+    action: (
+      <a href={links.startOnCloud} className={primaryAction}>
+        Get started for free
+        <span aria-hidden="true">→</span>
+      </a>
+    ),
     highlighted: true,
     badge: 'Quickest to start',
   },
@@ -68,9 +80,9 @@ const plans: Plan[] = [
       'Priority support',
     ],
     action: (
-      <Button asChild variant="outline" className="w-full font-semibold">
-        <a href="/solutions/enterprises">See enterprise features</a>
-      </Button>
+      <a href="/solutions/enterprises" className={secondaryAction}>
+        See enterprise features
+      </a>
     ),
   },
 ]
@@ -135,115 +147,151 @@ const faq = [
 export function PricingPage() {
   return (
     <PageShell current="pricing">
-      <section aria-labelledby="page-title" className="pb-20 pt-20 sm:pt-24">
-        <Container className="flex flex-col items-center text-center">
-          <h1
-            id="page-title"
-            className="max-w-[820px] text-[clamp(2rem,5vw,3.75rem)] font-bold leading-[1.05] tracking-[-0.03em]"
-          >
-            <span className="block text-balance">Every plan gets every feature.</span>
-            <span className="block text-balance text-muted-foreground">You pick who runs the servers.</span>
-          </h1>
-          <p className="mt-6 max-w-[600px] text-lg leading-8 text-muted-foreground">
-            Host it yourself for free, or let us run it on Cloud, which costs nothing while the beta lasts.
-          </p>
-        </Container>
-
-        <Container className="mt-14 grid items-stretch gap-4 lg:grid-cols-3">
-          {plans.map((plan) => (
-            <div
-              key={plan.name}
-              className={cn(
-                'flex flex-col rounded-xl border bg-card p-6',
-                plan.highlighted ? 'border-primary ring-1 ring-primary' : 'border-border',
-              )}
+      <section aria-labelledby="page-title" className="border-b border-border">
+        <div className="mx-auto max-w-6xl border-x border-border">
+          <div className="flex flex-col items-center px-5 pb-20 pt-[clamp(4rem,10vh,6.5rem)] text-center">
+            <p className="reveal inline-flex items-center gap-3 border border-border bg-card py-1.5 pl-1.5 pr-3">
+              <span className="flex size-7 items-center justify-center bg-primary/10">
+                <PixelSprite sprite={cometCrab} className="size-4" />
+              </span>
+              <span className="font-pixel text-[11px] uppercase tracking-[0.06em] text-accent-text">
+                Pricing
+              </span>
+            </p>
+            <h1
+              id="page-title"
+              className="reveal mt-6 max-w-4xl text-[clamp(2.25rem,5vw,4.25rem)] font-medium leading-[1.03] tracking-[-0.04em]"
+              style={{ animationDelay: '0.1s' }}
             >
-              <div className="flex items-center justify-between gap-3">
-                <h2 className="text-[17px] font-semibold">{plan.name}</h2>
-                {plan.badge ? <Badge>{plan.badge}</Badge> : null}
-              </div>
-              <p className="mt-4 flex items-baseline gap-2">
-                <span className="text-4xl font-bold tracking-[-0.03em]">{plan.price}</span>
-                <span className="text-sm text-muted-foreground">{plan.priceNote}</span>
-              </p>
-              <p className="mt-3 text-sm leading-6 text-muted-foreground">{plan.body}</p>
-              <div className="my-6 border-t border-border" />
-              <CheckList items={plan.items} />
-              <div className="mt-auto pt-8">{plan.action}</div>
-            </div>
-          ))}
-        </Container>
+              <span className="block text-balance">Every plan gets every feature.</span>
+              <span className="block text-balance text-accent-text">
+                You pick who runs the servers.
+              </span>
+            </h1>
+            <p
+              className="reveal mt-7 max-w-xl text-pretty text-lg leading-8 text-muted-foreground"
+              style={{ animationDelay: '0.2s' }}
+            >
+              Host it yourself for free, or let us run it on Cloud, which costs nothing while the
+              beta lasts.
+            </p>
+          </div>
+
+          <ul className="-mr-px grid border-t border-border lg:grid-cols-3">
+            {plans.map((plan) => (
+              <li
+                key={plan.name}
+                className={cn(
+                  'flex flex-col border-b border-r border-border px-6 py-10 last:border-b-0 sm:px-8 lg:border-b-0',
+                  plan.highlighted && '-mt-px border-t-2 border-t-primary bg-surface-tint',
+                )}
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <h2 className="text-xl font-medium tracking-[-0.01em]">{plan.name}</h2>
+                  {plan.badge ? (
+                    <span className="bg-primary px-2 py-1 font-pixel text-[10px] uppercase tracking-[0.08em] text-primary-foreground">
+                      {plan.badge}
+                    </span>
+                  ) : null}
+                </div>
+                <p className="mt-8 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                  <span className="text-5xl font-medium tracking-[-0.04em]">{plan.price}</span>
+                  <span className="font-pixel text-[10px] uppercase tracking-[0.08em] text-accent-text">
+                    {plan.priceNote}
+                  </span>
+                </p>
+                <p className="mt-4 text-sm leading-7 text-muted-foreground">{plan.body}</p>
+                <div className="my-8 border-t border-border" />
+                <CheckList items={plan.items} />
+                <div className="mt-auto pt-10">{plan.action}</div>
+              </li>
+            ))}
+          </ul>
+        </div>
       </section>
 
-      <section aria-labelledby="compare-title" className="border-t border-border bg-section-alt py-24">
-        <Container>
-          <SectionTitle id="compare-title" title="Compare the plans." />
-          <p className="mt-6 text-[12px] text-faint-foreground sm:hidden" aria-hidden="true">
+      <Frame labelledBy="compare-title">
+        <div className="border-b border-border px-5 py-20 sm:px-8 sm:py-28">
+          <SectionTitle id="compare-title" kicker="Compare" title="Compare the plans." />
+          <p
+            className="mt-6 font-pixel text-[10px] uppercase tracking-[0.08em] text-faint-foreground sm:hidden"
+            aria-hidden="true"
+          >
             Swipe the table to see every plan →
           </p>
-          <div className="relative mt-3 sm:mt-10 overflow-x-auto rounded-xl border border-border bg-card">
-            <table className="w-full min-w-[560px] text-sm">
-              <thead>
-                <tr className="border-b border-border text-left">
-                  <th scope="col" className="sticky left-0 z-10 bg-card p-3 font-semibold sm:p-4">
-                    <span className="sr-only">Feature</span>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[560px] text-sm">
+            <thead>
+              <tr className="border-b border-border text-left">
+                <th scope="col" className="sticky left-0 z-10 bg-background p-3 sm:p-4 sm:px-8">
+                  <span className="sr-only">Feature</span>
+                </th>
+                {plans.map((plan) => (
+                  <th
+                    key={plan.name}
+                    scope="col"
+                    className="w-1/5 border-l border-border p-3 text-center font-pixel text-[11px] font-normal uppercase tracking-[0.08em] sm:p-4"
+                  >
+                    {plan.name}
                   </th>
-                  {plans.map((plan) => (
-                    <th key={plan.name} scope="col" className="w-1/5 p-3 text-center font-semibold sm:p-4">
-                      {plan.name}
-                    </th>
-                  ))}
+                ))}
+              </tr>
+            </thead>
+            {comparison.map((group) => (
+              <tbody key={group.group}>
+                <tr>
+                  <th
+                    scope="colgroup"
+                    colSpan={4}
+                    className="border-b border-border bg-surface-tint px-4 py-2.5 text-left font-pixel text-[10px] font-normal uppercase tracking-[0.08em] text-accent-text sm:px-8"
+                  >
+                    {group.group}
+                  </th>
                 </tr>
-              </thead>
-              {comparison.map((group) => (
-                <tbody key={group.group}>
-                  <tr>
+                {group.rows.map(([label, ...cells]) => (
+                  <tr key={label} className="border-b border-border last:border-b-0">
                     <th
-                      scope="colgroup"
-                      colSpan={4}
-                      className="bg-section-alt px-4 py-2 text-left text-xs font-semibold uppercase tracking-wide text-faint-foreground"
+                      scope="row"
+                      className="sticky left-0 z-10 bg-background p-3 text-left font-normal sm:p-4 sm:px-8"
                     >
-                      {group.group}
+                      {label}
                     </th>
+                    {cells.map((cell, i) => (
+                      <td key={i} className="border-l border-border p-3 text-center sm:p-4">
+                        <CellValue value={cell} />
+                      </td>
+                    ))}
                   </tr>
-                  {group.rows.map(([label, ...cells]) => (
-                    <tr key={label} className="border-t border-border">
-                      <th scope="row" className="sticky left-0 z-10 bg-card p-3 text-left font-normal sm:p-4">
-                        {label}
-                      </th>
-                      {cells.map((cell, i) => (
-                        <td key={i} className="p-3 text-center sm:p-4">
-                          <CellValue value={cell} />
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              ))}
-            </table>
-          </div>
-        </Container>
-      </section>
-
-      <section aria-labelledby="faq-title" className="border-t border-border py-24">
-        <Container className="max-w-[800px]">
-          <SectionTitle id="faq-title" title="Common questions." />
-          <div className="mt-8 divide-y divide-border rounded-xl border border-border bg-card">
-            {faq.map((item) => (
-              <details key={item.q} className="group p-5">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-semibold [&::-webkit-details-marker]:hidden">
-                  {item.q}
-                  <ChevronDown
-                    className="size-4 shrink-0 text-faint-foreground transition-transform group-open:rotate-180"
-                    aria-hidden="true"
-                  />
-                </summary>
-                <p className="mt-3 text-sm leading-6 text-muted-foreground">{item.a}</p>
-              </details>
+                ))}
+              </tbody>
             ))}
-          </div>
-        </Container>
-      </section>
+          </table>
+        </div>
+      </Frame>
+
+      <Frame labelledBy="faq-title">
+        <div className="border-b border-border px-5 py-20 sm:px-8 sm:py-28">
+          <SectionTitle id="faq-title" kicker="FAQ" title="Common questions." />
+        </div>
+        <div className="divide-y divide-border">
+          {faq.map((item) => (
+            <details key={item.q} className="group px-5 py-6 sm:px-8">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-base font-medium [&::-webkit-details-marker]:hidden">
+                {item.q}
+                <span
+                  className="flex size-6 shrink-0 items-center justify-center border border-border bg-card font-pixel text-[12px] leading-none text-accent-text"
+                  aria-hidden="true"
+                >
+                  <span className="group-open:hidden">+</span>
+                  <span className="hidden group-open:inline">-</span>
+                </span>
+              </summary>
+              <p className="mt-4 max-w-2xl text-sm leading-7 text-muted-foreground">{item.a}</p>
+            </details>
+          ))}
+        </div>
+      </Frame>
 
       <CtaBand
         title="Start on Cloud for free, or host it yourself."
@@ -257,7 +305,9 @@ function CellValue({ value }: { value: Cell }) {
   if (value === true)
     return (
       <>
-        <Check className="mx-auto size-4 text-success-text" aria-hidden="true" />
+        <span className="mx-auto flex size-5 items-center justify-center border border-success-text/40 bg-success-text/10">
+          <Check className="size-3 text-success-text" strokeWidth={3} aria-hidden="true" />
+        </span>
         <span className="sr-only">Included</span>
       </>
     )

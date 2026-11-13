@@ -42,7 +42,7 @@ export function DocsSearch({ term }: { term: string }) {
         />
         <kbd
           aria-hidden="true"
-          className="pointer-events-none absolute right-2.5 top-1/2 inline-flex h-6 min-w-6 -translate-y-1/2 items-center justify-center rounded-sm border border-border bg-muted px-1.5 font-mono text-[11px] font-medium text-muted-foreground"
+          className="pointer-events-none absolute right-2.5 top-1/2 inline-flex h-6 min-w-6 -translate-y-1/2 items-center justify-center border border-border bg-muted px-1.5 font-mono text-[11px] font-medium text-muted-foreground"
         >
           ↵
         </kbd>

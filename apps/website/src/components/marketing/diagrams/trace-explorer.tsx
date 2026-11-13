@@ -71,7 +71,8 @@ const spans: Span[] = [
       { level: 'warn', text: 'psp latency 840ms, retrying (1/2)' },
       { level: 'error', text: 'deadline exceeded after 960ms' },
     ],
-    insight: 'Payments retried the provider twice, and only since deploy v2.14. Most of the 1.24 s is spent here.',
+    insight:
+      'Payments retried the provider twice, and only since deploy v2.14. Most of the 1.24 s is spent here.',
   },
   {
     id: 'psp',
@@ -89,7 +90,8 @@ const spans: Span[] = [
       ['net.peer.region', 'eu-west'],
     ],
     logs: [{ level: 'error', text: 'timeout 300ms exceeded, connection reset' }],
-    insight: 'Here is the cause. v2.14 lowered the provider timeout to 300 ms, so every slow answer triggers a retry.',
+    insight:
+      'Here is the cause. v2.14 lowered the provider timeout to 300 ms, so every slow answer triggers a retry.',
   },
   {
     id: 'orders',
@@ -126,7 +128,7 @@ export function TraceExplorer() {
   const selected = spans.find((span) => span.id === selectedId) ?? spans[0]
 
   return (
-    <div className="grid overflow-hidden rounded-xl border border-border bg-card lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
+    <div className="grid overflow-hidden border border-border bg-card lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
       <div className="p-4 sm:p-5">
         <div className="flex items-center justify-between font-mono text-[11px] text-faint-foreground">
           <span>trace 4bf92f35 · 5 spans · 3 services</span>
@@ -142,7 +144,7 @@ export function TraceExplorer() {
                   aria-pressed={active}
                   onClick={() => setSelectedId(span.id)}
                   className={cn(
-                    'flex h-9 w-full items-center gap-3 rounded-md px-2 text-left font-mono text-[12px] transition-colors',
+                    'flex h-9 w-full items-center gap-3 px-2 text-left font-mono text-[12px] transition-colors',
                     active ? 'bg-accent ring-1 ring-primary/40' : 'hover:bg-accent/60',
                   )}
                 >
@@ -158,7 +160,7 @@ export function TraceExplorer() {
                   <span className="relative h-3 flex-1">
                     <span
                       className={cn(
-                        'absolute inset-y-0 rounded-sm transition-opacity',
+                        'absolute inset-y-0 transition-opacity',
                         span.color,
                         !active && 'opacity-70',
                         span.error && 'outline-1 outline-offset-1 outline-destructive',
@@ -177,7 +179,7 @@ export function TraceExplorer() {
       <div
         key={selected.id}
         aria-live="polite"
-        className="problem-panel border-t border-border bg-section-alt p-5 lg:border-l lg:border-t-0"
+        className="problem-panel border-t border-border bg-surface-tint p-5 lg:border-l lg:border-t-0"
       >
         <p className="font-mono text-[11px] text-faint-foreground">{selected.service}</p>
         <h3 className="mt-0.5 font-mono text-sm font-semibold">{selected.name}</h3>
@@ -191,7 +193,7 @@ export function TraceExplorer() {
           ))}
         </dl>
 
-        <p className="mt-5 text-[11px] font-semibold uppercase tracking-wide text-faint-foreground">
+        <p className="mt-5 font-pixel text-[10px] uppercase tracking-[0.08em] text-faint-foreground">
           Logs of this span
         </p>
         <ul className="mt-2 space-y-1.5">
@@ -199,14 +201,17 @@ export function TraceExplorer() {
             const Icon = levelIcon[log.level]
             return (
               <li key={log.text} className="flex items-start gap-2 font-mono text-[12px]">
-                <Icon className={cn('mt-0.5 size-3.5 shrink-0', levelClass[log.level])} aria-hidden="true" />
+                <Icon
+                  className={cn('mt-0.5 size-3.5 shrink-0', levelClass[log.level])}
+                  aria-hidden="true"
+                />
                 <span className="text-muted-foreground">{log.text}</span>
               </li>
             )
           })}
         </ul>
 
-        <p className="mt-5 rounded-md border border-primary/30 bg-primary/5 p-3 text-sm leading-6">
+        <p className="mt-5 border border-primary/30 bg-primary/5 p-3 text-sm leading-6">
           {selected.insight}
         </p>
       </div>
