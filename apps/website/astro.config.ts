@@ -11,7 +11,7 @@ export default defineConfig({
     // One social card per page, from the same metadata as the <head> tags.
     thumbnailIntegration({
       appName: 'FerrisTrace',
-      primaryColor: '#4f46e5',
+      primaryColor: '#4338ca',
       content: {
         type: 'static',
         pages: pages.map((page) => ({ path: page.path, headline: page.card.eyebrow, title: page.card.headline })),
