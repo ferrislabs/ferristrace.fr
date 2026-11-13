@@ -5,7 +5,7 @@ replicaCount: 2
 image:
   # Written by the docker workflow on every push to main. Empty until the first
   # image is built, which is why the Application is applied after that.
-  tag: "sha-cb6e7f3"
+  tag: "sha-1b0d733"
 gatewayApi:
   hostnames:
     - ferristrace.dev
