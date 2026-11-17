@@ -1,0 +1,45 @@
+---
+title: Traces & spans
+description: Search distributed traces, inspect end-to-end waterfalls, pivot across span attributes and events, and attach traces to incidents.
+icon: waypoints
+order: 3
+---
+
+# Traces & spans
+
+The **Traces** explorer (`/traces`, shortcut `g` then `t`) searches and visualises distributed requests across all your services.
+
+## Searching traces and spans
+
+Combine the [query language](/en/ferristrace/exploring/query-language), the facet rail, duration bounds, and placement pickers (`cluster`, `namespace`, `workload`, `pod`, `node`) to isolate interesting requests:
+
+```text
+service = checkout-api AND status = error AND duration >= 250ms
+```
+
+- **Built-in presets** — Switch between **All traces**, **Errors** (`status = error`), and **Slow** sorted by descending duration.
+- **Sort orders** — Order matching traces by **Started** (most recent first), **Duration** (slowest root trace first), or **Spans** (largest fan-out tree first).
+- **Kubernetes placement semantics** — Filtering by `pod`, `workload`, `node`, `namespace`, or `cluster` matches any trace where **at least one span** in the time window ran in that placement, while still returning the complete end-to-end trace summary.
+
+## Inspecting the trace waterfall
+
+Clicking any row opens `/traces/{trace_id}`:
+
+- **End-to-end timeline** — Displays every span nested by `parent_span_id`, colour-coded by `service.name`, with inline error badges (`status = error` or HTTP 5xx) and exact microsecond start offsets and durations.
+- **Span detail pane** — Selecting a span shows:
+  - `span_id`, `parent_span_id`, `kind` (`server`, `client`, `producer`, `consumer`, `internal`), `status`, and HTTP status code.
+  - **Attributes** — Both span attributes and merged resource attributes (`service.version`, `deployment.environment.name`, `k8s.*`, `db.*`, `http.*`, `gen_ai.*`). Click any attribute value to filter traces by it.
+  - **Events** — Timestamped span events, including full `exception` stack traces (`exception.type`, `exception.message`, `exception.stacktrace`) with one-click navigation to the grouped [Issue](/en/ferristrace/exploring/issues).
+- **Correlated logs** — Jump directly from a trace or span to **Logs** filtered by `trace_id` (or `span_id`) to read every log line emitted during that request.
+- **Attach to incident** — Click **Attach to incident** to pin the trace as permanent evidence on an open incident's timeline and postmortem draft.
+
+<Screenshot
+  src="/screenshots/trace-light.png"
+  darkSrc="/screenshots/trace-dark.png"
+  alt="Trace waterfall in FerrisTrace"
+  caption="Waterfall breakdown showing cross-service spans, durations, and attributes."
+/>
+
+## Span-level aggregations
+
+In addition to root-trace summaries (`POST /api/orgs/{org}/traces/search`), FerrisTrace supports direct span-level search, time-series charts, and grouped tables (`POST /api/orgs/{org}/spans/search`, `/spans/series`, `/spans/table`), which also power trace panels in [Dashboards](/en/ferristrace/exploring/dashboards).

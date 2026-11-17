@@ -1,0 +1,75 @@
+---
+title: Backups, export & upgrades
+description: Back up PostgreSQL, ClickHouse, Redis, and encryption keys, stream portable organisation tar.gz exports, and upgrade FerrisTrace safely.
+icon: archive-restore
+order: 5
+---
+
+# Backups, export & upgrades
+
+## What to back up
+
+A complete disaster-recovery backup of a self-hosted FerrisTrace deployment covers four items:
+
+1. **PostgreSQL (`ferristrace` database)** — Holds all organisations, accounts, memberships, teams, projects, API key digests, dashboards, alert rules & channels, on-call schedules, incidents, timelines, postmortems, status pages, usage history, and the audit log. Back up with `pg_dump -Fc` or continuous WAL archiving (e.g. CloudNativePG Barman).
+2. **FerrisKey PostgreSQL (`ferriskey` database)** — Holds OIDC realms, users, credentials, MFA devices, client secrets, and Cedar policies. Back up alongside the control plane so user `(issuer, sub)` identities remain intact.
+3. **Secret sealing key (`FERRISTRACE_SECRETS__AT_REST_KEY`)** — Store this 64-hex-character key in your vault alongside database backups. Without it, encrypted webhook channel secrets in PostgreSQL cannot be decrypted after a restore.
+4. **ClickHouse (`/var/lib/clickhouse` + S3 cold bucket if tiered)** — Holds historical spans, logs, and metrics. Use ClickHouse native `BACKUP DATABASE ferristrace TO S3(...)` or volume snapshots. If [cold storage](/en/ferristrace/administration/retention-and-cold-storage) is enabled, snapshot the ClickHouse disk and S3 bucket together.
+
+Redis (`redis:/data`, AOF enabled) holds live current-hour/month usage counters; on startup, `ferristrace` automatically rehydrates monthly totals from PostgreSQL (`usage_hourly`), so losing Redis loses at most the unrolled fraction of the current hour's usage count.
+
+## Portable organisation data export (`tar.gz`)
+
+An organisation `owner` can stream a complete portable archive of an organisation from **Settings > Organisation > General > Export organisation data** or via `GET /api/orgs/{org}/export` (requires a signed-in owner OIDC Bearer token; API keys are refused).
+
+```sh
+curl -fL -H "Authorization: Bearer $OWNER_OIDC_TOKEN" \
+  "https://ferristrace.example.com/api/orgs/$ORG_ID/export" \
+  -o "ferristrace-$ORG_ID.tar.gz"
+```
+
+- **Zero server disk footprint** — Streamed directly as `application/gzip`, buffering at most one page (`10,000` spans) in memory at a time. Recorded in the audit log as `org.exported`.
+- **Archive contents**:
+  - `control-plane.json` (`format: "ferristrace-export"`, `version: 1`) — Organisation metadata, projects, teams, members, active API key metadata (never secrets or digests), issue triage decisions, and audit entries.
+  - `spans/000001.ndjson`, `spans/000002.ndjson`, ... — Deterministic NDJSON pages of up to `10,000` spans each (64-bit nanosecond timestamps, attributes, and span events).
+
+## Upgrading FerrisTrace
+
+FerrisTrace applies forward PostgreSQL and ClickHouse migrations automatically on startup before opening traffic ports.
+
+<Callout type="note" title="Pre-1.0 SemVer convention">
+While FerrisTrace is pre-`1.0`, a **minor** bump (`0.x.0`) may include breaking configuration changes documented in the [GitHub release notes](https://github.com/ferrislabs/ferristrace/releases), whereas **patch** releases (`0.1.z`) are drop-in compatible. Always take a `pg_dump` before upgrading across minor versions.
+</Callout>
+
+<CodeTabs group="upgrade">
+<CodeTab label="Docker Compose">
+
+Update `FERRISTRACE_IMAGE` in `deploy/.env` (or `git pull` if building from source) and recreate the containers:
+
+```sh
+cd deploy
+export FERRISTRACE_IMAGE=ghcr.io/ferrislabs/ferristrace:0.2.0
+docker compose pull
+docker compose up --detach
+```
+
+</CodeTab>
+<CodeTab label="Kubernetes (Helm)">
+
+```sh
+helm upgrade ferristrace oci://ghcr.io/ferrislabs/charts/ferristrace \
+  --version 0.2.0 \
+  --namespace ferristrace \
+  -f values.yaml
+```
+
+During rollout, old pods flush buffered telemetry for up to `terminationGracePeriodSeconds` (`60s`) on `SIGTERM` while new pods apply any pending database migrations and take over traffic seamlessly.
+
+</CodeTab>
+</CodeTabs>
+
+## Migrating from legacy Comettrace deployments
+
+FerrisTrace was previously named Comettrace. Legacy `COMETTRACE_*` environment variables, `comettrace` Docker volumes, and pre-rename API keys are **not** compatible:
+1. Rename every `COMETTRACE_*` variable in `.env` to `FERRISTRACE_*` (and remove obsolete `CLIENT_SECRET`, `REDIRECT_URI`, and `COOKIE_SECURE` settings — OIDC now uses PKCE public clients).
+2. Issue new `ft_live_` ingest keys and update your OpenTelemetry exporters.

@@ -1,0 +1,56 @@
+---
+title: Ports, containers & architecture
+description: Reference table of network ports, published OCI images, database storage responsibilities, and FerrisTrace's hexagonal Rust workspace.
+icon: network
+order: 5
+---
+
+# Ports, containers & architecture
+
+## Network ports
+
+| Port | Default host bind (Compose) | Service | Protocol & purpose |
+| --- | --- | --- | --- |
+| **`4317`** | `0.0.0.0:4317` | `server` | OTLP over gRPC (`TraceService`, `LogsService`, `MetricsService`) |
+| **`4318`** | `0.0.0.0:4318` | `server` | OTLP over HTTP (`/v1/*`), REST API (`/api/*`), public status pages (`/status/*`), `/health`, and the React web UI |
+| **`8080`** | `127.0.0.1:8080` | `mcp-gateway` | Public MCP Streamable HTTP endpoint (`/orgs/{org}/mcp`), RFC 9728 OAuth metadata, and `/healthz` |
+| **`8081`** | Compose internal only | `mcp` | Upstream `ferristrace-mcp` server (never expose publicly; reached only via `mcp-gateway`) |
+| **`5432`** | `127.0.0.1:5432` | `postgres` | PostgreSQL 16 control plane |
+| **`8123`** | Compose internal only | `clickhouse` | ClickHouse 24.8 HTTP query & batch insert interface |
+| **`6379`** | Compose internal only | `redis` | Redis 7 usage counter store |
+| **`3333`** | `127.0.0.1:3333` | `ferriskey-api` | FerrisKey OIDC discovery, token, JWKS, and AuthZEN endpoints |
+| **`5555`** | `127.0.0.1:5555` | `ferriskey-webapp` | FerrisKey login UI and realm administration console |
+
+## Published OCI artefacts
+
+Every git tag `vX.Y.Z` publishes `linux/amd64` and `linux/arm64` distroless images (running as non-root UID `65532` with provenance attestations, SBOMs, and Sigstore keyless Cosign signatures) plus the Helm chart:
+
+| Artefact | Registry URI |
+| --- | --- |
+| Main server + web UI | `ghcr.io/ferrislabs/ferristrace:X.Y.Z` |
+| MCP server | `ghcr.io/ferrislabs/ferristrace-mcp:X.Y.Z` |
+| MCP policy gateway | `ghcr.io/ferrislabs/ferristrace-mcp-gateway:X.Y.Z` |
+| Helm chart | `oci://ghcr.io/ferrislabs/charts/ferristrace` |
+
+## Storage responsibilities
+
+| Store | Tables / structures | Lifecycle |
+| --- | --- | --- |
+| **ClickHouse** | `spans` (`ReplacingMergeTree`), `span_events` (with 16-byte exception `fingerprint`), `logs`, `metric_points`, `metric_histograms`, `metric_exemplars`, `releases`, `llm_calls`, `infra_resources` | Append-heavy columnar partitions; expires automatically on row TTL (`retention_days`), optional S3 tiering after `cold_after_days`. |
+| **PostgreSQL** | Accounts, OIDC identities, organisations, plans, projects, teams, API key SHA-256 digests, AI agents, dashboards, saved views, alert rules/duties/outbox, on-call schedules/overrides/pages, incidents & `incident_events`, postmortems, status pages/subscribers, LLM prices, `issue_decisions`, `usage_hourly`, `usage_hourly_project`, `audit_entries` | ACID transactional control plane; durable indefinitely until explicitly deleted (audit log and incident timelines are append-only). |
+| **Redis** | `usage:{tenant}:{month}` and `usage:{tenant}:{hour}` hashes (per-signal & per-project counters) | Rolled up hourly into PostgreSQL and rehydrated from PostgreSQL on server boot. |
+
+## Hexagonal workspace layout
+
+For contributors building or auditing FerrisTrace from source (`Cargo.toml` workspace, Rust edition 2024):
+
+| Path | Layer |
+| --- | --- |
+| `crates/domain` | Pure domain entities, value objects, fingerprinting, query validation, and port traits — zero I/O dependencies. |
+| `crates/application` | Transactional control-plane and ingestion use cases orchestrated over domain ports. |
+| `crates/otlp` | OTLP protobuf & JSON decoders into domain spans, logs, and metrics. |
+| `crates/postgres`, `crates/clickhouse`, `crates/redis`, `crates/infra` | Driven adapters and embedded SQL migrations, SMTP, S3 avatars, JWKS verification, and secret sealing. |
+| `crates/api` | Axum HTTP routers, Tonic gRPC OTLP services, and Bearer authentication extractors. |
+| `apps/server` | Main `ferristrace` binary wiring concrete adapters, background duties, and the CLI. |
+| `apps/mcp`, `apps/mcp-gateway` | Stateless MCP Streamable HTTP server and AuthZEN/Cedar policy gateway. |
+| `web` | React, TypeScript, TanStack Router/Query, and Vite single-page PWA. |

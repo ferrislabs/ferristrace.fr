@@ -1,0 +1,121 @@
+---
+title: Infrastructure & Kubernetes
+description: Monitor Kubernetes clusters, nodes, workloads, pods, hosts, and Docker containers purely from OpenTelemetry Collector telemetry.
+icon: boxes
+order: 8
+---
+
+# Infrastructure & Kubernetes
+
+FerrisTrace provides two complementary infrastructure views under **Infrastructure** in the navigation rail — without ever requiring cluster-admin credentials or polling the Kubernetes or cloud provider APIs directly:
+
+- **Infrastructure > Overview (`/infra`)** — Estate-wide catalogue of Kubernetes clusters, Linux/Windows hosts, and standalone Docker containers discovered from OpenTelemetry resource attributes, with cloud facets (`cloud.provider`, `cloud.region`, `cloud.availability_zone`, `host.type`, `deployment.environment.name`) and correlated services.
+- **Infrastructure > Kubernetes (`/infra/kubernetes`)** — Live 10-minute cluster view showing node readiness, CPU/memory pressure, deployments, statefulsets, daemonsets, and pod health with one-click jumps to pod traces and logs.
+
+## Resource discovery & silence detection
+
+Resources appear automatically in `/infra` as soon as metrics arrive for them:
+
+- **Clusters** — Identified by `k8s.cluster.name`.
+- **Hosts** — Identified by `host.name` (outside Kubernetes pods).
+- **Docker containers** — Identified by `container.name` (falling back to `container.id`); containers belonging to a Kubernetes pod are grouped under their pod rather than duplicated as standalone containers.
+- **Silent vs unhealthy** — If a resource stops sending metrics for **5 minutes**, FerrisTrace marks it **`silent`** with blank figures rather than misleading zeros. Each resource also lists up to 20 services whose spans executed on it in the last 10 minutes.
+
+## Kubernetes Collector configuration
+
+To populate both the **Kubernetes cluster view** and **placement filters** across Traces, Logs, and Metrics, run the OpenTelemetry Collector (`otel/opentelemetry-collector-contrib`) with:
+1. `k8s_cluster` once per cluster (a 1-replica `Deployment`)
+2. `kubeletstats` on every node (a `DaemonSet` with `K8S_NODE_NAME` from the Kubernetes Downward API)
+3. `k8sattributes` on your OTLP pipelines
+
+```yaml
+receivers:
+  otlp:
+    protocols:
+      grpc: {}
+      http: {}
+  k8s_cluster:
+    auth_type: serviceAccount
+    collection_interval: 30s
+    node_conditions_to_report: [Ready]
+  kubeletstats:
+    auth_type: serviceAccount
+    endpoint: https://${env:K8S_NODE_NAME}:10250
+    insecure_skip_verify: true
+    collection_interval: 30s
+    metric_groups: [node, pod]
+
+processors:
+  k8sattributes:
+    pod_association:
+      - sources:
+          - from: resource_attribute
+            name: k8s.pod.uid
+      - sources:
+          - from: connection
+    extract:
+      metadata:
+        - k8s.namespace.name
+        - k8s.pod.name
+        - k8s.pod.uid
+        - k8s.node.name
+        - k8s.deployment.name
+        - k8s.statefulset.name
+        - k8s.daemonset.name
+        - k8s.cronjob.name
+        - k8s.job.name
+  resource:
+    attributes:
+      - key: k8s.cluster.name
+        value: prod-eu-1
+        action: upsert
+  batch: {}
+
+exporters:
+  otlphttp:
+    endpoint: https://ferristrace.example.com
+    compression: gzip
+    headers:
+      Authorization: Bearer ${env:FERRISTRACE_INGEST_KEY}
+
+service:
+  pipelines:
+    metrics:
+      receivers: [otlp, k8s_cluster, kubeletstats]
+      processors: [k8sattributes, resource, batch]
+      exporters: [otlphttp]
+    traces:
+      receivers: [otlp]
+      processors: [k8sattributes, resource, batch]
+      exporters: [otlphttp]
+    logs:
+      receivers: [otlp]
+      processors: [k8sattributes, resource, batch]
+      exporters: [otlphttp]
+```
+
+### Metrics read by the Kubernetes view
+
+| Collector receiver | Metrics consumed by FerrisTrace |
+| --- | --- |
+| **`k8s_cluster`** | `k8s.pod.phase`, `k8s.container.restarts`, `k8s.container.ready`, `k8s.node.condition_ready` (or `k8s.node.condition` with `condition=Ready`), `k8s.deployment.desired` / `available`, `k8s.statefulset.desired_pods` / `ready_pods`, `k8s.daemonset.desired_scheduled_nodes` / `ready_nodes` |
+| **`kubeletstats`** | `k8s.pod.cpu.usage` (or `k8s.pod.cpu.utilization`), `k8s.pod.memory.working_set`, `k8s.node.cpu.usage` (or `utilization`), `k8s.node.memory.working_set`, `k8s.node.memory.available` |
+
+### Pod health classification
+
+Every figure in `/infra/kubernetes` reflects the latest value reported within the last **10 minutes** (pods and nodes that have been gone for over 10 minutes drop out automatically). A pod is flagged unhealthy with an explicit reason when:
+
+- **`restarting`** — Container restart count increased in the last 10 minutes.
+- **`not ready`** — Pod phase is `Running`, but at least one container is not ready.
+- **`Pending` / `Failed` / `Unknown`** — Pod is in a non-running phase.
+- **`node not ready`** — The node hosting the pod has `Ready != true`.
+
+## Filtering telemetry by Kubernetes placement
+
+Across **Traces**, **Services**, **Logs**, and **Metrics**, you can filter by five materialised placement dimensions:
+
+- `cluster` (`k8s.cluster.name`)
+- `namespace` (`k8s.namespace.name`)
+- `workload` — Either `kind:name` (`deployment:checkout`, `statefulset:db`, `daemonset:agent`, `cronjob:nightly`, `job:nightly-28472`) or a bare name (`checkout`, `nightly`), which matches the owning workload in priority order (`deployment` > `statefulset` > `daemonset` > `cronjob` > `job`).
+- `pod` (`k8s.pod.name`)
+- `node` (`k8s.node.name`)

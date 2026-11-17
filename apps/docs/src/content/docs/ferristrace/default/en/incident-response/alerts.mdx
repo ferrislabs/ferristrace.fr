@@ -1,0 +1,83 @@
+---
+title: Alert rules & channels
+description: Evaluate trace, log, metric, and LLM alert rules every minute and deliver signed webhooks, emails, and on-call pages reliably.
+icon: bell-ring
+order: 1
+---
+
+# Alert rules & channels
+
+**Alerts > Rules** (`/alerts`, shortcut `g` then `a`) continuously evaluates telemetry in ClickHouse against thresholds stored in PostgreSQL and dispatches notifications when rules enter or leave `firing`.
+
+## Signals and units
+
+Each alert rule watches a single signal over a sliding window:
+
+- **Traces** — Latency percentiles in **milliseconds** (`ms`), error rate in **percent** (`%`), or matching trace/span **count** over the window.
+- **Logs** — Count of matching log records over the window (filtered by service, severity, body, or attributes).
+- **Metrics** — Aggregated metric value in its native instrument unit (`sum`, `min`, or `max` across steps; mean across steps for `avg`, `rate`, and percentiles).
+- **LLM signals** — Token consumption, error rate, latency, or spend spikes across GenAI calls.
+
+Rules transition deterministically across four states: **`ok`**, **`pending`** (threshold crossed, waiting for hold duration), **`firing`**, and **`no_data`**.
+
+## Multi-replica evaluation & delivery
+
+Every `ferristrace` server replica runs two transactional background loops coordinated via PostgreSQL `pg_try_advisory_xact_lock` and recorded in `alert_duties`:
+
+1. **Evaluation loop (every 60 seconds)** — Evaluates active rules once per minute across the entire cluster, even when running multiple replicas.
+2. **Delivery loop (every 10 seconds)** — Drains `alert_outbox` for transitions into or out of `firing`.
+
+Failed notification deliveries retry automatically at **1, 5, 15, and 60 minutes** after each failure before being marked `abandoned` with the last transport error preserved in `alert_outbox`. Alert state history is retained for **30 days**.
+
+## Notification channels
+
+Configure channels under **Settings > Project > Alerts**:
+
+### Email channels
+
+Sent through the SMTP relay configured under `FERRISTRACE_MAIL__*` (`relay`, `username`, `password`, `from`, `base_url`).
+
+### Signed webhook channels
+
+<Callout type="important" title="Requires FERRISTRACE_SECRETS__AT_REST_KEY">
+Webhook signing secrets are encrypted at rest with `FERRISTRACE_SECRETS__AT_REST_KEY` (`openssl rand -hex 32`). Without that key configured, creating a webhook channel returns `422 Unprocessable Entity` rather than storing the secret in plaintext.
+</Callout>
+
+When a webhook channel is created, FerrisTrace returns a 64-character hex signing secret once. Every webhook `POST` sends a JSON payload:
+
+```json
+{
+  "alert": {
+    "id": "01932c80-...",
+    "name": "Checkout p95 latency",
+    "severity": "critical"
+  },
+  "from": "pending",
+  "to": "firing",
+  "value": 842.5,
+  "labels": {},
+  "at_ms": 1763400000000,
+  "org": "01932c40-...",
+  "url_to_alert": "https://ferristrace.example.com/alerts/01932c80-..."
+}
+```
+
+Every request carries an **`X-FerrisTrace-Signature: sha256=<hex>`** header containing the HMAC-SHA256 digest of the exact raw request body under the channel secret. Verify it in your receiver before trusting the payload:
+
+```sh
+printf '%s' "$RAW_BODY" | openssl dgst -sha256 -hmac "$CHANNEL_SECRET"
+```
+
+### SSRF protection on webhooks
+
+By default, webhook URLs cannot target loopback, RFC 1918 private networks, link-local ranges, or cloud metadata IPs — verified both when saving the channel and on every DNS-resolved IP immediately before each delivery (with HTTP redirects disabled).
+
+If your webhook receiver runs on a private internal network (such as a self-hosted Mattermost, Slack bridge, or n8n instance), opt in explicitly:
+
+```sh
+FERRISTRACE_ALERTS__ALLOW_PRIVATE_WEBHOOKS=true
+```
+
+### Paging on-call schedules
+
+Attach `"page": { "schedule": "<schedule-uuid>" }` to an alert rule to page the engineer currently on call as soon as the rule enters `firing`. See [On-call & paging](/en/ferristrace/incident-response/on-call).

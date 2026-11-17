@@ -1,0 +1,128 @@
+---
+title: Deploy on Kubernetes (Helm)
+description: Install the official FerrisTrace OCI Helm chart on Kubernetes with external PostgreSQL, ClickHouse, Redis, and FerrisKey.
+icon: ship-wheel
+order: 4
+---
+
+# Deploy on Kubernetes (Helm)
+
+FerrisTrace publishes an official OCI Helm chart at `oci://ghcr.io/ferrislabs/charts/ferristrace` matching every release tag.
+
+The chart deploys `ferristrace` as a stateless, horizontally scalable `Deployment` (plus optional `ferristrace-mcp` and `ferristrace-mcp-gateway` Deployments). **PostgreSQL, ClickHouse, Redis, and your OIDC provider are supplied externally** (for example via CloudNativePG, Altinity ClickHouse Operator, and a Redis cluster). On startup, `ferristrace` runs both PostgreSQL and ClickHouse schema migrations automatically.
+
+<Prereqs>
+- Kubernetes 1.28+ and Helm 3.12+
+- Reachable PostgreSQL 16+, ClickHouse 24.8+, and Redis 7+ instances
+- FerrisKey (or another OIDC provider) configured with a public PKCE client whose redirect URI is `https://<your-ferristrace-host>/` and web origin is `https://<your-ferristrace-host>`
+</Prereqs>
+
+## Create Kubernetes Secrets first
+
+The Helm chart intentionally stores **zero cleartext secrets** in `values.yaml`. Create your Secrets out of band (via External Secrets Operator, Sealed Secrets, OpenBao, or `kubectl`) in the target namespace and reference them by `{ name, key }` under `secrets.*`.
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ferristrace-secrets
+  namespace: ferristrace
+type: Opaque
+stringData:
+  database-url: postgresql://ferristrace:<password>@postgres-rw.db.svc:5432/ferristrace
+  redis-url: redis://:<password>@redis.db.svc:6379/0
+  clickhouse-password: <clickhouse-password>
+  # Mint once with: openssl rand -hex 32
+  at-rest-key: <64-hex-chars>
+```
+
+| Helm value | Injected env var | When required |
+| --- | --- | --- |
+| `secrets.databaseUrl` | `FERRISTRACE_DATABASE_URL` | Always (defaults to CloudNativePG secret `ferristrace-app`, key `uri`) |
+| `secrets.redisUrl` | `FERRISTRACE_REDIS_URL` | Always |
+| `secrets.clickhousePassword` | `FERRISTRACE_SPANS__PASSWORD` | When `secrets.clickhousePassword.name` is set |
+| `secrets.atRestKey` | `FERRISTRACE_SECRETS__AT_REST_KEY` | Recommended; required for webhook secrets, email page acks, and status subscriptions |
+| `secrets.smtpPassword` | `FERRISTRACE_MAIL__PASSWORD` | When `config.mail.enabled: true` |
+| `secrets.objectsAccessKeyId` / `secrets.objectsSecretAccessKey` | `FERRISTRACE_OBJECTS__ACCESS_KEY_ID` / `..._SECRET_ACCESS_KEY` | When `config.objects.enabled: true` |
+
+## Configure `values.yaml`
+
+```yaml
+replicaCount: 2
+
+secrets:
+  databaseUrl:
+    name: ferristrace-secrets
+    key: database-url
+  redisUrl:
+    name: ferristrace-secrets
+    key: redis-url
+  clickhousePassword:
+    name: ferristrace-secrets
+    key: clickhouse-password
+  atRestKey:
+    name: ferristrace-secrets
+    key: at-rest-key
+
+config:
+  logLevel: info
+  spans:
+    url: http://clickhouse.db.svc:8123
+    database: ferristrace
+    user: ferristrace
+    retentionDays: 30
+  oidc:
+    enabled: true
+    issuer: https://id.example.com/realms/ferristrace
+    clientId: ferristrace
+  agents:
+    issuer: https://id.example.com/realms/ferristrace
+    audience: ferristrace-agents
+
+httpRoute:
+  enabled: true
+  parentRefs:
+    - name: main-gateway
+      namespace: gateway-system
+  hostnames:
+    - ferristrace.example.com
+```
+
+## Install the chart
+
+```sh
+helm install ferristrace oci://ghcr.io/ferrislabs/charts/ferristrace \
+  --version 0.1.0 \
+  --namespace ferristrace \
+  --create-namespace \
+  -f values.yaml
+```
+
+Then bootstrap the initial organisation once:
+
+```sh
+kubectl -n ferristrace exec deploy/ferristrace -- \
+  ferristrace bootstrap --email ops@example.com --org "Production"
+```
+
+## Routing HTTP, UI, and OTLP gRPC
+
+The Kubernetes `Service` exposes two ports:
+- **`4318` (`http`)** — Serves the React web UI, `/api/*`, `/status/*`, `/health`, and OTLP over HTTP (`/v1/traces`, `/v1/logs`, `/v1/metrics`). Enabling `httpRoute.enabled: true` creates a Kubernetes Gateway API `HTTPRoute` pointing to port `4318`.
+- **`4317` (`grpc`)** — Serves OTLP over gRPC. In-cluster OpenTelemetry Collectors can send directly to `ferristrace.ferristrace.svc.cluster.local:4317`. If external Collectors send gRPC from outside the cluster, attach your own `GRPCRoute` or Ingress with HTTP/2 backend support.
+
+## High availability and security defaults
+
+- **Multi-replica coordination** — Setting `replicaCount: 2` or higher automatically renders a `PodDisruptionBudget` (`minAvailable: 1`). Background loops (alert evaluation, webhook/email delivery, paging escalations, status page announcements, and deploy tracking) coordinate via PostgreSQL advisory locks so notifications are never duplicated.
+- **Graceful batch drain** — `terminationGracePeriodSeconds` defaults to `60`, giving the server time to flush buffered spans, logs, and metrics to ClickHouse on `SIGTERM` before exiting.
+- **Container hardening** — Pods run as non-root UID `65532` with a read-only root filesystem, all Linux capabilities dropped, `RuntimeDefault` seccomp, and `automountServiceAccountToken: false`.
+
+## Enabling the MCP gateway in Helm
+
+Set `mcp.enabled: true` to deploy `ferristrace-mcp` (port `8081`, cluster-internal) and `ferristrace-mcp-gateway` (port `8080`). Expose **only** the `ferristrace-mcp-gateway` Service through your Ingress or `HTTPRoute` — `ferristrace-mcp` trusts tokens already authorised and exchanged by the gateway.
+
+See [MCP server & policy gateway](/en/ferristrace/ai-agents-and-mcp/mcp-gateway) for the FerrisKey clients, Secrets (`pdpClientSecret`, `exchangeClientSecret`), and Cedar policies.
+
+## GitOps with ArgoCD
+
+An example ArgoCD `Application` manifest is shipped in the repository under `deploy/argocd/ferristrace-application.yaml` for declarative OCI chart upgrades.

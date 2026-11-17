@@ -1,0 +1,45 @@
+---
+title: Authentication & FerrisKey (OIDC)
+description: Configure OIDC sign-in with the bundled FerrisKey server or an external identity provider using Authorization Code with PKCE.
+icon: lock
+order: 1
+---
+
+# Authentication & FerrisKey (OIDC)
+
+FerrisTrace delegates all human authentication, password storage, multi-factor authentication (TOTP / WebAuthn), and session management to an OpenID Connect (OIDC) identity provider.
+
+The web application signs users in with **Authorization Code + PKCE** using a **public OIDC client** (no client secret) and sends the resulting JWT in `Authorization: Bearer <token>`. The Rust server verifies each token statelessly against the provider's JWKS keys (`RS256` / `ES256`).
+
+## Bundled FerrisKey in Docker Compose
+
+In `deploy/docker-compose.yml`, the `ferriskey-init` container automatically provisions the `ferristrace` realm, creates the public `ferristrace` client, registers `http://localhost:4318/` as a redirect URI and `http://localhost:4318` as an allowed web origin, and writes `FERRISTRACE_OIDC__ISSUER` and `FERRISTRACE_OIDC__CLIENT_ID` into `deploy/ferriskey/ferriskey.env`.
+
+- **Admin console** — `http://ferriskey:5555` (`admin` / `admin` unless `FERRISKEY_ADMIN_USERNAME` and `FERRISKEY_ADMIN_PASSWORD` were set in `.env` before first start).
+- **Additional dev origins** — Set `FERRISKEY_EXTRA_APP_ORIGINS=http://localhost:5173` in `.env` when running the Vite frontend dev server alongside the stack.
+
+## Using an external FerrisKey or OIDC provider
+
+To authenticate against an external FerrisKey deployment or any standards-compliant OIDC provider (Keycloak, Authentik, Dex, Zitadel, Okta), set these two variables in `.env` or `ferristrace.toml` — they override anything written by `ferriskey-init`:
+
+```sh
+FERRISTRACE_OIDC__ISSUER=https://id.example.com/realms/ferristrace
+FERRISTRACE_OIDC__CLIENT_ID=ferristrace
+```
+
+Configure the client in your identity provider with:
+- **Client type** — Public (`Client authentication: Off`, no client secret)
+- **Grant type** — Authorization Code with **PKCE (`S256`)** enabled
+- **Valid Redirect URI** — Your FerrisTrace origin **with a trailing slash**, e.g. `https://ferristrace.example.com/`
+- **Web Origin (CORS)** — Your FerrisTrace origin without a trailing slash, e.g. `https://ferristrace.example.com`
+- **Claims** — Include `sub`, `email`, and `email_verified` in the access token
+
+## Security invariants to know
+
+<Callout type="danger" title="Verify email addresses in your realm">
+When `ferristrace bootstrap` or an organisation invitation creates an account ahead of time by email address, the first OIDC login carrying that address adopts the account **only if** the token asserts `email_verified: true`. Never allow unverified self-registration or unverified email changes in your OIDC realm, or an attacker could claim an invited address and inherit its membership.
+</Callout>
+
+- **Keep `FERRISTRACE_OIDC__ISSUER` stable.** Each linked identity is keyed by `(issuer, sub)`. Trailing slashes are normalised away, but changing the hostname or realm path turns existing users into unrecognised subjects on their next login.
+- **MFA & password recovery live in FerrisKey.** Require 2FA or reset a forgotten credential directly in your FerrisKey realm settings. Signing out in FerrisTrace redirects to the OIDC `end_session_endpoint`.
+- **Headless / API-only mode.** If `FERRISTRACE_OIDC__*` is omitted completely, `ferristrace` still starts, ingests OTLP telemetry, and serves API keys and AI agent tokens — `/auth/methods` simply returns `{"oidc": false}` and browser sign-in is disabled.

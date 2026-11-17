@@ -1,0 +1,34 @@
+---
+title: Postmortems
+description: Generate deterministic Markdown postmortem drafts from incident timelines, collaborate safely, and publish redacted public write-ups.
+icon: file-text
+order: 4
+---
+
+# Postmortems
+
+Every incident in FerrisTrace can carry one **postmortem** — a Markdown document (up to **200 KiB**) drafted directly from the factual record captured during the incident.
+
+## Deterministic draft generation
+
+On any incident detail page (`/incidents/{id}`), click **Draft postmortem** (`POST /api/orgs/{org}/incidents/{id}/postmortem`). FerrisTrace assembles a structured Markdown document containing:
+
+1. **Summary placeholder** for the narrative root-cause analysis
+2. **Impact window** — Exact UTC start and resolution timestamps and duration in minutes (or `"still open"` if ongoing), plus severity and incident owner
+3. **UTC timeline table** — Every status change, comment, deploy marker, and alert transition recorded on the incident
+4. **Alerts & paging summary** — Every alert rule that fired, who was paged, and who acknowledged
+5. **Attached evidence** — Direct links to every trace waterfall, log query, and metric chart pinned during investigation
+6. **Action items checklist** — Ready to fill in follow-up engineering tasks
+
+## Editing and conflict protection
+
+- Any organisation `member` can draft and edit an unpublished postmortem (`PATCH /api/orgs/{org}/incidents/{id}/postmortem` with `{"body": "..."}`).
+- The built-in editor renders a live Markdown preview with raw HTML stripped for XSS safety.
+- **Accidental overwrite protection** — Re-running **Draft postmortem** succeeds freely on an untouched draft, but once a human has edited the body, re-drafting returns `409 Conflict` unless an `owner` or `admin` explicitly passes `?force=true`.
+
+## Publishing and status page visibility
+
+- **Publish / unpublish** — Only `owner` and `admin` roles can publish (`POST .../postmortem/publish`) or unpublish (`POST .../postmortem/unpublish`) a postmortem.
+- **Read-only lock** — Once published, edits and re-drafts are rejected with `409 Conflict` until an administrator unpublishes it.
+- **Public status page integration** — If the parent incident is marked **public** and appears on a [Public status page](/en/ferristrace/incident-response/status-pages), its published postmortem is linked automatically at `/status/{slug}/postmortems/{incident_id}` with **all email addresses automatically redacted**.
+- Every lifecycle step is recorded in the audit log (`postmortem.drafted`, `postmortem.edited`, `postmortem.published`, `postmortem.unpublished`).

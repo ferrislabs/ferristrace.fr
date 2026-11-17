@@ -1,0 +1,48 @@
+---
+title: Members, teams & roles
+description: Invite teammates, assign owner, admin, and member roles safely, and organise teams for projects and on-call schedules.
+icon: users
+order: 3
+---
+
+# Members, teams & roles
+
+Manage access to your organisation under **Settings > Organisation > Members** and **Settings > Organisation > Teams**.
+
+## Inviting members
+
+1. In **Settings > Organisation > Members**, an `owner` or `admin` enters the person's email address and selects a role (`member`, `admin`, or `owner`).
+2. Create the user with that same email address in your FerrisKey realm (`http://ferriskey:5555` locally) and mark their email address **verified**.
+3. On first sign-in through **Continue with FerrisKey**, FerrisTrace links their OIDC `(issuer, sub)` identity to the pre-provisioned membership automatically.
+
+<Callout type="note">
+Inviting an email address in FerrisTrace sends no invitation email by itself — authentication is governed entirely by your FerrisKey / OIDC realm. You can also grant or update roles from the CLI with `ferristrace grant-role --org <uuid> --member user@example.com --role admin`.
+</Callout>
+
+## Role permissions matrix
+
+| Action | `member` | `admin` | `owner` |
+| --- | :---: | :---: | :---: |
+| Query traces, logs, metrics, services, infra, LLM calls, cost meter | Yes | Yes | Yes |
+| Create, edit, clone, import & export dashboards | Yes | Yes | Yes |
+| Declare incidents, comment, attach telemetry, resolve/reopen | Yes | Yes | Yes |
+| Triage issues (`unresolved`, `resolved`, `ignored`) & assign owners | Yes | Yes | Yes |
+| Draft & edit unpublished postmortems | Yes | Yes | Yes |
+| Acknowledge pages targeted at themselves | Yes | Yes | Yes |
+| Publish / unpublish postmortems & force re-draft | — | Yes | Yes |
+| Manage alert rules, channels, on-call schedules, overrides & status pages | — | Yes | Yes |
+| Create, rename & delete projects and teams | — | Yes | Yes |
+| Issue & revoke API keys, register & revoke AI agents, toggle MCP | — | Yes | Yes |
+| Configure LLM model prices & read the organisation audit log | — | Yes | Yes |
+| Invite/remove `member` and `admin` accounts | — | Yes | Yes |
+| Grant/revoke the `owner` role, set org retention, export org `tar.gz`, delete org | — | — | Yes |
+
+### Sole-owner safeguard
+
+Every organisation must retain **at least one `owner`** at all times, and only an existing `owner` can promote, demote, or remove another `owner`. If you are the sole owner of an organisation, promote a replacement owner first before stepping down or leaving.
+
+## Teams
+
+Create teams under **Settings > Organisation > Teams** (`GET` / `POST` / `PATCH` / `DELETE /api/orgs/{org}/teams`) to group members by squad or domain (`platform`, `checkout`, `ai`). Teams serve two purposes:
+- **Project ownership** — Assign projects to the team responsible for them.
+- **On-call rotations** — Build [On-call schedules](/en/ferristrace/incident-response/on-call) directly from a team's member roster.

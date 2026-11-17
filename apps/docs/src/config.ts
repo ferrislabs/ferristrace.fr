@@ -1,5 +1,5 @@
 import { defineConfig } from '@cometrace/config'
 
 export const siteConfig = defineConfig({
-  titleTemplate: '%s · Cometrace docs',
+  titleTemplate: '%s · FerrisTrace Docs',
 })

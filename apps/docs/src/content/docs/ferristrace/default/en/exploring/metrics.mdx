@@ -1,0 +1,38 @@
+---
+title: Metrics
+description: Explore gauges, counters, and histograms, group series by attributes, and jump from metric exemplars straight to traces.
+icon: line-chart
+order: 5
+---
+
+# Metrics
+
+The **Metrics** explorer (`/metrics`, shortcut `g` then `m`) browses every OpenTelemetry metric ingested into your organisation and charts aggregated time series with exemplar links.
+
+## Metric catalogue
+
+When you open `/metrics`, FerrisTrace lists the discovered metric catalogue (`GET /api/orgs/{org}/metrics`) with each metric's:
+
+- **Name** (for example `http.server.request.duration`, `system.cpu.utilization`, `db.client.connections.usage`)
+- **Kind** (`gauge`, `sum`, or `histogram`)
+- **Unit** (UCUM unit reported by the instrument, such as `ms`, `s`, `By`, `1`)
+- **Description** and **last seen** timestamp
+
+## Querying and grouping series
+
+Select a metric to build a chart (`GET` or `POST /api/orgs/{org}/metrics/{name}/series`):
+
+- **Aggregations** — Choose temporal and spatial aggregations suited to the instrument kind: `avg`, `sum`, `min`, `max`, `rate`, `increase`, and histogram percentiles (`p50`, `p90`, `p95`, `p99`).
+- **Attribute filters** — Filter by `service` or any metric/resource attribute discovered for that metric (`/api/orgs/{org}/metrics/{name}/attributes` and `.../values`), plus Kubernetes placement (`cluster`, `namespace`, `workload`, `pod`, `node`).
+- **Group by** — Split series by one or more label keys (for example `http.response.status_code`, `k8s.pod.name`, or `host.name`).
+
+## Jumping from exemplars to traces
+
+When your OpenTelemetry SDK records **exemplars** on counters or histograms (enabled automatically by official SDKs when sampling traces alongside metrics), FerrisTrace stores them in `metric_exemplars` with their `trace_id`, `span_id`, timestamp, and value.
+
+Exemplar points are plotted directly on the metric chart: clicking an exemplar opens the exact slow or failing trace waterfall in **Traces** so you never have to guess which request caused a p99 spike.
+
+## Adding charts to incidents and dashboards
+
+- **Add to dashboard** — Save any metric query directly into a new or existing [Dashboard](/en/ferristrace/exploring/dashboards).
+- **Attach to incident** — Pin the metric chart and active window to an open incident's timeline as permanent evidence.

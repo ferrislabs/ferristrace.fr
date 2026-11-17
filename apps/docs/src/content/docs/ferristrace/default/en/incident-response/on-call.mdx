@@ -1,0 +1,52 @@
+---
+title: On-call & paging
+description: Build DST-safe team rotations, schedule temporary overrides, page engineers from alerts or incidents, and escalate unacknowledged pages automatically.
+icon: calendar-clock
+order: 3
+---
+
+# On-call & paging
+
+**Alerts > On-call** (`/oncall`) manages team rotations, temporary shift overrides, paging, and automated escalation ladders.
+
+## Schedules and DST-safe rotations
+
+Organisation `owner` and `admin` members create schedules assigned to a [Team](/en/ferristrace/administration/members-and-roles):
+
+- **Timezone** — Any IANA timezone (for example `Europe/Paris` or `America/New_York`). Handoffs preserve wall-clock local time across Daylight Saving Time transitions.
+- **Rotation order** — Ordered list of team members taking turns on shift.
+- **Shift cadence** — Handoff weekday, handoff local time, start date, and shift length between **1 and 28 days**.
+- **Overrides** — Hand the pager to any member of the organisation between two exact timestamps without altering the underlying recurring rotation. Overrides always take precedence over the base rotation.
+
+Query who holds the pager right now via the UI, MCP (`who_is_on_call`), or HTTP API:
+
+```sh
+curl -H "Authorization: Bearer $READ_TOKEN" \
+  "http://localhost:4318/api/orgs/$ORG_ID/schedules/$SCHEDULE_ID/now"
+```
+
+## Paging and escalation ladder
+
+Pages are triggered in two ways:
+1. Automatically when an alert rule configured with `"page": { "schedule": "<schedule-uuid>" }` enters `firing` (re-firing while a page is already open never sends duplicate initial pages).
+2. Immediately when declaring an incident with `"page": { "schedule": "<schedule-uuid>" }`.
+
+### 15-minute escalation policy
+
+Pages are delivered by email through your configured SMTP relay (`FERRISTRACE_MAIL__*`) and checked every **30 seconds** by a cluster-wide advisory-locked worker:
+
+1. **Step 0 (`t = 0m`)** — Emails the engineer currently on call (respecting active overrides).
+2. **Next rotation steps (+15 minutes per unacknowledged step)** — If unacknowledged after 15 minutes, the page escalates to the next member in the schedule's rotation.
+3. **Organisation admin fallback** — Once every member in the rotation has been paged without acknowledgement, FerrisTrace pages **every administrator (`owner` and `admin`)** of the organisation.
+
+When the underlying alert rule returns to `ok` or the incident is marked `resolved`, the open page resolves automatically.
+
+## Acknowledging a page
+
+Engineers can acknowledge an open page in three ways:
+
+1. **In the web UI / PWA** — Click **Acknowledge** (`POST /api/orgs/{org}/pages/{id}/ack`, allowed for the paged target or any administrator).
+2. **One-click signed email link** — Click the acknowledgement link inside the paging email (`GET /api/pages/ack?token=...`). No active browser login is required; links are HMAC-SHA256 signed using a key derived from `FERRISTRACE_SECRETS__AT_REST_KEY` and remain valid for **24 hours** (`403` if tampered, `410` once expired).
+3. **Through MCP** — Run `acknowledge_page` from Claude Code or another MCP client when permitted by your FerrisKey Cedar policy.
+
+Acknowledging an incident's page appends an entry to the incident timeline and writes `page.acknowledged` to the audit log.
