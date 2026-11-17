@@ -38,7 +38,7 @@ const DOCS_ORIGIN = docsOrigin()
 
 /** `docs('/getting-started/introduction')` -> the full cross-app URL. */
 export function docs(path = ''): string {
-  return `${DOCS_ORIGIN}/en/cometrace${path}`
+  return `${DOCS_ORIGIN}/en/ferristrace${path}`
 }
 
 export const links = {

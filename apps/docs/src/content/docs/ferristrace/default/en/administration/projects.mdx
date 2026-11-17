@@ -1,0 +1,46 @@
+---
+title: Organisations & projects
+description: Structure telemetry, dashboards, keys, and audit logs across organisations and URL-safe project slugs.
+icon: folder-git-2
+order: 2
+---
+
+# Organisations & projects
+
+FerrisTrace organises resources on two levels: **Organisations** (hard tenant boundaries) and **Projects** (operational workspaces within an organisation).
+
+## Organisations
+
+Every self-hosted stack typically runs one organisation created by `ferristrace bootstrap`:
+
+```sh
+docker compose exec server ferristrace bootstrap --email ops@example.com --org "Acme"
+```
+
+- **Organisation settings (`Settings > Organisation > General`)** — Owners can rename the organisation, set its local IANA timezone (used by MCP time-of-day Cedar policies and schedules), configure a custom retention window in days, export all organisation data, or delete the organisation.
+- **Multiple organisations** — While `bootstrap` refuses to run once an organisation exists, operators can create additional isolated organisations at any time with `ferristrace create-org --name "Staging Org" --owner lead@example.com`.
+
+## Projects
+
+Every span, log, metric point, exception issue, dashboard, and ingest key belongs to a project. `bootstrap` creates the initial `default` project automatically.
+
+Manage projects under **Settings > Organisation > Projects** (`GET` / `POST` / `PATCH` / `DELETE /api/orgs/{org}/projects`) or via the CLI:
+
+```sh
+docker compose exec server ferristrace create-project \
+  --org <org-uuid> \
+  --name payments-eu
+```
+
+### Slug rules, renaming, and deletion
+
+- **Lowercase slugs** — Project names consist of lowercase ASCII letters, digits, and hyphens (`payments-eu`, `checkout-v2`). Typing `Payments-EU` automatically normalises to `payments-eu`.
+- **Zero-downtime renames** — API keys, dashboards, and ClickHouse rows store the immutable `project_id` UUID rather than the slug. Renaming a project never invalidates ingest keys or orphans historical traces.
+- **Team ownership** — Hand a project to a [Team](/en/ferristrace/administration/members-and-roles) so ownership is explicit across the organisation.
+- **Deleting a project** — Immediately revokes all API keys bound to the project and deletes its dashboards. Telemetry rows already written in ClickHouse become unreachable at once and age out on their normal ClickHouse TTL.
+
+## Immutable audit log
+
+Every administrative action across an organisation — whether performed in the web UI, via the REST API, by an AI agent, or through the `ferristrace` CLI (recorded under actor `operator`) — appends an immutable entry to **Settings > Organisation > Audit log** (`GET /api/orgs/{org}/audit`).
+
+Audit entries never contain plaintext API secrets, webhook secrets, or JWTs, and no endpoint or CLI command in FerrisTrace can edit or delete individual audit rows.

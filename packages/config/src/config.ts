@@ -27,14 +27,14 @@ export const defaultConfig: SiteConfig = {
       documentation: [
         {
           label: 'footer.links.quickstart',
-          href: '/{locale}/cometrace/getting-started/quickstart-self-host',
+          href: '/{locale}/ferristrace/getting-started/quickstart-self-host',
         },
-        { label: 'footer.links.sendingData', href: '/{locale}/cometrace/sending-data/ingest-keys' },
+        { label: 'footer.links.sendingData', href: '/{locale}/ferristrace/sending-data/ingest-keys' },
         {
           label: 'footer.links.administration',
-          href: '/{locale}/cometrace/administration/projects',
+          href: '/{locale}/ferristrace/administration/projects',
         },
-        { label: 'footer.links.reference', href: '/{locale}/cometrace/reference/configuration' },
+        { label: 'footer.links.reference', href: '/{locale}/ferristrace/reference/configuration' },
       ],
       resources: [
         { label: 'footer.links.github', href: REPO, external: true },

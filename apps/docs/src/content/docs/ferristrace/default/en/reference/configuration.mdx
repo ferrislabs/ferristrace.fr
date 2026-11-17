@@ -1,0 +1,116 @@
+---
+title: Configuration & environment variables
+description: Complete reference for ferristrace.toml, FERRISTRACE_* server environment variables, Docker Compose variables, and MCP gateway settings.
+icon: sliders-horizontal
+order: 4
+---
+
+# Configuration & environment variables
+
+`ferristrace` loads configuration in order of increasing precedence:
+
+1. Built-in defaults
+2. `ferristrace.toml` in the working directory (if present)
+3. `FERRISTRACE_ENV_FILE` (used by Docker Compose to read `ferriskey/ferriskey.env`)
+4. Process environment variables prefixed with `FERRISTRACE_`, using **`__` (double underscore)** to separate nested sections (`FERRISTRACE_SPANS__RETENTION_DAYS` maps to `spans.retention_days`)
+
+## Core server (`FERRISTRACE_*`)
+
+| Environment variable | TOML key | Default | Description |
+| --- | --- | --- | --- |
+| `FERRISTRACE_GRPC_ADDRESS` | `grpc_address` | `0.0.0.0:4317` | Bind address for OTLP over gRPC |
+| `FERRISTRACE_HTTP_ADDRESS` | `http_address` | `0.0.0.0:4318` | Bind address for OTLP/HTTP, REST API, and web UI |
+| `FERRISTRACE_DATABASE_URL` | `database_url` | unset | PostgreSQL connection URI (`postgres://user:pass@host:5432/ferristrace`) |
+| `FERRISTRACE_REDIS_URL` | `redis_url` | unset | Redis connection URI (`redis://host:6379`); falls back to in-memory meter if unset |
+| `FERRISTRACE_WEB_ROOT` | `web_root` | set in image | Directory containing built frontend assets |
+| `RUST_LOG` | — | `info` | `tracing` log filter (`info`, `debug`, `ferristrace=debug`) |
+
+## ClickHouse signal store (`[spans]`)
+
+| Environment variable | TOML key | Default | Description |
+| --- | --- | --- | --- |
+| `FERRISTRACE_SPANS__URL` | `spans.url` | required | ClickHouse HTTP URL (`http://clickhouse:8123`) |
+| `FERRISTRACE_SPANS__DATABASE` | `spans.database` | unset (`default`) | ClickHouse database name (`ferristrace` in Compose/Helm) |
+| `FERRISTRACE_SPANS__USER` | `spans.user` | unset | ClickHouse username |
+| `FERRISTRACE_SPANS__PASSWORD` | `spans.password` | unset | ClickHouse password |
+| `FERRISTRACE_SPANS__RETENTION_DAYS` | `spans.retention_days` | `30` | Default TTL in days for ingested signals |
+| `FERRISTRACE_SPANS__COLD_AFTER_DAYS` | `spans.cold_after_days` | unset | Non-zero days before moving parts to ClickHouse `tiered` `cold` S3 volume |
+
+## Authentication, AI agents & MCP (`[oidc]`, `[agents]`, `[mcp]`)
+
+| Environment variable | TOML key | Default | Description |
+| --- | --- | --- | --- |
+| `FERRISTRACE_OIDC__ISSUER` | `oidc.issuer` | auto in Compose | OIDC discovery issuer URL for human sign-in |
+| `FERRISTRACE_OIDC__CLIENT_ID` | `oidc.client_id` | `ferristrace` | Public PKCE web client ID |
+| `FERRISTRACE_AGENTS__ISSUER` | `agents.issuer` | `oidc.issuer` | OIDC issuer URL for AI agent tokens |
+| `FERRISTRACE_AGENTS__AUDIENCE` | `agents.audience` | `ferristrace-agents` (Compose) | **Mandatory** `aud` claim required on agent JWTs; agents stay off if empty |
+| `FERRISTRACE_MCP__GATEWAY_CLIENT_ID` | `mcp.gateway_client_id` | `ferristrace-mcp-gateway` (Compose) | FerrisKey client ID of the MCP gateway |
+| `FERRISTRACE_MCP__PUBLIC_URL` | `mcp.public_url` | `http://localhost:8080` (Compose) | Public base URL of `ferristrace-mcp-gateway` shown in Settings > MCP |
+
+## Secrets, alerts, SMTP mail & S3 avatars
+
+| Environment variable | TOML key | Default | Description |
+| --- | --- | --- | --- |
+| `FERRISTRACE_SECRETS__AT_REST_KEY` | `secrets.at_rest_key` | unset | 64-char hex key (`openssl rand -hex 32`) sealing webhook secrets and signing page ack & status links |
+| `FERRISTRACE_ALERTS__ALLOW_PRIVATE_WEBHOOKS` | `alerts.allow_private_webhooks` | `false` | Allow webhook deliveries to loopback, RFC 1918 private, or link-local IPs |
+| `FERRISTRACE_ALERTS__BASE_URL` | `alerts.base_url` | `mail.base_url` | External FerrisTrace URL placed in `url_to_alert` webhook payloads |
+| `FERRISTRACE_MAIL__RELAY` | `mail.relay` | unset | SMTP server hostname (all `mail.*` fields must be set together to enable email) |
+| `FERRISTRACE_MAIL__USERNAME` | `mail.username` | — | SMTP username |
+| `FERRISTRACE_MAIL__PASSWORD` | `mail.password` | — | SMTP password |
+| `FERRISTRACE_MAIL__FROM` | `mail.from` | — | Sender header (`FerrisTrace <no-reply@example.com>`) |
+| `FERRISTRACE_MAIL__BASE_URL` | `mail.base_url` | — | Public app URL used in email links |
+| `FERRISTRACE_OBJECTS__ENDPOINT` | `objects.endpoint` | unset | S3-compatible endpoint for profile photos (`<= 1 MB` PNG/JPEG/WebP, served privately via server origin) |
+| `FERRISTRACE_OBJECTS__BUCKET` | `objects.bucket` | — | Bucket name (needs no public access) |
+| `FERRISTRACE_OBJECTS__REGION` | `objects.region` | `auto` | S3 region (`auto` works out of the box for Cloudflare R2 and MinIO) |
+| `FERRISTRACE_OBJECTS__ACCESS_KEY_ID` | `objects.access_key_id` | — | S3 access key ID |
+| `FERRISTRACE_OBJECTS__SECRET_ACCESS_KEY` | `objects.secret_access_key` | — | S3 secret access key |
+
+## Internal cost meter rates (`[billing]`)
+
+Optional unit rates so `/cost` computes internal chargeback/showback spend alongside volumes:
+
+| Environment variable | TOML key | Default | Description |
+| --- | --- | --- | --- |
+| `FERRISTRACE_BILLING__CURRENCY` | `billing.currency` | — | 3-letter ISO 4217 code (`EUR`, `USD`, `GBP`) |
+| `FERRISTRACE_BILLING__SPANS_GB_MICROS` | `billing.spans_gb_micros` | — | Price per `10^9` bytes of spans in micro-units (`250000` = `0.25`) |
+| `FERRISTRACE_BILLING__LOGS_GB_MICROS` | `billing.logs_gb_micros` | — | Price per `10^9` bytes of logs in micro-units |
+| `FERRISTRACE_BILLING__METRICS_MILLION_MICROS` | `billing.metrics_million_micros` | — | Price per `10^6` metric datapoints in micro-units |
+| `FERRISTRACE_BILLING__INCLUDED_SPANS_GB` | `billing.included_spans_gb` | `0` | Monthly included GB of spans |
+| `FERRISTRACE_BILLING__INCLUDED_LOGS_GB` | `billing.included_logs_gb` | `0` | Monthly included GB of logs |
+| `FERRISTRACE_BILLING__INCLUDED_METRICS_MILLION` | `billing.included_metrics_million` | `0` | Monthly included millions of datapoints |
+
+Custom unpriced internal quota plans can also be declared via `[[plans]]` (`slug`, `name`, `ingest_gb`, `retention_days`, `overage`) and `default_plan` in `ferristrace.toml`.
+
+## Docker Compose wrapper variables (`deploy/.env`)
+
+Variables without the `FERRISTRACE_` prefix parameterize `deploy/docker-compose.yml`:
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `FERRISTRACE_IMAGE` | built locally | Published server image (`ghcr.io/ferrislabs/ferristrace:X.Y.Z`) |
+| `OTLP_GRPC_PORT` / `OTLP_HTTP_PORT` | `4317` / `4318` | Published host ports for gRPC and HTTP/UI |
+| `RETENTION_DAYS` | `30` | Passed to `FERRISTRACE_SPANS__RETENTION_DAYS` |
+| `POSTGRES_PASSWORD` / `CLICKHOUSE_PASSWORD` | `ferristrace` | Store passwords |
+| `POSTGRES_BIND` / `POSTGRES_PORT` | `127.0.0.1` / `5432` | Host bind for PostgreSQL |
+| `FERRISKEY_DB_PASSWORD` | `ferriskey` | FerrisKey database password |
+| `FERRISKEY_ADMIN_USERNAME` / `PASSWORD` / `EMAIL` | `admin` / `admin` / `admin@ferristrace.local` | Seeded once on FerrisKey's first start |
+| `FERRISKEY_API_BIND` / `FERRISKEY_WEBAPP_BIND` | `127.0.0.1` | Host binds for FerrisKey API (`3333`) and console (`5555`) |
+| `FERRISKEY_EXTRA_APP_ORIGINS` | empty | Space-separated extra origins registered on the OIDC client |
+| `FERRISTRACE_MCP_PUBLIC_URL` / `FERRISTRACE_MCP_ORGS` | `http://localhost:8080` / empty | MCP gateway public URL and comma-separated allowed org UUIDs |
+| `MCP_GATEWAY_BIND` / `MCP_GATEWAY_PORT` | `127.0.0.1` / `8080` | Host bind and port for `mcp-gateway` |
+
+## MCP server & gateway (`apps/mcp` & `apps/mcp-gateway`)
+
+| Variable | Default | Binary |
+| --- | --- | --- |
+| `FERRISTRACE_MCP_LISTEN` | `0.0.0.0:8081` | `ferristrace-mcp` listen address |
+| `FERRISTRACE_MCP_API_URL` | `http://localhost:3333` (`http://server:4318` in Compose) | FerrisTrace HTTP API base URL |
+| `FERRISTRACE_MCP_GATEWAY_LISTEN` | `0.0.0.0:8080` | `ferristrace-mcp-gateway` listen address |
+| `FERRISTRACE_MCP_GATEWAY_PUBLIC_URL` | required | Canonical public URL (`<url>/orgs/{org}/mcp`) |
+| `FERRISTRACE_MCP_GATEWAY_UPSTREAM` | `http://localhost:8081` | Upstream `ferristrace-mcp` URL |
+| `FERRISTRACE_MCP_GATEWAY_ISSUER` | required | FerrisKey realm OIDC issuer |
+| `FERRISTRACE_MCP_GATEWAY_API_URL` | `http://localhost:3333` | FerrisTrace API URL for PIP context lookups |
+| `FERRISTRACE_MCP_GATEWAY_AGENT_AUDIENCE` | required | Matches `FERRISTRACE_AGENTS__AUDIENCE` |
+| `FERRISTRACE_MCP_GATEWAY_PDP__URL` / `REALM` / `CLIENT_ID` / `CLIENT_SECRET` | required | FerrisKey AuthZEN PDP connection and PEP service account |
+| `FERRISTRACE_MCP_GATEWAY_EXCHANGE__CLIENT_ID` / `CLIENT_SECRET` | required | RFC 8693 token exchange client credentials |
+| `FERRISTRACE_MCP_GATEWAY_INGEST_ENDPOINT` / `INGEST_KEY` | unset | Optional OTLP/HTTP log export of `mcp_decision` audit events |

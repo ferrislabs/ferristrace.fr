@@ -1,0 +1,294 @@
+---
+title: OpenTelemetry SDKs
+description: Send traces, logs, and metrics directly from Node.js, Python, Go, Rust, Java, or .NET applications using standard OpenTelemetry SDKs.
+icon: code-2
+order: 2
+---
+
+# OpenTelemetry SDKs
+
+FerrisTrace speaks standard OpenTelemetry Protocol (OTLP) over gRPC (`4317`) and HTTP (`4318`). Any official OpenTelemetry SDK works out of the box without vendor wrappers.
+
+<Prereqs>
+- A running FerrisTrace instance (`localhost:4317` / `http://localhost:4318` or your deployment URL)
+- An ingest key (`ft_live_...`) from **Settings > Project > API keys**
+</Prereqs>
+
+## Recommended resource attributes
+
+Set three standard OpenTelemetry resource attributes on every service so FerrisTrace can populate **Services**, **Releases**, and environment filters automatically:
+
+| Attribute | Purpose in FerrisTrace | Example |
+| --- | --- | --- |
+| `service.name` | Groups spans, logs, metrics, issues, and service map edges | `checkout-api` |
+| `service.version` | Creates releases and deploy markers automatically on first sight | `2.4.1` or `sha-8f1c2a9` |
+| `deployment.environment.name` | Enables environment filtering (`production`, `staging`) across views and MCP policies | `production` |
+
+## Zero-code environment configuration
+
+Every official OpenTelemetry SDK honours these standard environment variables:
+
+```sh
+export OTEL_SERVICE_NAME="checkout-api"
+export OTEL_RESOURCE_ATTRIBUTES="service.version=1.4.0,deployment.environment.name=production"
+export OTEL_EXPORTER_OTLP_PROTOCOL="http/protobuf"
+export OTEL_EXPORTER_OTLP_ENDPOINT="http://localhost:4318"
+export OTEL_EXPORTER_OTLP_HEADERS="Authorization=Bearer ft_live_<prefix>.<secret>"
+export OTEL_EXPORTER_OTLP_COMPRESSION="gzip"
+```
+
+<Callout type="note">
+When using `OTEL_EXPORTER_OTLP_PROTOCOL="grpc"`, change `OTEL_EXPORTER_OTLP_ENDPOINT` to `http://localhost:4317` (or `https://<your-grpc-host>:4317` behind TLS). When setting signal-specific HTTP URLs (`OTEL_EXPORTER_OTLP_TRACES_ENDPOINT`), include the full path such as `http://localhost:4318/v1/traces`.
+</Callout>
+
+## Language setups
+
+<CodeTabs group="sdk-lang">
+
+<CodeTab label="Node.js / TypeScript">
+
+Install the Node SDK and auto-instrumentations:
+
+```sh
+pnpm add @opentelemetry/sdk-node \
+  @opentelemetry/auto-instrumentations-node \
+  @opentelemetry/exporter-trace-otlp-proto \
+  @opentelemetry/exporter-metrics-otlp-proto \
+  @opentelemetry/exporter-logs-otlp-proto \
+  @opentelemetry/resources
+```
+
+Create `instrumentation.ts` and load it first (`node --import ./instrumentation.js dist/index.js`):
+
+```ts
+import { NodeSDK } from '@opentelemetry/sdk-node'
+import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node'
+import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-proto'
+import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-proto'
+import { OTLPLogExporter } from '@opentelemetry/exporter-logs-otlp-proto'
+import { PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics'
+import { BatchLogRecordProcessor } from '@opentelemetry/sdk-logs'
+import { resourceFromAttributes } from '@opentelemetry/resources'
+
+const baseUrl = process.env.FERRISTRACE_URL ?? 'http://localhost:4318'
+const headers = {
+  Authorization: `Bearer ${process.env.FERRISTRACE_INGEST_KEY}`,
+}
+
+const sdk = new NodeSDK({
+  resource: resourceFromAttributes({
+    'service.name': 'checkout-api',
+    'service.version': process.env.APP_VERSION ?? '0.1.0',
+    'deployment.environment.name': process.env.NODE_ENV ?? 'production',
+  }),
+  traceExporter: new OTLPTraceExporter({ url: `${baseUrl}/v1/traces`, headers }),
+  metricReader: new PeriodicExportingMetricReader({
+    exporter: new OTLPMetricExporter({ url: `${baseUrl}/v1/metrics`, headers }),
+    exportIntervalMillis: 15_000,
+  }),
+  logRecordProcessors: [
+    new BatchLogRecordProcessor(
+      new OTLPLogExporter({ url: `${baseUrl}/v1/logs`, headers }),
+    ),
+  ],
+  instrumentations: [getNodeAutoInstrumentations()],
+})
+
+sdk.start()
+process.on('SIGTERM', () => sdk.shutdown().finally(() => process.exit(0)))
+```
+
+</CodeTab>
+
+<CodeTab label="Python">
+
+Install the OpenTelemetry distro and OTLP exporters:
+
+```sh
+pip install opentelemetry-distro opentelemetry-exporter-otlp
+opentelemetry-bootstrap -a install
+```
+
+Run your service with `opentelemetry-instrument`:
+
+```sh
+OTEL_SERVICE_NAME=billing-worker \
+OTEL_RESOURCE_ATTRIBUTES="service.version=1.2.0,deployment.environment.name=production" \
+OTEL_TRACES_EXPORTER=otlp \
+OTEL_METRICS_EXPORTER=otlp \
+OTEL_LOGS_EXPORTER=otlp \
+OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED=true \
+OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf \
+OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318 \
+OTEL_EXPORTER_OTLP_HEADERS="Authorization=Bearer ft_live_<prefix>.<secret>" \
+opentelemetry-instrument python app.py
+```
+
+</CodeTab>
+
+<CodeTab label="Go">
+
+Install the Go OTLP gRPC exporter packages:
+
+```sh
+go get go.opentelemetry.io/otel \
+  go.opentelemetry.io/otel/sdk/trace \
+  go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc
+```
+
+Configure the tracer provider in `main.go`:
+
+```go
+package main
+
+import (
+	"context"
+	"os"
+
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
+	"go.opentelemetry.io/otel/sdk/resource"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
+)
+
+func initTelemetry(ctx context.Context) (*sdktrace.TracerProvider, error) {
+	exp, err := otlptracegrpc.New(ctx,
+		otlptracegrpc.WithEndpoint("localhost:4317"),
+		otlptracegrpc.WithInsecure(),
+		otlptracegrpc.WithCompressor("gzip"),
+		otlptracegrpc.WithHeaders(map[string]string{
+			"authorization": "Bearer " + os.Getenv("FERRISTRACE_INGEST_KEY"),
+		}),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := resource.Merge(
+		resource.Default(),
+		resource.NewWithAttributes(
+			semconv.SchemaURL,
+			semconv.ServiceName("orders-service"),
+			semconv.ServiceVersion("1.0.0"),
+			attribute.String("deployment.environment.name", "production"),
+		),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	tp := sdktrace.NewTracerProvider(
+		sdktrace.WithBatcher(exp),
+		sdktrace.WithResource(res),
+	)
+	otel.SetTracerProvider(tp)
+	return tp, nil
+}
+```
+
+</CodeTab>
+
+<CodeTab label="Rust">
+
+Add `opentelemetry`, `opentelemetry_sdk`, `opentelemetry-otlp`, and `tracing-opentelemetry`:
+
+```toml
+[dependencies]
+opentelemetry = "0.29"
+opentelemetry_sdk = { version = "0.29", features = ["rt-tokio"] }
+opentelemetry-otlp = { version = "0.29", features = ["grpc-tonic", "gzip-tonic"] }
+tonic = "0.12"
+```
+
+Configure the OTLP tonic exporter with Bearer metadata:
+
+```rust
+use opentelemetry::KeyValue;
+use opentelemetry_otlp::{SpanExporter, WithExportConfig, WithTonicConfig};
+use opentelemetry_sdk::{Resource, trace::SdkTracerProvider};
+use tonic::metadata::{MetadataMap, MetadataValue};
+
+pub fn init_tracer(ingest_key: &str) -> anyhow::Result<SdkTracerProvider> {
+    let mut metadata = MetadataMap::new();
+    metadata.insert(
+        "authorization",
+        MetadataValue::try_from(format!("Bearer {ingest_key}"))?,
+    );
+
+    let exporter = SpanExporter::builder()
+        .with_tonic()
+        .with_endpoint("http://localhost:4317")
+        .with_metadata(metadata)
+        .build()?;
+
+    let resource = Resource::builder()
+        .with_service_name("catalog-rs")
+        .with_attributes([
+            KeyValue::new("service.version", env!("CARGO_PKG_VERSION")),
+            KeyValue::new("deployment.environment.name", "production"),
+        ])
+        .build();
+
+    Ok(SdkTracerProvider::builder()
+        .with_batch_exporter(exporter)
+        .with_resource(resource)
+        .build())
+}
+```
+
+</CodeTab>
+
+<CodeTab label="Java / .NET">
+
+**Java** (using `opentelemetry-javaagent.jar`):
+
+```sh
+OTEL_SERVICE_NAME=inventory-api \
+OTEL_RESOURCE_ATTRIBUTES="service.version=3.1.0,deployment.environment.name=production" \
+OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf \
+OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318 \
+OTEL_EXPORTER_OTLP_HEADERS="Authorization=Bearer ft_live_<prefix>.<secret>" \
+java -javaagent:/opt/opentelemetry-javaagent.jar -jar app.jar
+```
+
+**.NET** (with `OpenTelemetry.Exporter.OpenTelemetryProtocol`):
+
+```csharp
+builder.Services.AddOpenTelemetry()
+    .ConfigureResource(r => r
+        .AddService("payments-dotnet", serviceVersion: "2.0.0")
+        .AddAttributes([new("deployment.environment.name", "production")]))
+    .WithTracing(t => t
+        .AddAspNetCoreInstrumentation()
+        .AddHttpClientInstrumentation()
+        .AddOtlpExporter())
+    .WithMetrics(m => m
+        .AddAspNetCoreInstrumentation()
+        .AddOtlpExporter());
+```
+
+Then supply `OTEL_EXPORTER_OTLP_ENDPOINT` and `OTEL_EXPORTER_OTLP_HEADERS` in your environment as shown above.
+
+</CodeTab>
+
+</CodeTabs>
+
+## Recording exceptions for Issues
+
+FerrisTrace groups exceptions automatically in the **Issues** view whenever a span carries an OpenTelemetry `exception` event (`span.recordException(err)` in JS/TS, `span.record_exception(exc)` in Python, `span.RecordError(err)` in Go, or `#[instrument(err)]` in Rust) containing `exception.type`, `exception.message`, and `exception.stacktrace`. Setting `status = error` alone without recording an `exception` span event marks the trace red in **Traces** and **Services**, but does not create an entry in **Issues**.
+
+## Next steps
+
+<Cards>
+
+<Card href="/en/ferristrace/sending-data/opentelemetry-collector" title="OpenTelemetry Collector">
+Add host metrics, container metrics, and Kubernetes metadata enrichment.
+</Card>
+
+<Card href="/en/ferristrace/exploring/services-and-backend" title="Backend & semantic conventions">
+See which attributes power the Requests, Jobs, Cache, Queries, and System views.
+</Card>
+
+</Cards>

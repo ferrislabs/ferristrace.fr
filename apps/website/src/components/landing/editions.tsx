@@ -2,20 +2,19 @@ import type { ReactNode } from 'react'
 import { cn } from '@cometrace/ui'
 import { CopyCommand } from './copy-command'
 import { CheckList, Frame, SectionTitle } from './shared'
-import { IMAGE, links } from './links'
+import { links } from './links'
 
 const selfHosted = [
-  'A setup token is printed at first boot. There is no default password',
-  'Projects, ingest keys and API tokens per workspace',
-  'Local accounts, plus OpenID Connect (FerrisKey) when you configure it',
-  'Kubernetes manifests (Kustomize + ArgoCD) in deploy/k8s',
-  'Retention in days, set by an admin',
+  'Sign-in through FerrisKey (OIDC) — FerrisTrace stores no password',
+  'Unlimited users, projects, ingest keys and API keys',
+  'OCI Helm chart (ArgoCD ready) and Docker Compose stack',
+  'Retention in days set by you, plus S3 cold storage tiering',
 ]
 
 const cloud = [
-  'Same UI and API as self-hosted',
-  'Multi-region',
-  'Retention up to 90 days',
+  'Same UI, API and features as self-hosted',
+  'Free tier (30 GB/mo, 7d) or Pro at €19.99/mo (100 GB/mo, 30d)',
+  'Unlimited users and projects on every plan',
   'Export your data and move to self-hosted any time',
 ]
 
@@ -49,8 +48,11 @@ export function Editions() {
           action={
             <div className="space-y-3">
               <CopyCommand
-                label="Copy the docker run command"
-                lines={[`$ docker run -d -p 8080:8080 -p 4318:4318 -v ferristrace:/data ${IMAGE}`]}
+                label="Copy the self-host commands"
+                lines={[
+                  '$ git clone https://github.com/ferrislabs/ferristrace.git',
+                  '$ cd ferristrace/deploy && docker compose up --detach',
+                ]}
               />
               <a
                 href={links.selfHostGuide}
@@ -66,7 +68,9 @@ export function Editions() {
           id="cloud"
           title="Cloud"
           highlighted
-          aside={<span className={cn(pixelLabel, 'text-accent-text')}>Free while in beta</span>}
+          aside={
+            <span className={cn(pixelLabel, 'text-accent-text')}>Free · 30 GB / mo</span>
+          }
           body="We host the container, keep it updated and handle the backups. You get a workspace and an ingest key."
           items={cloud}
           action={

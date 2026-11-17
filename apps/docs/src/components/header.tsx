@@ -23,7 +23,7 @@ interface HeaderProps {
 }
 
 export function Header({
-  title = 'Cometrace',
+  title = 'FerrisTrace',
   projects,
   currentProject,
   currentVersion,
@@ -46,6 +46,7 @@ export function Header({
       <Navbar
         brand={title}
         brandHref="/"
+        brandIcon="/favicon.svg"
         currentApp="docs"
         appUrlOverrides={appUrlOverrides}
         breakpoint="lg"

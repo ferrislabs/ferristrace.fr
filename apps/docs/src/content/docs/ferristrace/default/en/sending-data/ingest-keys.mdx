@@ -1,0 +1,111 @@
+---
+title: Ingest keys
+description: Issue, scope, use, and revoke ft_live_ API keys for OpenTelemetry ingestion.
+icon: key-round
+order: 1
+---
+
+# Ingest keys
+
+Every OTLP payload sent to FerrisTrace — over gRPC on port `4317` or HTTP on port `4318` — must authenticate with an API key holding the `ingest` scope.
+
+## Key format and storage
+
+Keys use the `ft_live_` prefix followed by a unique cleartext identifier and a secret separated by a dot:
+
+```text
+ft_live_<prefix>.<secret>
+```
+
+- **Shown once.** FerrisTrace displays the full secret only at creation time.
+- **Hashed at rest.** PostgreSQL stores the cleartext `prefix` (for indexed lookup and display in audit logs) and a constant-time-verified **SHA-256 digest** of the secret. Neither the secret nor a reversible ciphertext ever touches disk.
+- **Project-bound.** An ingest key is tied to a project (`project_id`). Every span, log record, and metric point accepted under that key is stamped with that project's UUID and its organisation's retention TTL.
+
+<Callout type="warning" title="Always bind ingest keys to a project">
+When issuing a key from the CLI in an organisation with multiple projects, always pass `--project <project-uuid>`. A key without a project writes telemetry with `project_id = NULL`, which will not appear inside project-scoped views.
+</Callout>
+
+## Creating an ingest key
+
+### In the web UI
+
+1. Sign in as an organisation `owner` or `admin`.
+2. Select the target project in the top bar, then open **Settings > Project > API keys**.
+3. Click **New key**, enter a descriptive name (up to 64 bytes, such as `otel-collector-prod-eu`), select the **`ingest`** scope, and copy the secret immediately.
+
+### From the CLI
+
+Operators with shell access to the container or pod can mint an ingest key directly:
+
+```sh
+docker compose exec server ferristrace issue-key \
+  --org <org-uuid> \
+  --project <project-uuid>
+```
+
+### Via the HTTP API
+
+Signed-in owners and admins can issue keys programmatically:
+
+```sh
+curl -X POST "http://localhost:4318/api/orgs/$ORG_ID/keys" \
+  -H "Authorization: Bearer $USER_OIDC_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "otel-collector-prod",
+    "scopes": ["ingest"],
+    "project": "'"$PROJECT_ID"'"
+  }'
+```
+
+## Passing the key in OTLP exporters
+
+Send the key in the `Authorization` header using the `Bearer` scheme (case-insensitive):
+
+```http
+Authorization: Bearer ft_live_<prefix>.<secret>
+```
+
+In OpenTelemetry SDKs configured through standard `OTEL_EXPORTER_OTLP_HEADERS` environment variables:
+
+```sh
+export OTEL_EXPORTER_OTLP_HEADERS="Authorization=Bearer ft_live_<prefix>.<secret>"
+```
+
+<Callout type="note">
+For gRPC exporters (`localhost:4317`), the metadata key is lowercase `authorization` with value `Bearer ft_live_<prefix>.<secret>`. Standard OpenTelemetry SDKs map `OTEL_EXPORTER_OTLP_HEADERS="Authorization=Bearer ..."` to lowercase gRPC metadata automatically.
+</Callout>
+
+## Revoking and rotating keys
+
+Revoking a key takes effect immediately on the next request. To rotate without dropping telemetry:
+
+1. Create a replacement `ingest` key for the same project.
+2. Roll out the new key to your OpenTelemetry Collectors or application deployments.
+3. Verify `last_used_at` on the old key stops advancing in **Settings > Project > API keys**.
+4. Revoke the old key in the UI (`DELETE /api/orgs/{org}/keys/{key_id}`) or via the CLI using its prefix:
+
+```sh
+docker compose exec server ferristrace revoke-key --prefix ft_live_01932c45
+```
+
+Both creation and revocation are recorded in **Settings > Organisation > Audit log**.
+
+## Payload size and compression
+
+- **Gzip compression** (`Content-Encoding: gzip` on HTTP and `gzip` compression on gRPC) is supported and recommended for production workloads.
+- **Maximum payload size** is **4 MiB decompressed** per HTTP request. Payloads larger than 4 MiB after decompression are rejected with `413 Payload Too Large` rather than silently truncated; keep Collector `batch` processor sizes below that ceiling (for example `send_batch_max_size: 2048`).
+
+## Next steps
+
+<Cards>
+
+<Card href="/en/ferristrace/sending-data/opentelemetry-sdks" title="OpenTelemetry SDKs">
+Instrument Node.js, Python, Go, Rust, Java, or .NET services directly.
+</Card>
+
+<Card href="/en/ferristrace/sending-data/opentelemetry-collector" title="OpenTelemetry Collector">
+Fan in telemetry through a Collector with batching, retries, and Kubernetes enrichment.
+</Card>
+
+</Cards>

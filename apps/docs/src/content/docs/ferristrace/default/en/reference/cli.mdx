@@ -1,0 +1,99 @@
+---
+title: CLI reference
+description: Every subcommand and flag of the ferristrace server binary for bootstrapping, provisioning, key management, healthchecks, and backfills.
+icon: terminal
+order: 3
+---
+
+# CLI reference
+
+The `ferristrace` binary (`apps/server`) runs the ingestion and control-plane server when invoked with no subcommand, and provides administrative subcommands for day-zero bootstrap and day-two operations.
+
+Every subcommand reads the exact same `ferristrace.toml` and `FERRISTRACE_*` environment variables as the server, and records administrative mutations in the organisation's audit log under actor `operator`.
+
+```sh
+# Inside Docker Compose
+docker compose exec server ferristrace <subcommand> [flags]
+
+# Inside Kubernetes
+kubectl -n ferristrace exec deploy/ferristrace -- ferristrace <subcommand> [flags]
+```
+
+## Server mode (no subcommand)
+
+```sh
+ferristrace
+```
+
+Connects to PostgreSQL, ClickHouse, and Redis, runs pending schema migrations, rehydrates usage counters, starts background evaluation/delivery loops, and serves OTLP gRPC (`4317`) and HTTP + UI (`4318`).
+
+## Subcommands
+
+### `bootstrap`
+
+Founds the first account, initial organisation, and `default` project on a fresh deployment. Safe and idempotent: if any organisation already exists, `bootstrap` prints its UUID and makes no changes.
+
+```sh
+ferristrace bootstrap --email <email> [--org <name>]
+```
+
+| Flag | Required | Default | Description |
+| --- | --- | --- | --- |
+| `--email` | Yes | — | Verified OIDC email address of the initial owner |
+| `--org` | No | `Default` | Display name of the initial organisation |
+
+### `create-org`
+
+Creates an additional organisation owned by the given email address (provisioning the account record if needed). Prints the new organisation UUID to `stdout`.
+
+```sh
+ferristrace create-org --name "Staging" --owner ops@example.com
+```
+
+### `create-project`
+
+Creates a project slug inside an existing organisation and prints the new project UUID to `stdout`.
+
+```sh
+ferristrace create-project --org <org-uuid> --name checkout-eu
+```
+
+### `grant-role`
+
+Grants or updates a member's role (`owner`, `admin`, or `member`) in an organisation. Useful as break-glass recovery from the command line.
+
+```sh
+ferristrace grant-role --org <org-uuid> --member alice@example.com --role owner
+```
+
+### `issue-key`
+
+Mints a new `ft_live_` API key with the `ingest` scope and prints the plaintext secret once to `stdout`.
+
+```sh
+ferristrace issue-key --org <org-uuid> --project <project-uuid>
+```
+
+### `revoke-key`
+
+Immediately revokes a live key by its cleartext prefix.
+
+```sh
+ferristrace revoke-key --prefix ft_live_01932c45
+```
+
+### `backfill-usage`
+
+Populates missing per-signal (`spans_bytes`, `logs_bytes`, `metrics_points`) and per-project (`usage_hourly_project`) splits for historical hours rolled up on older versions of FerrisTrace, reading stored proportions from ClickHouse without altering `ingested_bytes`.
+
+```sh
+ferristrace backfill-usage
+```
+
+### `health`
+
+Queries `http://127.0.0.1:<http_port>/health` with a 5-second timeout and exits `0` on `2xx` or non-zero otherwise. Used as the container healthcheck inside distroless images that carry no `curl` or shell.
+
+```sh
+ferristrace health
+```

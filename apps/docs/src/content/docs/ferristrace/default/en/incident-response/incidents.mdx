@@ -1,0 +1,34 @@
+---
+title: Incidents
+description: Declare incidents, coordinate response on an append-only timeline, attach telemetry evidence, and track alert and deploy changes automatically.
+icon: siren
+order: 2
+---
+
+# Incidents
+
+**Incidents** (`/incidents`, shortcut `g` then `n`) provides a fast, resilient command centre for active outages — backed solely by PostgreSQL so you can still declare and coordinate incidents even if your telemetry pipeline or ClickHouse cluster is under stress.
+
+## Lifecycle, severities, and permissions
+
+Any member of the organisation can declare and work an incident:
+
+- **Severities** — `sev1` (critical outage), `sev2` (major degradation), `sev3` (minor impact), `sev4` (cosmetic / low impact).
+- **Statuses** — `investigating` -> `identified` -> `monitoring` -> `resolved`.
+- **Ownership & visibility** — Assign an incident lead (`owner`) and toggle whether the incident is **public** (visible on your organisation's [Public status pages](/en/ferristrace/incident-response/status-pages)).
+- **No deletion** — Incidents are never deleted. Resolve an incident when mitigated, and set its status back to `investigating`, `identified`, or `monitoring` if you need to reopen it.
+
+API keys with the `read` scope can read incidents and timelines (`GET /api/orgs/{org}/incidents`) but can never mutate them (`403 Forbidden`).
+
+## Append-only timeline & evidence attachments
+
+Every change to an incident inserts an immutable event into `incident_events` and records a matching entry in the organisation's audit log (`incident.opened`, `incident.updated`, `incident.commented`, `incident.attached`, `incident.resolved`, `incident.reopened`):
+
+- **Comments** — Post internal coordination notes or tick **Post publicly on the status page** (`"public": true`) to publish an update simultaneously to status page visitors and email subscribers.
+- **Evidence attachments** — From **Traces**, **Logs**, or **Metrics**, click **Attach to incident** to pin a specific trace waterfall, log query, or metric chart directly onto the timeline.
+- **Alert state tracking** — When an incident is declared from a firing alert rule, FerrisTrace links the two: every subsequent state change of that alert rule appends a system `alert` event to the incident timeline until the incident is resolved.
+- **Automatic deploy correlation** — Every minute, FerrisTrace checks for new releases or CI deploy markers (`follow_deploys`). Deploys of a service named by the incident's alert (or of any service when the incident has no linked alert) are automatically added to the open incident's timeline and included when drafting its postmortem.
+
+## Incident insights (`/incidents/insights`)
+
+Open **Incidents > Insights** to review historical incident volume, severity distribution, mean time to acknowledge (MTTA), and mean time to resolve (MTTR) across your organisation.

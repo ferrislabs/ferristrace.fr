@@ -1,0 +1,201 @@
+---
+title: "Quickstart: Docker Compose"
+description: Bring up FerrisTrace, PostgreSQL, ClickHouse, Redis, and FerrisKey with Docker Compose, bootstrap your organisation, and ingest your first trace.
+icon: rocket
+order: 3
+---
+
+# Quickstart: Docker Compose
+
+The `deploy/` directory in the FerrisTrace repository brings up a complete self-hosted stack — the `ferristrace` server, PostgreSQL, ClickHouse, Redis, FerrisKey (OIDC identity provider), and the MCP gateway — with a single `docker compose` command.
+
+<Prereqs>
+- Docker Engine 24+ and Docker Compose v2
+- Administrator / `sudo` access on your workstation (only if testing locally on `localhost`, to add one `/etc/hosts` entry for FerrisKey)
+- `curl` for testing OTLP ingestion
+</Prereqs>
+
+<Steps>
+
+<Step title="Clone the repository">
+
+```sh
+git clone https://github.com/ferrislabs/ferristrace.git
+cd ferristrace/deploy
+```
+
+</Step>
+
+<Step title="Map the ferriskey hostname (local workstation only)">
+
+FerrisKey derives its OIDC discovery URLs and token `iss` claim from the HTTP `Host` header. Both your browser and the `ferristrace` container must reach FerrisKey under the same hostname (`ferriskey`), or token issuer verification will fail.
+
+On a local laptop or workstation, map `ferriskey` to loopback once:
+
+<CodeTabs group="os">
+<CodeTab label="Linux / macOS">
+
+```sh
+echo '127.0.0.1 ferriskey' | sudo tee -a /etc/hosts
+```
+
+</CodeTab>
+<CodeTab label="Windows (PowerShell as Admin)">
+
+```powershell
+Add-Content -Path C:\Windows\System32\drivers\etc\hosts -Value "`n127.0.0.1 ferriskey"
+```
+
+</CodeTab>
+</CodeTabs>
+
+<Callout type="note">
+In production, FerrisKey runs behind a real DNS hostname (for example `https://id.example.com`) that both browsers and containers resolve naturally, so no `/etc/hosts` entry is needed.
+</Callout>
+
+</Step>
+
+<Step title="Start the stack">
+
+You can either run a published multi-arch release image from GitHub Container Registry or build from source:
+
+<CodeTabs group="start-mode">
+<CodeTab label="Published image">
+
+```sh
+export FERRISTRACE_IMAGE=ghcr.io/ferrislabs/ferristrace:latest
+docker compose up --detach --no-build --pull always
+```
+
+</CodeTab>
+<CodeTab label="Build from source">
+
+```sh
+docker compose up --build --detach
+```
+
+</CodeTab>
+</CodeTabs>
+
+On startup:
+- `postgres`, `clickhouse`, and `redis` initialize their volumes and pass healthchecks.
+- `ferriskey-migrations` and `ferriskey-init` provision the `ferristrace` realm, the PKCE public web client, and the MCP policies automatically.
+- `server` runs all PostgreSQL and ClickHouse migrations, then listens on port **`4317`** (OTLP gRPC) and port **`4318`** (OTLP HTTP, REST API, and web UI).
+
+Verify the server is healthy:
+
+```sh
+curl http://localhost:4318/health
+# ok
+```
+
+</Step>
+
+<Step title="Create your user in FerrisKey and bootstrap the organisation">
+
+A fresh deployment has no accounts or organisations. Complete these two actions in either order:
+
+1. Open the FerrisKey admin console at `http://ferriskey:5555` and sign in (`admin` / `admin` by default).
+2. Select the **`ferristrace`** realm, create a user with your email address (for example `you@example.com`), set a password, and **mark the email address as verified**.
+
+<Callout type="warning" title="Email verification is required">
+FerrisTrace only links a pre-created account to an OIDC login when the identity provider asserts `email_verified: true`. Unverified addresses are refused.
+</Callout>
+
+3. Run `bootstrap` to create your account, found the initial organisation, and create its `default` project:
+
+```sh
+docker compose exec server ferristrace bootstrap --email you@example.com
+```
+
+The command prints your new organisation UUID and `default` project UUID:
+
+```text
+you@example.com owns Default (01932c40-8b1e-7000-8000-000000000001).
+It holds one project, default (01932c40-8b20-7000-8000-000000000002).
+Draw its first ingest key with:
+  ferristrace issue-key --org 01932c40-8b1e-7000-8000-000000000001 --project 01932c40-8b20-7000-8000-000000000002
+```
+
+Open `http://localhost:4318` and click **Continue with FerrisKey** to sign in.
+
+</Step>
+
+<Step title="Issue an ingest key and send your first trace">
+
+Create an ingest key from **Settings > Project > API keys** in the web UI, or from the CLI using the UUIDs printed by `bootstrap`:
+
+```sh
+docker compose exec server ferristrace issue-key \
+  --org <org-uuid> \
+  --project <project-uuid>
+```
+
+Copy the `ft_live_...` key (it is shown only once) and send a test OTLP JSON span over HTTP:
+
+```sh
+curl -X POST http://localhost:4318/v1/traces \
+  -H "Authorization: Bearer ft_live_<your-key>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "resourceSpans": [{
+      "resource": {
+        "attributes": [
+          { "key": "service.name", "value": { "stringValue": "checkout" } },
+          { "key": "deployment.environment.name", "value": { "stringValue": "production" } }
+        ]
+      },
+      "scopeSpans": [{
+        "spans": [{
+          "traceId": "5b8aa5a2d2c872e8321cf37308d69df2",
+          "spanId": "051581bf3cb55c13",
+          "name": "POST /pay",
+          "kind": 2,
+          "startTimeUnixNano": "1763400000000000000",
+          "endTimeUnixNano": "1763400000042000000",
+          "status": { "code": 1 }
+        }]
+      }]
+    }]
+  }'
+```
+
+Within 5 seconds (the maximum batch flush interval), open `http://localhost:4318/traces` or `http://localhost:4318/services` to inspect `checkout`.
+
+</Step>
+
+</Steps>
+
+## Production checklist
+
+Before exposing a Docker Compose deployment beyond `localhost`, copy `.env.example` to `.env` and set:
+
+```sh
+cp .env.example .env
+```
+
+1. **Database passwords** — Set strong values for `POSTGRES_PASSWORD`, `CLICKHOUSE_PASSWORD`, and `FERRISKEY_DB_PASSWORD`. Keep `POSTGRES_BIND=127.0.0.1` unless external database clients require access.
+2. **FerrisKey admin credentials** — Set `FERRISKEY_ADMIN_USERNAME` and `FERRISKEY_ADMIN_PASSWORD` **before first start** (FerrisKey seeds its initial admin account only when its database is empty).
+3. **Secret sealing key** — Generate a 32-byte hex key with `openssl rand -hex 32` and set `FERRISTRACE_SECRETS__AT_REST_KEY`. Required for webhook signing secrets, email page acknowledgement links, and status page subscriptions.
+4. **TLS reverse proxy** — Terminate HTTPS in front of port `4318` (and FerrisKey) and point `FERRISTRACE_OIDC__ISSUER` at your public HTTPS FerrisKey realm URL.
+5. **Verify image signatures (optional)** — Every official release image is keyless-signed with Cosign in Sigstore:
+
+```sh
+cosign verify ghcr.io/ferrislabs/ferristrace:0.1.0 \
+  --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+  --certificate-identity-regexp '^https://github.com/ferrislabs/ferristrace/\.github/workflows/docker\.yaml@'
+```
+
+## Next steps
+
+<Cards>
+
+<Card href="/en/ferristrace/getting-started/kubernetes-helm" title="Deploy on Kubernetes (Helm)">
+Run FerrisTrace on Kubernetes with external stores, PodDisruptionBudgets, and Gateway API routing.
+</Card>
+
+<Card href="/en/ferristrace/sending-data/opentelemetry-sdks" title="Instrument an application">
+Configure OpenTelemetry SDKs in Node.js, Python, Go, Rust, Java, or .NET.
+</Card>
+
+</Cards>

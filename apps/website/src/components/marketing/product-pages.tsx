@@ -170,7 +170,7 @@ export function ObservabilityPage() {
       <ExploreGrid title="The rest of FerrisTrace." entries={others('observability')} />
       <CtaBand
         title="Find your slowest request in the next ten minutes."
-        body="Cloud is free while we are in beta. Self-hosting takes one docker run."
+        body="Start free on Cloud with 30 GB/month included, or self-host with Docker Compose or Helm."
       />
     </PageShell>
   )
@@ -278,7 +278,7 @@ export function InfrastructurePage() {
           {
             Icon: GitBranch,
             title: 'GitOps ready',
-            body: 'Self-host it from the Kustomize manifests and let ArgoCD deploy it with your apps.',
+            body: 'Self-host it from the OCI Helm chart and let ArgoCD deploy it with your apps.',
           },
         ]}
       />

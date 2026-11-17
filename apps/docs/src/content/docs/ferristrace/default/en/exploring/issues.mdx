@@ -1,0 +1,50 @@
+---
+title: Issues & exceptions
+description: Group recurring exceptions automatically by normalised fingerprint, assign owners, resolve issues, and catch regressions.
+icon: circle-alert
+order: 7
+---
+
+# Issues & exceptions
+
+The **Issues** view (`/issues`, shortcut `g` then `i`) deduplicates noisy exception streams into actionable error groups scoped per project.
+
+## How exception fingerprinting works
+
+Whenever an ingested span includes a span event named **`exception`** (standard OpenTelemetry `span.recordException(...)` carrying `exception.type`, `exception.message`, and `exception.stacktrace`), FerrisTrace computes a deterministic 16-byte SHA-256 **fingerprint** at ingest time over:
+
+1. `service.name`
+2. `exception.type`
+3. Normalised `exception.message`
+
+Before hashing, message normalisation strips volatile values so distinct occurrences of the same bug collapse into a single issue:
+- Runs of digits (`48192`) become `0`
+- UUIDs and hexadecimal strings longer than 8 characters become `x`
+- Single- and double-quoted substrings become `''`
+- File or URL paths keep only their final segment
+
+The fingerprint is stored on `span_events` in ClickHouse with a skip index, so spans that never threw an exception incur zero overhead.
+
+<Callout type="note">
+Issues are scoped per **project** and per **service**: the same library exception thrown in two different services or two different projects creates two separate issues so each team can triage its own work independently.
+</Callout>
+
+## Triage lifecycle and regression detection
+
+While raw occurrences expire from ClickHouse according to your retention TTL, human triage decisions live permanently in PostgreSQL (`issue_decisions`):
+
+| Status | Meaning |
+| --- | --- |
+| **`unresolved`** | Default state for any newly seen exception fingerprint (requires no database write until acted upon). |
+| **`resolved`** | Marked fixed by a team member. |
+| **`ignored`** | Muted from active triage queues. |
+
+- **Automatic regression detection** — If a new occurrence of a **`resolved`** issue arrives after the timestamp it was resolved, FerrisTrace flags the issue as **Regressed** (`regressed: true`) so broken fixes surface immediately on **Overview** and **Issues**.
+- **Ownership** — Assign any organisation member as the owner of an issue (`PATCH /api/orgs/{org}/issues/{fingerprint}`).
+
+## Inspecting occurrences and stack traces
+
+Opening `/issues/{fingerprint}` displays:
+- Exception type, normalised message, owning service, total occurrence count in the window, `first_seen`, and `last_seen`.
+- Full raw `exception.stacktrace` text captured by the OpenTelemetry SDK.
+- Recent occurrences (`/api/orgs/{org}/issues/{fingerprint}/occurrences`), each linking directly to the exact distributed trace waterfall (`/traces/{trace_id}`) where the exception was thrown.

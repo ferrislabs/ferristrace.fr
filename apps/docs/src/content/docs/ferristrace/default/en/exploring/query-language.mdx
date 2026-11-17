@@ -1,0 +1,73 @@
+---
+title: Query language & filters
+description: Filter traces, spans, logs, and dashboard panels using FerrisTrace's typed boolean query language and saved views.
+icon: search
+order: 2
+---
+
+# Query language & filters
+
+The **Traces**, **Logs**, and **Dashboard** query bars share a single typed filter language with context-aware autocomplete for field names, operators, and observed attribute values.
+
+```text
+service = checkout-api AND (http_status_code >= 500 OR duration >= 500ms) AND NOT http.route = "/health"
+```
+
+## Built-in fields
+
+Built-in fields map directly to indexed ClickHouse columns:
+
+| Field | Signals | Type | Allowed values / notes |
+| --- | --- | --- | --- |
+| `service` | Traces, Logs, Metrics | Text | Service name (`service.name`) |
+| `name` | Traces | Text | Span operation name (for example `POST /pay`) |
+| `status` | Traces | Choice | `ok`, `error`, `unset` |
+| `kind` | Traces | Choice | `server`, `client`, `internal`, `producer`, `consumer`, `unspecified` |
+| `duration` | Traces | Duration / Number | Accepts `us`, `ms`, `s`, or `m` suffixes (bare numbers default to `ms`) |
+| `http_status_code` | Traces | Number | Extracted from `http.response.status_code` or `http.status_code` |
+| `trace_id` | Traces, Logs | Hex (`32` chars) | Exact 32-character hexadecimal trace ID |
+| `span_id` | Traces, Logs | Hex (`16` chars) | Exact 16-character hexadecimal span ID |
+| `severity` | Logs | Choice | `trace`, `debug`, `info`, `warn`, `error`, `fatal` |
+| `body` | Logs | Text | Log message body (`body CONTAINS "timeout"`) |
+
+## Custom attributes
+
+Any identifier that is not a built-in field queries span, resource, or log attributes directly:
+
+- Bare attribute keys may contain letters, digits, `_`, `.`, and `-`:
+  - `http.route = "/api/orders"`
+  - `k8s.pod.name = checkout-7f9d8c-2k4p`
+  - `gen_ai.request.model = "claude-sonnet-4-5"`
+  - `cache.hit = false`
+- Quote an attribute name with double quotes if it collides with a reserved keyword (`"in" = "eu-west-1"`) or contains spaces.
+
+## Operators
+
+| Operator | Syntax | Supported types | Example |
+| --- | --- | --- | --- |
+| Equals | `=` (or `==`) | Text, Choice, Number, Boolean | `status = error` |
+| Not equals | `!=` | Text, Choice, Number, Boolean | `service != healthcheck` |
+| Comparisons | `>`, `>=`, `<`, `<=` | Number, `duration` | `duration >= 1.5s`, `http.retry_count > 2` |
+| Substring match | `CONTAINS`, `NOT CONTAINS` | Text | `body CONTAINS "deadlock"` |
+| Set membership | `IN (...)`, `NOT IN (...)` | Text, Choice, Number | `severity IN (error, fatal)` |
+| Attribute presence | `EXISTS`, `NOT EXISTS` | Custom attributes | `exception.type EXISTS` |
+
+Operators and boolean keywords (`AND`, `OR`, `NOT`, `IN`, `CONTAINS`, `EXISTS`) are case-insensitive.
+
+## Boolean composition and limits
+
+Combine clauses with **`AND`**, **`OR`**, **`NOT`**, and parentheses `(...)`. Standard operator precedence applies (`NOT` binds tightest, then `AND`, then `OR`):
+
+```text
+severity IN (warn, error, fatal)
+  AND (service = payments OR service = ledger)
+  AND NOT body CONTAINS "connection reset by peer"
+```
+
+- **Duration units** — `500us`, `250ms`, `2s`, `1.5m` are converted to nanoseconds on the wire automatically.
+- **Query bounds** — A single query supports up to **32 conditions** (`MAX_CLAUSES`) and **8 levels of nesting** (`MAX_DEPTH`), preventing runaway expressions.
+
+## Facets and saved views
+
+- **Facet rail** — Clicking any attribute value in the left facet sidebar toggles `=` / `IN` (include) or `!=` / `NOT IN` (exclude) chips in the query bar, keeping visual chips and text queries synchronized.
+- **Saved views** — Save frequently used filter combinations, sort orders, and presets (alongside the built-in `Errors`, `Slow`, and `Explore` trace views) to share across your organisation via `/api/orgs/{org}/views`.

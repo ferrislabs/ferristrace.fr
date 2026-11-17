@@ -88,7 +88,7 @@ const solutionData: Record<SolutionSlug, Solution> = {
         after: [
           [
             'FerrisTrace',
-            'self-host free with unlimited users, or use Cloud while the beta is free',
+            'unlimited users on every plan — self-host free or start on Cloud Free (30 GB/mo)',
           ],
         ],
         result: 'Anyone who ships code gets to look at production.',
@@ -112,7 +112,7 @@ const solutionData: Record<SolutionSlug, Solution> = {
     recommended: ['observability', 'incidents', 'ai-observability', 'infrastructure'],
     cta: {
       title: 'Set it up before your next release goes out.',
-      body: 'Cloud is free during the beta, and signing up takes a minute without a credit card.',
+      body: 'Cloud Free includes 30 GB/month and signing up takes a minute without a credit card.',
     },
   },
   enterprises: {
@@ -230,7 +230,7 @@ const solutionData: Record<SolutionSlug, Solution> = {
     recommended: ['infrastructure', 'observability', 'incidents', 'ai-agents'],
     cta: {
       title: 'Give every team observability and keep your queue short.',
-      body: 'Deploy it with our Kustomize manifests through ArgoCD, or try it on Cloud first.',
+      body: 'Deploy our OCI Helm chart through ArgoCD, or try it on Cloud first.',
     },
   },
   'ai-teams': {

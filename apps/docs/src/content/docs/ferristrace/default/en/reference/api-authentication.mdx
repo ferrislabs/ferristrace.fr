@@ -1,0 +1,55 @@
+---
+title: API keys & authentication
+description: Authenticate against FerrisTrace HTTP endpoints using read-scoped ft_live_ API keys, OIDC user tokens, or AI agent JWTs.
+icon: key
+order: 1
+---
+
+# API keys & authentication
+
+Every authenticated HTTP route in FerrisTrace expects a standard `Authorization: Bearer <token>` header:
+
+```http
+Authorization: Bearer <token>
+```
+
+FerrisTrace inspects the shape of `<token>` to route authentication automatically:
+
+1. **Three dot-separated base64url segments (`header.payload.signature`)** — Verified as a JWT:
+   - First checked against the human OIDC verifier (`FERRISTRACE_OIDC__*`) if the token belongs to the web client.
+   - Otherwise checked against the AI agent verifier (`FERRISTRACE_AGENTS__*`, requiring `aud == FERRISTRACE_AGENTS__AUDIENCE` and a registered active agent).
+2. **Any non-JWT token (`ft_live_<prefix>.<secret>`)** — Verified in constant time against SHA-256 API key digests in PostgreSQL.
+
+## Issuing a `read` API key
+
+To query telemetry from scripts, CI checks, Grafana/custom tools, or runbooks without an interactive user token:
+
+1. Sign in as an `owner` or `admin` and open **Settings > Project > API keys**.
+2. Click **New key**, choose a name, tick the **`read`** scope (you can combine `ingest` and `read` on one key, though separating write and read keys is recommended), and optionally bind it to a single **Project**.
+3. Copy the `ft_live_<prefix>.<secret>` value immediately.
+
+```sh
+curl -H "Authorization: Bearer ft_live_<prefix>.<secret>" \
+  "http://localhost:4318/api/orgs/$ORG_ID/services?from=1763396400000&to=1763400000000"
+```
+
+### Project-scoped `read` keys
+
+When a `read` key is bound to a project:
+- Every query across traces, logs, metrics, services, infrastructure, issues, releases, LLM calls, incidents, and dashboards automatically restricts results to **that project only**.
+- Requesting an item belonging to another project (or an incident without a project) returns `404 Not Found` or `403 Forbidden`.
+- A `read` key is strictly read-only: any `POST`, `PUT`, `PATCH`, or `DELETE` mutation (other than read-only search `POST` endpoints such as `/traces/search`, `/logs/search`, and `/v1/dashboards/query`) returns `403 Forbidden`.
+
+## Common HTTP status codes
+
+| Status | Meaning |
+| --- | --- |
+| `200 OK` / `201 Created` / `202 Accepted` | Request succeeded |
+| `400 Bad Request` | Invalid query parameter, malformed filter syntax, or invalid time window (`from >= to`) |
+| `401 Unauthorized` | Missing `Authorization: Bearer` header, expired/invalid JWT, or unknown/revoked key |
+| `403 Forbidden` | Caller is authenticated but lacks the required role, project access, or key/agent scope |
+| `404 Not Found` | Resource does not exist or is outside the caller's project/organisation scope |
+| `409 Conflict` | Duplicate slug/name or state conflict (for example editing a published postmortem) |
+| `413 Payload Too Large` | Request body exceeds endpoint limit (4 MiB OTLP, 300 KiB dashboard save, 128 KiB panel query) |
+| `422 Unprocessable Entity` | Domain validation failed (for example creating a webhook without `at_rest_key` or unknown `schema_version`) |
+| `503 Service Unavailable` | ClickHouse or the OIDC JWKS endpoint is unconfigured or temporarily unreachable |

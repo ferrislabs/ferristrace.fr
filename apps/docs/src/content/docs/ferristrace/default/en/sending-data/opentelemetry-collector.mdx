@@ -1,0 +1,143 @@
+---
+title: OpenTelemetry Collector
+description: Route traces, logs, and metrics through the OpenTelemetry Collector for batching, retries, host metrics, and Kubernetes enrichment.
+icon: workflow
+order: 3
+---
+
+# OpenTelemetry Collector
+
+Running the [OpenTelemetry Collector](https://opentelemetry.io/docs/collector/) (`otel/opentelemetry-collector-contrib`) between your applications and FerrisTrace decouples telemetry delivery from application processes, adds local retry queues and memory limits, and unlocks host, container, and Kubernetes infrastructure metrics.
+
+## Standard gateway / agent configuration
+
+Save the configuration below as `otel-collector-config.yaml` and supply `FERRISTRACE_ENDPOINT` and `FERRISTRACE_INGEST_KEY` in the Collector's environment:
+
+```yaml
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+  # Optional: populate Infrastructure > Hosts and Services > System metrics
+  hostmetrics:
+    collection_interval: 30s
+    scrapers:
+      cpu: {}
+      memory: {}
+      load: {}
+      disk: {}
+      filesystem: {}
+      network: {}
+
+processors:
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 512
+    spike_limit_mib: 128
+
+  resourcedetection:
+    detectors: [env, system]
+    timeout: 2s
+    override: false
+
+  # Keep decompressed batches safely under FerrisTrace's 4 MiB HTTP body limit
+  batch:
+    send_batch_size: 1024
+    send_batch_max_size: 2048
+    timeout: 2s
+
+exporters:
+  otlphttp/ferristrace:
+    endpoint: ${env:FERRISTRACE_ENDPOINT} # e.g. https://ferristrace.example.com or http://server:4318
+    compression: gzip
+    headers:
+      Authorization: Bearer ${env:FERRISTRACE_INGEST_KEY}
+    retry_on_failure:
+      enabled: true
+      initial_interval: 1s
+      max_interval: 30s
+      max_elapsed_time: 300s
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, resourcedetection, batch]
+      exporters: [otlphttp/ferristrace]
+    logs:
+      receivers: [otlp]
+      processors: [memory_limiter, resourcedetection, batch]
+      exporters: [otlphttp/ferristrace]
+    metrics:
+      receivers: [otlp, hostmetrics]
+      processors: [memory_limiter, resourcedetection, batch]
+      exporters: [otlphttp/ferristrace]
+```
+
+## Exporting over gRPC instead of HTTP
+
+If your FerrisTrace gRPC port (`4317`) is reachable directly (for example inside the same VPC or Kubernetes cluster), you can use the `otlp` gRPC exporter instead of `otlphttp`:
+
+```yaml
+exporters:
+  otlp/ferristrace:
+    endpoint: ferristrace.ferristrace.svc.cluster.local:4317
+    tls:
+      insecure: true # set false when terminating TLS on 4317
+    compression: gzip
+    headers:
+      authorization: Bearer ${env:FERRISTRACE_INGEST_KEY}
+```
+
+## Sending CI/CD deploy markers
+
+FerrisTrace detects releases automatically when spans carry a new `service.version`. You can also record explicit deploy events from a CI/CD job by sending an OTLP log record with `event.name = "deploy"` (or `"deployment.event"`), `service.name`, `service.version`, and `deployment.environment.name`:
+
+```sh
+NOW_NS="$(date +%s)000000000"
+curl -X POST "$FERRISTRACE_URL/v1/logs" \
+  -H "Authorization: Bearer $FERRISTRACE_INGEST_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "resourceLogs": [{
+      "resource": {
+        "attributes": [
+          { "key": "service.name", "value": { "stringValue": "checkout-api" } },
+          { "key": "service.version", "value": { "stringValue": "2.5.0" } },
+          { "key": "deployment.environment.name", "value": { "stringValue": "production" } }
+        ]
+      },
+      "scopeLogs": [{
+        "logRecords": [{
+          "timeUnixNano": "'"$NOW_NS"'",
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": { "stringValue": "Deployed checkout-api 2.5.0" },
+          "attributes": [
+            { "key": "event.name", "value": { "stringValue": "deploy" } }
+          ]
+        }]
+      }]
+    }]
+  }'
+```
+
+Deploy markers appear on chart timelines, in **Services > Releases**, and are automatically appended to matching open incidents within one minute.
+
+## Next steps
+
+<Cards>
+
+<Card href="/en/ferristrace/exploring/infrastructure" title="Kubernetes & infrastructure Collector setup">
+Configure `k8s_cluster`, `kubeletstats`, and `k8sattributes` to light up the Kubernetes cluster view and placement pickers.
+</Card>
+
+<Card href="/en/ferristrace/sending-data/otlp-protocol" title="OTLP endpoints & wire format">
+Check supported encodings, limits, status codes, and signal specifics.
+</Card>
+
+</Cards>
