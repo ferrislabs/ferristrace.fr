@@ -60,4 +60,5 @@ export const links = {
   terms: '/terms',
   termsOfSale: '/terms-of-sale',
   privacy: '/privacy',
+  dpa: '/dpa',
 } as const

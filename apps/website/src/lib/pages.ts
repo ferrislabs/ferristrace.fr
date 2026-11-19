@@ -141,6 +141,14 @@ export const pages: PageMeta[] = [
     card: { eyebrow: 'Legal · GDPR / RGPD', headline: 'Privacy Policy & Data Protection.' },
     priority: 0.3,
   },
+  {
+    path: '/dpa/',
+    title: 'Data Processing Agreement (DPA)',
+    description:
+      'Article 28 GDPR Data Processing Agreement governing observability telemetry ingested into FerrisTrace Cloud workspaces in the European Union.',
+    card: { eyebrow: 'Legal · GDPR Art. 28', headline: 'Data Processing Agreement (DPA).' },
+    priority: 0.3,
+  },
 ]
 
 export function pageMeta(path: string): PageMeta {

@@ -6,7 +6,7 @@ import { PixelSprite } from '../pixel/pixel-sprite'
 import { cometCrab } from '../pixel/sprites'
 import { PageShell } from './blocks'
 
-type LegalDocId = 'terms' | 'terms-of-sale' | 'privacy'
+type LegalDocId = 'terms' | 'terms-of-sale' | 'privacy' | 'dpa'
 
 interface LegalSection {
   id: string
@@ -18,6 +18,7 @@ const LEGAL_TABS: Array<{ id: LegalDocId; label: string; shortLabel: string; hre
   { id: 'terms', label: 'Terms of Use (CGU)', shortLabel: 'CGU', href: links.terms },
   { id: 'terms-of-sale', label: 'Terms of Sale (CGV)', shortLabel: 'CGV', href: links.termsOfSale },
   { id: 'privacy', label: 'Privacy Policy (GDPR)', shortLabel: 'GDPR / RGPD', href: links.privacy },
+  { id: 'dpa', label: 'Data Processing Agreement (DPA)', shortLabel: 'DPA', href: links.dpa },
 ]
 
 const EFFECTIVE_DATE = 'November 18, 2026'
@@ -832,21 +833,17 @@ const saleSections: LegalSection[] = [
   },
   {
     id: 'dpa',
-    title: 'Data Processing Commitments (GDPR Art. 28)',
+    title: 'Data Processing Agreement (GDPR Art. 28)',
     content: (
       <>
         <p>
           When a Business Customer ingests personal data within telemetry sent to FerrisTrace Cloud,
-           the Customer acts as Data Controller and FerrisLabs acts as Data Processor within the
-          meaning of Article 28 of Regulation (EU) 2016/679 (GDPR). FerrisLabs processes such
-          telemetry solely on the Customer&apos;s documented instructions (providing the Cloud
-          observability service), hosts it in the European Union (France), applies the technical and
-          organisational security measures described in our{' '}
-          <InlineLink href={links.privacy}>Privacy Policy</InlineLink>, notifies the Customer
-          without undue delay upon becoming aware of a personal data breach, assists with data
-          subject requests and impact assessments where applicable, and deletes Customer telemetry
-          upon expiry of the configured retention TTL or workspace deletion. Enterprise customers
-          requiring a countersigned standalone Data Processing Agreement (DPA) may request one at{' '}
+          the Customer acts as Data Controller and FerrisLabs acts as Data Processor within the
+          meaning of Article 28 of Regulation (EU) 2016/679 (GDPR). Our{' '}
+          <InlineLink href={links.dpa}>Data Processing Agreement (DPA)</InlineLink> forms an
+          integral part of these Terms of Sale and applies automatically to every Business Customer
+          workspace. Enterprise customers requiring a countersigned PDF execution copy of the DPA
+          may request one at{' '}
           <InlineLink href="mailto:contact@ferrislabs.fr">contact@ferrislabs.fr</InlineLink>.
         </p>
       </>
@@ -908,8 +905,9 @@ const privacySections: LegalSection[] = [
               <strong>FerrisLabs as Data Processor (Sous-traitant, Art. 28 GDPR):</strong> For
               observability telemetry (traces, spans, logs, metrics, LLM spans, alerts, and incident
               records) ingested by Customers into their FerrisTrace Cloud workspaces. Each Customer
-              controls what telemetry its OpenTelemetry SDKs emit and remains the Data Controller
-              for any personal data contained in that telemetry.
+              controls what telemetry its OpenTelemetry SDKs emit, remains the Data Controller for
+              any personal data contained in that telemetry, and benefits from our{' '}
+              <InlineLink href={links.dpa}>Data Processing Agreement (DPA)</InlineLink>.
             </>,
             <>
               <strong>Privacy contact:</strong>{' '}
@@ -1231,6 +1229,434 @@ const privacySections: LegalSection[] = [
 ]
 
 /* ========================================================================== */
+/* 4. DATA PROCESSING AGREEMENT (DPA — ACCORD DE SOUS-TRAITANCE ART. 28 RGPD) */
+/* ========================================================================== */
+
+const dpaSections: LegalSection[] = [
+  {
+    id: 'dpa-parties-and-scope',
+    title: 'Parties, Scope & Incorporation (Art. 28 GDPR)',
+    content: (
+      <>
+        <p>
+          This Data Processing Agreement (<em>Accord de sous-traitance de données personnelles</em>{' '}
+          — &ldquo;DPA&rdquo;) is entered into pursuant to Article 28 of Regulation (EU) 2016/679
+          (the <strong>General Data Protection Regulation — GDPR / RGPD</strong>) and French Law
+          No. 78-17 of January 6, 1978 as amended (<em>Loi Informatique et Libertés</em>) between:
+        </p>
+        <BulletList
+          items={[
+            <>
+              <strong>The Data Controller (Responsable de traitement — &ldquo;Customer&rdquo;):</strong>{' '}
+              Any legal entity or professional user subscribing to or operating an Organisation
+              workspace on <strong>FerrisTrace Cloud</strong> (
+              <InlineLink href={links.signIn}>console.ferristrace.dev</InlineLink>); and
+            </>,
+            <>
+              <strong>The Data Processor (Sous-traitant — &ldquo;FerrisLabs&rdquo;):</strong>{' '}
+              <strong>Thibault Pointurier — Entrepreneur Individuel (EI)</strong>, operating under
+              the trade name <strong>FerrisLabs</strong> (French{' '}
+              <em>micro-entreprise / auto-entreprise</em>, SIREN / SIRET{' '}
+              <Placeholder>[SIREN / SIRET — À compléter]</Placeholder>, registered with the French{' '}
+              <em>Registre National des Entreprises (RNE)</em>, business address:{' '}
+              <Placeholder>[Business address — À compléter]</Placeholder>, France).
+            </>,
+          ]}
+        />
+        <p>
+          <strong>Automatic incorporation:</strong> This DPA forms an integral part of our{' '}
+          <InlineLink href={links.terms}>Terms of Use (CGU)</InlineLink> and{' '}
+          <InlineLink href={links.termsOfSale}>Terms of Sale (CGV)</InlineLink>, and applies
+          automatically whenever Customer telemetry ingested into FerrisTrace Cloud contains
+          personal data. Enterprise customers requiring a countersigned PDF execution copy may
+          request one at{' '}
+          <InlineLink href="mailto:contact@ferrislabs.fr">contact@ferrislabs.fr</InlineLink>. In the
+          event of any conflict between this DPA and the CGU/CGV regarding personal data protection,
+          this DPA prevails.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: 'dpa-annex-1-description',
+    title: 'Annex I — Description of Processing',
+    content: (
+      <>
+        <p>
+          In accordance with Article 28(3) GDPR, the subject matter, duration, nature, and purpose
+          of the processing, as well as the types of personal data and categories of data subjects,
+          are specified below:
+        </p>
+        <div className="overflow-x-auto border border-border bg-card">
+          <table className="w-full min-w-[560px] text-left text-sm">
+            <tbody className="divide-y divide-border">
+              <tr>
+                <th scope="row" className="w-56 px-4 py-3 font-medium text-foreground">
+                  Subject matter &amp; purpose
+                </th>
+                <td className="px-4 py-3">
+                  Provision of the managed <strong>FerrisTrace Cloud</strong> observability platform
+                  (ingestion, indexing, storage, querying, dashboarding, alerting, incident
+                  management, and Customer-authorised AI/MCP inspection of observability telemetry).
+                </td>
+              </tr>
+              <tr>
+                <th scope="row" className="px-4 py-3 font-medium text-foreground">
+                  Nature of operations
+                </th>
+                <td className="px-4 py-3">
+                  Automated reception over OpenTelemetry (OTLP gRPC/HTTP), structured parsing,
+                  ClickHouse &amp; PostgreSQL storage, full-text and attribute indexing, display in
+                  the Customer&apos;s workspace, portable <code>tar.gz</code> export, and automated
+                  TTL expiration or deletion.
+                </td>
+              </tr>
+              <tr>
+                <th scope="row" className="px-4 py-3 font-medium text-foreground">
+                  Duration of processing
+                </th>
+                <td className="px-4 py-3">
+                  For the duration of the Customer&apos;s FerrisTrace Cloud subscription, subject to
+                  rolling ClickHouse retention TTLs (<strong>7 days</strong> on Free,{' '}
+                  <strong>30 days</strong> on Pro, or the contractual window on Enterprise) and
+                  post-termination purge within 30 days.
+                </td>
+              </tr>
+              <tr>
+                <th scope="row" className="px-4 py-3 font-medium text-foreground">
+                  Categories of data subjects
+                </th>
+                <td className="px-4 py-3">
+                  Determined solely by the Customer&apos;s instrumentation; typically includes end
+                  users of the Customer&apos;s software applications, employees, engineers, on-call
+                  responders, or API consumers whose identifiers appear in telemetry emitted by the
+                  Customer&apos;s services.
+                </td>
+              </tr>
+              <tr>
+                <th scope="row" className="px-4 py-3 font-medium text-foreground">
+                  Categories of personal data
+                </th>
+                <td className="px-4 py-3">
+                  Determined by the Customer&apos;s OpenTelemetry SDKs and Collector pipelines:
+                  IP addresses, user/session IDs, request headers, URLs, email addresses, service
+                  log lines, span attributes, LLM prompt/completion metadata, and incident responder
+                  notes.
+                </td>
+              </tr>
+              <tr>
+                <th scope="row" className="px-4 py-3 font-medium text-foreground">
+                  Excluded sensitive data
+                </th>
+                <td className="px-4 py-3">
+                  Special categories of data (Art. 9 GDPR — health, biometric, political, religious
+                  data), criminal conviction data (Art. 10 GDPR), and unredacted payment card data
+                  (PCI-DSS PAN/CVV) are excluded and must be scrubbed or redacted in the
+                  Customer&apos;s OTel SDK or Collector prior to ingestion.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </>
+    ),
+  },
+  {
+    id: 'dpa-controller-and-processor-obligations',
+    title: 'Documented Instructions & Processor Obligations (Art. 28(3)(a)-(b))',
+    content: (
+      <>
+        <p>
+          <strong>Customer obligations as Data Controller:</strong> The Customer warrants that it
+          has a valid legal basis under Article 6 GDPR for collecting and transmitting any personal
+          data included in its telemetry, has informed data subjects appropriately, and configures
+          its OpenTelemetry instrumentation in compliance with the data minimisation principle (Art.
+          5(1)(c) GDPR).
+        </p>
+        <p>
+          <strong>FerrisLabs obligations as Data Processor:</strong> Pursuant to Article 28(3)(a)
+          and (b) GDPR, FerrisLabs undertakes to:
+        </p>
+        <BulletList
+          items={[
+            <>
+              <strong>Documented instructions only:</strong> Process Customer telemetry solely in
+              accordance with the Customer&apos;s documented instructions — as set out in this DPA,
+              the CGU/CGV, and the Customer&apos;s configurations in{' '}
+              <code>console.ferristrace.dev</code> — unless required to do so by European Union or
+              French law (in which case FerrisLabs shall inform the Customer of that legal
+              requirement before processing, unless the law prohibits such information on important
+              grounds of public interest).
+            </>,
+            <>
+              <strong>Duty to alert:</strong> Immediately inform the Customer if, in FerrisLabs&apos;
+              opinion, an instruction given by the Customer infringes the GDPR or other EU or Member
+              State data protection provisions (Art. 28(3) subparagraph 2 GDPR).
+            </>,
+            <>
+              <strong>Zero secondary use or AI model training:</strong> Never sell, rent, or monetise
+              Customer telemetry, never use it for advertising, and never use Customer telemetry or
+              LLM traces to train or fine-tune machine-learning models.
+            </>,
+            <>
+              <strong>Confidentiality:</strong> Ensure that any person authorised to access personal
+              data is bound by a strict contractual or statutory obligation of confidentiality and
+              processes data only on a need-to-know basis for support or platform maintenance.
+            </>,
+          ]}
+        />
+      </>
+    ),
+  },
+  {
+    id: 'dpa-annex-2-security',
+    title: 'Annex II — Technical & Organisational Security Measures (Art. 32 GDPR)',
+    content: (
+      <>
+        <p>
+          Pursuant to Article 28(3)(c) and Article 32 GDPR, FerrisLabs implements and maintains the
+          following technical and organisational security measures (TOMs) to protect Customer
+          telemetry against accidental or unlawful destruction, loss, alteration, unauthorised
+          disclosure, or access:
+        </p>
+        <BulletList
+          items={[
+            <>
+              <strong>Encryption in transit &amp; at rest:</strong> All external traffic across web,
+              OIDC, HTTP API, OTLP gRPC/HTTP ingestion, and MCP endpoints is encrypted via TLS
+              1.2/1.3. Underlying block storage, PostgreSQL databases, ClickHouse volumes, and S3
+              object storage are encrypted at rest.
+            </>,
+            <>
+              <strong>Passwordless OIDC &amp; cryptographic token hashing:</strong> Human sign-in
+              uses OpenID Connect (OIDC) Authorization Code + PKCE via FerrisKey. Ingest keys and
+              API tokens are stored exclusively as cryptographic hashes. AI agent / MCP tokens are
+              short-lived, audience-bound, and filtered through a policy gateway.
+            </>,
+            <>
+              <strong>Strict multi-tenant isolation &amp; RBAC:</strong> Every database query and
+              storage path is scoped to the authenticated Organisation ID. Role-based access control
+              (<code>owner</code>, <code>admin</code>, <code>member</code>) restricts administrative
+              operations, and an immutable Organisation audit log records key issuance, role
+              changes, and agent actions.
+            </>,
+            <>
+              <strong>Memory-safe runtime &amp; container hardening:</strong> FerrisTrace services
+              are compiled in Rust (eliminating memory-corruption classes of vulnerabilities) and
+              run in minimal non-root containers with read-only root filesystems, signed container
+              images, and automated dependency vulnerability scanning.
+            </>,
+            <>
+              <strong>Resilience &amp; availability:</strong> Hosted in tier-3+ EU data centres in
+              France (Scaleway SAS) with automated health checks, resource isolation, and encrypted
+              operational backups.
+            </>,
+          ]}
+        />
+      </>
+    ),
+  },
+  {
+    id: 'dpa-annex-3-subprocessors',
+    title: 'Annex III — Authorised Sub-processors & EU Data Residency (Art. 28(2) & (4))',
+    content: (
+      <>
+        <p>
+          The Customer grants FerrisLabs a general written authorisation under Article 28(2) GDPR to
+          engage the sub-processors listed below for the hosting and delivery of FerrisTrace Cloud:
+        </p>
+        <div className="overflow-x-auto border border-border bg-card">
+          <table className="w-full min-w-[540px] text-left text-sm">
+            <thead>
+              <tr className="border-b border-border bg-surface-tint text-xs uppercase tracking-wider text-accent-text">
+                <th scope="col" className="px-4 py-3 font-pixel text-[10px]">
+                  Sub-processor
+                </th>
+                <th scope="col" className="px-4 py-3 font-pixel text-[10px]">
+                  Scope of processing
+                </th>
+                <th scope="col" className="px-4 py-3 font-pixel text-[10px]">
+                  Data location &amp; Chapter V status
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              <tr>
+                <th scope="row" className="px-4 py-3 font-medium text-foreground">
+                  Scaleway SAS (Iliad Group)
+                </th>
+                <td className="px-4 py-3">
+                  Cloud compute, Kubernetes clusters, PostgreSQL &amp; ClickHouse storage, S3 object
+                  storage for ingested telemetry
+                </td>
+                <td className="px-4 py-3">
+                  <strong>France (European Union)</strong> — 100% EEA residency; zero transfer of
+                  Customer telemetry outside the European Economic Area.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          <em>
+            Note: Stripe Payments Europe, Ltd. processes subscription billing data where FerrisLabs
+            acts as Data Controller (covered by our{' '}
+            <InlineLink href={links.privacy}>Privacy Policy</InlineLink>), and never receives or
+            processes ingested Customer observability telemetry.
+          </em>
+        </p>
+        <BulletList
+          items={[
+            <>
+              <strong>Prior notice &amp; right to object:</strong> FerrisLabs informs Organisation
+              owners by email at least <strong>30 calendar days</strong> before adding or replacing
+              any sub-processor that handles Customer telemetry. The Customer may object on
+              reasonable, documented data protection grounds within 15 days of notice; if the
+              parties cannot resolve the objection amicably, the Customer may export its{' '}
+              <code>tar.gz</code> archive and terminate its subscription prior to the new
+              sub-processor taking effect, receiving a pro-rata refund of any prepaid unused fees.
+            </>,
+            <>
+              <strong>Flow-down obligations (Art. 28(4) GDPR):</strong> FerrisLabs imposes on each
+              sub-processor data protection obligations no less protective than those set out in
+              this DPA and remains liable to the Customer for the performance of the
+              sub-processor&apos;s obligations.
+            </>,
+          ]}
+        />
+      </>
+    ),
+  },
+  {
+    id: 'dpa-assistance-and-rights',
+    title: 'Assistance with Data Subject Rights, DPIAs & CNIL Consultations (Art. 28(3)(e)-(f))',
+    content: (
+      <>
+        <BulletList
+          items={[
+            <>
+              <strong>Self-service tools &amp; Data Subject Requests (DSRs):</strong> The
+              FerrisTrace Cloud console and HTTP API enable the Customer to search, export (
+              <code>tar.gz</code>), and delete project or workspace telemetry directly. If
+              FerrisLabs receives a request directly from an end user relating to telemetry in a
+              Customer&apos;s workspace, FerrisLabs will promptly forward the request to the
+              Customer and will not respond directly to the data subject without the Customer&apos;s
+              prior authorisation, unless legally compelled.
+            </>,
+            <>
+              <strong>DPIA &amp; supervisory authority consultation:</strong> Taking into account
+              the nature of processing and the information available to FerrisLabs, FerrisLabs
+              assists the Customer upon request in carrying out Data Protection Impact Assessments
+              (Art. 35 GDPR) and prior consultations with the CNIL or other competent supervisory
+              authorities (Art. 36 GDPR) by providing up-to-date architectural and security
+              documentation.
+            </>,
+          ]}
+        />
+      </>
+    ),
+  },
+  {
+    id: 'dpa-breach-notification',
+    title: 'Personal Data Breach Notification (Art. 33 GDPR)',
+    content: (
+      <>
+        <p>
+          In the event of a confirmed personal data breach affecting Customer telemetry processed by
+          FerrisLabs (Art. 4(12) and Art. 33(2) GDPR), FerrisLabs shall notify the Customer&apos;s
+          Organisation owner by email <strong>without undue delay</strong> — and in any event within{' '}
+          <strong>48 hours</strong> of becoming aware of the breach — so the Customer can meet its
+          own 72-hour notification deadline where applicable.
+        </p>
+        <p>The notification shall describe, to the extent known:</p>
+        <BulletList
+          items={[
+            <>
+              The nature and timeline of the personal data breach, including the categories and
+              approximate volume of affected telemetry records;
+            </>,
+            <>
+              The contact point at FerrisLabs (
+              <InlineLink href="mailto:contact@ferrislabs.fr">contact@ferrislabs.fr</InlineLink>)
+              from whom further information may be obtained;
+            </>,
+            <>The likely consequences of the breach; and</>,
+            <>
+              The technical measures taken or proposed by FerrisLabs to contain the breach and
+              mitigate its possible adverse effects.
+            </>,
+          ]}
+        />
+      </>
+    ),
+  },
+  {
+    id: 'dpa-deletion-and-return',
+    title: 'Return & Deletion of Data at End of Service (Art. 28(3)(g) GDPR)',
+    content: (
+      <>
+        <p>
+          At any time during the subscription and prior to closing an Organisation workspace, the
+          Customer can retrieve all of its data in a standard, portable <code>tar.gz</code> archive
+          from <InlineLink href={links.signIn}>console.ferristrace.dev</InlineLink> or via the HTTP
+          API.
+        </p>
+        <p>
+          Upon deletion of a project or Organisation workspace by the Customer, or upon termination
+          of the subscription:
+        </p>
+        <BulletList
+          items={[
+            <>
+              Ingested telemetry and workspace metadata are immediately removed from active
+              ClickHouse and PostgreSQL databases (in addition to continuous automatic expiration at
+              the end of the plan&apos;s 7-day or 30-day retention TTL); and
+            </>,
+            <>
+              Any residual copies in encrypted operational backups are permanently overwritten and
+              purged within <strong>30 calendar days</strong> as backup snapshots rotate out, unless
+              European Union or French law requires storage of specific records. Upon written
+              request, FerrisLabs confirms completion of deletion by email.
+            </>,
+          ]}
+        />
+      </>
+    ),
+  },
+  {
+    id: 'dpa-audits-and-law',
+    title: 'Audits, Demonstration of Compliance & Governing Law (Art. 28(3)(h) GDPR)',
+    content: (
+      <>
+        <p>
+          <strong>Transparency &amp; documentation:</strong> Because FerrisTrace is open-source (
+          <InlineLink href={links.github}>github.com/ferrislabs/ferristrace</InlineLink>), the
+          Customer can inspect the exact ingestion, storage, tenant-isolation, and authentication
+          code running on FerrisTrace Cloud at any time. Upon written request, FerrisLabs also makes
+          available information necessary to demonstrate compliance with Article 28 GDPR.
+        </p>
+        <p>
+          <strong>Audit rights:</strong> Where the documentation above is insufficient to satisfy a
+          mandatory regulatory requirement of the Customer, the Customer (or an independent auditor
+          mandated by the Customer who is not a competitor of FerrisLabs and is bound by
+          confidentiality) may conduct a remote or on-document audit of FerrisLabs&apos; data
+          protection controls at most once per 12-month period (or following a confirmed personal
+          data breach affecting the Customer&apos;s workspace), subject to at least{' '}
+          <strong>30 calendar days&apos; prior written notice</strong>, conducted during normal
+          business hours at the Customer&apos;s expense, and without compromising the security or
+          confidentiality of other tenants.
+        </p>
+        <p>
+          <strong>Governing law:</strong> This DPA is governed by <strong>French law</strong> and
+          follows the dispute resolution and liability provisions of the{' '}
+          <InlineLink href={links.termsOfSale}>Terms of Sale (CGV)</InlineLink>.
+        </p>
+      </>
+    ),
+  },
+]
+
+/* ========================================================================== */
 /* EXPORTED PAGES                                                             */
 /* ========================================================================== */
 
@@ -1266,6 +1692,18 @@ export function PrivacyPage() {
       title="Privacy Policy"
       lead="How FerrisLabs collects, secures, and retains account data and Cloud observability telemetry in the European Union under the GDPR and French law."
       sections={privacySections}
+    />
+  )
+}
+
+export function DpaPage() {
+  return (
+    <LegalLayout
+      active="dpa"
+      eyebrow="Legal · GDPR Art. 28 (DPA)"
+      title="Data Processing Agreement"
+      lead="Article 28 GDPR Data Processing Agreement (Accord de sous-traitance) governing observability telemetry ingested into FerrisTrace Cloud workspaces in the European Union."
+      sections={dpaSections}
     />
   )
 }

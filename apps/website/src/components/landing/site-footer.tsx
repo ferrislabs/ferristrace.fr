@@ -83,6 +83,9 @@ export function SiteFooter() {
               <a href={links.privacy} className="transition-colors hover:text-foreground">
                 Privacy &amp; GDPR
               </a>
+              <a href={links.dpa} className="transition-colors hover:text-foreground">
+                DPA
+              </a>
             </nav>
           </div>
           <a
