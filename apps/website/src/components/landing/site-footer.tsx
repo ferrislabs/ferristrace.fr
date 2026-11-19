@@ -70,15 +70,28 @@ export function SiteFooter() {
           ))}
         </nav>
 
-        <p className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-5 py-6 text-xs text-muted-foreground sm:px-10">
-          <span>© {new Date().getFullYear()} FerrisTrace · Apache 2.0</span>
+        <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-b border-border px-5 py-6 text-xs text-muted-foreground sm:px-10">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <span>© {new Date().getFullYear()} FerrisTrace · Apache 2.0</span>
+            <nav aria-label="Legal" className="flex flex-wrap items-center gap-x-4 gap-y-1">
+              <a href={links.terms} className="transition-colors hover:text-foreground">
+                Terms of Use
+              </a>
+              <a href={links.termsOfSale} className="transition-colors hover:text-foreground">
+                Terms of Sale
+              </a>
+              <a href={links.privacy} className="transition-colors hover:text-foreground">
+                Privacy &amp; GDPR
+              </a>
+            </nav>
+          </div>
           <a
             href="https://ferrislabs.fr"
             className="inline-flex items-center gap-2 font-pixel uppercase transition-colors hover:text-foreground"
           >
             <PixelSprite sprite={rustCrab} className="size-4" />A Ferrislabs project
           </a>
-        </p>
+        </div>
 
         <div className="px-5 sm:px-10">
           <FooterWordmark />
