@@ -51,11 +51,11 @@ export const links = {
   changelog: '/changelog',
   /** The core repository: what a visitor clicking "GitHub" is after. */
   github: `${ORG}/ferristrace`,
-  sponsor: 'https://github.com/sponsors/Comettrace',
+  sponsor: 'https://github.com/sponsors/ferrislabs',
   signIn: CONSOLE,
   startOnCloud: CONSOLE,
   selfHostGuide: docs('/getting-started/quickstart-self-host'),
-  status: '/status',
+  status: 'https://status.ferristrace.dev',
   security: '/security',
   terms: '/terms',
   termsOfSale: '/terms-of-sale',

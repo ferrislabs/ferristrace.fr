@@ -1,12 +1,12 @@
 # Changelog — EXAMPLE FILE
 
-This file is **an example**, not the Cometrace changelog. It exists so the
+This file is **an example**, not the FerrisTrace changelog. It exists so the
 parser has a fixture to be tested against and so `/changelog` has something to
 render before the real `CHANGELOG.md` lands at the repository root. The
 releases below are made up. Never publish it as the real changelog.
 
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 1.1, plus two
-Cometrace conventions:
+FerrisTrace conventions:
 
 - the first `>` line under a version heading is the release title, a second one
   is the summary;
@@ -32,7 +32,7 @@ Cometrace conventions:
 ### Changed
 
 - The waterfall virtualises rows past 500 spans, so a 10k span trace opens in one frame.
-- **Breaking:** `cmt_key_` ingest keys are rejected. Reissue them as `cmt_ik_` from the workspace settings.
+- **Breaking:** `ft_key_` ingest keys are rejected. Reissue them as `ft_ik_` from the workspace settings.
 
 ### Fixed
 

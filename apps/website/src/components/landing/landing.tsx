@@ -1,4 +1,6 @@
 import { TooltipProvider } from '@cometrace/ui'
+import { CtaBand, DiagramSection } from '../marketing/blocks'
+import { ConnectTerminal } from '../marketing/diagrams/connect-terminal'
 import { Editions } from './editions'
 import { Features } from './features'
 import { Hero } from './hero'
@@ -31,8 +33,21 @@ export function Landing({ shotLight, shotDark }: LandingProps) {
           <Hero shotLight={shotLight} shotDark={shotDark} />
           <Features />
           <Problems />
+          <DiagramSection
+            id="opentelemetry"
+            kicker="OpenTelemetry native"
+            title="Send what you already have."
+            description="There is no proprietary FerrisTrace SDK. Point any standard OpenTelemetry SDK or Collector at your endpoint and traces, logs and metrics arrive already linked."
+            alt
+          >
+            <ConnectTerminal />
+          </DiagramSection>
           <Editions />
           <Sponsors />
+          <CtaBand
+            title="Start on Cloud for free, or host it yourself."
+            body="Create a Cloud workspace in a minute, or self-host on your own servers under Apache 2.0."
+          />
         </main>
 
         <SiteFooter />

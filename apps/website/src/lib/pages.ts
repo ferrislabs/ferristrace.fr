@@ -118,6 +118,14 @@ export const pages: PageMeta[] = [
     priority: 0.5,
   },
   {
+    path: '/security/',
+    title: 'Security & Trust',
+    description:
+      'Memory-safe Rust binaries, passwordless OIDC via FerrisKey, scoped AI agent tokens, EU Cloud hosting in France and responsible vulnerability disclosure.',
+    card: { eyebrow: 'Security & Trust', headline: 'Security built into the binary, not bolted on later.' },
+    priority: 0.6,
+  },
+  {
     path: '/terms/',
     title: 'Terms of Use (CGU)',
     description:
