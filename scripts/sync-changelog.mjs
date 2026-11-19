@@ -15,7 +15,7 @@ import { fileURLToPath } from 'node:url'
 
 const SOURCE =
   process.env.CHANGELOG_SOURCE_URL ??
-  'https://raw.githubusercontent.com/Comettrace/Cometrace/main/CHANGELOG.md'
+  'https://raw.githubusercontent.com/ferrislabs/ferristrace/main/CHANGELOG.md'
 
 const TARGET = fileURLToPath(new URL('../CHANGELOG.md', import.meta.url))
 

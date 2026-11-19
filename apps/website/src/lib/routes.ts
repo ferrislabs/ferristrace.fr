@@ -48,6 +48,11 @@ export const routes: Route[] = [
   { path: '/', href: '/', title: 'Home', local: true },
   { path: '/changelog', href: '/changelog', title: 'Changelog', local: true },
   { path: '/pricing', href: '/pricing', title: 'Pricing', local: true },
+  { path: '/security', href: '/security', title: 'Security & Trust', local: true },
+  { path: '/terms', href: '/terms', title: 'Terms of Use (CGU)', local: true },
+  { path: '/terms-of-sale', href: '/terms-of-sale', title: 'Terms of Sale (CGV)', local: true },
+  { path: '/privacy', href: '/privacy', title: 'Privacy Policy (GDPR)', local: true },
+  { path: '/dpa', href: '/dpa', title: 'Data Processing Agreement (DPA)', local: true },
   ...[...products, ...solutions].map(({ href, title }) => ({ path: href, href, title, local: true })),
   ...DOCS_PAGES.map(([path, title]) => ({ path, href: docs(path), title })),
 ]

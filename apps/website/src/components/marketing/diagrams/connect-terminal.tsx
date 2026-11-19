@@ -4,7 +4,7 @@ import { Play, RotateCcw } from 'lucide-react'
 
 const env = [
   'export OTEL_EXPORTER_OTLP_ENDPOINT=https://your-server:4318',
-  'export OTEL_EXPORTER_OTLP_HEADERS="authorization=Bearer cmt_ik_…"',
+  'export OTEL_EXPORTER_OTLP_HEADERS="authorization=Bearer ft_ik_…"',
   'export OTEL_SERVICE_NAME=checkout',
 ]
 
@@ -18,6 +18,21 @@ interface Stack {
 }
 
 const stacks: Stack[] = [
+  {
+    id: 'rust',
+    label: 'Rust',
+    lines: [
+      'cargo add opentelemetry opentelemetry_sdk opentelemetry-otlp tracing-opentelemetry',
+      ...env,
+      'cargo run --release',
+    ],
+    signals: [
+      ['trace', 'POST /api/checkout · 18 ms · 9 spans'],
+      ['trace', 'sqlx.query SELECT orders · 3 ms'],
+      ['log', 'info  order created  trace_id=4bf9…'],
+      ['metric', 'http.server.request.duration · p99 24 ms'],
+    ],
+  },
   {
     id: 'node',
     label: 'Node.js',
@@ -73,7 +88,7 @@ const stacks: Stack[] = [
       '  otlphttp/ferristrace:',
       '    endpoint: https://your-server:4318',
       '    headers:',
-      '      authorization: Bearer cmt_ik_…',
+      '      authorization: Bearer ft_ik_…',
       'service:',
       '  pipelines:',
       '    traces:  { exporters: [otlphttp/ferristrace] }',

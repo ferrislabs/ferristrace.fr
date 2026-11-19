@@ -17,6 +17,7 @@ interface Feature {
   id: string
   title: string
   body: string
+  href: string
   preview: ReactNode
   wide?: boolean
 }
@@ -26,6 +27,7 @@ const features: Feature[] = [
     id: 'tracing',
     title: 'Tracing.',
     body: 'Follow a request through every service it touched and find the span that ate the time.',
+    href: '/product/observability',
     preview: <TracePreview />,
     wide: true,
   },
@@ -33,36 +35,42 @@ const features: Feature[] = [
     id: 'logs',
     title: 'Logs.',
     body: 'Search your logs, then click an error to open the request that threw it.',
+    href: '/product/observability',
     preview: <LogsPreview />,
   },
   {
     id: 'infra',
     title: 'Infrastructure.',
     body: 'See which pod is crash-looping and which deploy put it there.',
+    href: '/product/infrastructure',
     preview: <InfraPreview />,
   },
   {
     id: 'incidents',
     title: 'Incidents.',
     body: 'Declare an incident straight from the alert, with the evidence already attached.',
+    href: '/product/incidents',
     preview: <IncidentPreview />,
   },
   {
     id: 'ai',
     title: 'AI observability.',
     body: 'See what each LLM call cost and how long it took, by model and by feature.',
+    href: '/product/ai-observability',
     preview: <AiPreview />,
   },
   {
     id: 'metrics',
     title: 'Metrics.',
     body: 'When p99 jumps, click the spike to see the traces behind it.',
+    href: '/product/observability',
     preview: <MetricsPreview />,
   },
   {
     id: 'agents',
     title: 'Secure AI agents.',
     body: 'Agents can read telemetry and help triage incidents with scoped FerrisKey tokens. You can audit what they did and revoke a token at any time.',
+    href: '/product/ai-agents',
     preview: <AgentPreview className="max-w-[380px]" />,
     wide: true,
   },
@@ -107,12 +115,24 @@ export function Features() {
               feature.wide && 'md:col-span-2',
             )}
           >
-            <p className="p-6 pb-0 text-[15px] leading-7 text-muted-foreground sm:p-8 sm:pb-0">
-              <span id={`feature-${feature.id}`} className="font-medium text-foreground">
-                {feature.title}
-              </span>{' '}
-              {feature.body}
-            </p>
+            <div className="flex items-start justify-between gap-4 p-6 pb-0 sm:p-8 sm:pb-0">
+              <p className="text-[15px] leading-7 text-muted-foreground">
+                <a
+                  href={feature.href}
+                  id={`feature-${feature.id}`}
+                  className="font-medium text-foreground after:absolute after:inset-0 focus:outline-none"
+                >
+                  {feature.title}
+                </a>{' '}
+                {feature.body}
+              </p>
+              <span
+                aria-hidden="true"
+                className="shrink-0 pt-1 font-pixel text-[10px] uppercase tracking-[0.08em] text-faint-foreground transition-colors group-hover:text-accent-text"
+              >
+                →
+              </span>
+            </div>
             <div className="mt-auto px-6 pb-6 pt-8 sm:px-8 sm:pb-8">{feature.preview}</div>
             <span
               className="absolute inset-x-0 bottom-0 h-0.5 origin-left scale-x-0 bg-primary transition-transform duration-300 group-hover:scale-x-100"
