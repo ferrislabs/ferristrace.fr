@@ -1,0 +1,172 @@
+---
+title: MCP server & policy gateway
+description: Connect Claude Code, Claude Desktop, or any MCP client to FerrisTrace behind an OAuth 2.1 and Cedar policy gateway powered by FerrisKey.
+icon: shield-check
+order: 2
+---
+
+# MCP server & policy gateway
+
+FerrisTrace ships two dedicated binaries for the Model Context Protocol (MCP):
+
+- **`ferristrace-mcp`** (`apps/mcp`, internal port `8081`) — Stateless Streamable HTTP MCP server exposing 15 observability and incident-response tools.
+- **`ferristrace-mcp-gateway`** (`apps/mcp-gateway`, public port `8080`) — Policy Enforcement Point (PEP) that authenticates the caller via OAuth 2.1 (RFC 9728 resource metadata), queries **FerrisKey** via AuthZEN 1.0 to evaluate your **Cedar policies** on every `tools/list` and `tools/call`, exchanges the token (RFC 8693), and forwards approved calls to `ferristrace-mcp`.
+
+```text
+MCP Client ──(OAuth 2.1 token for <public_url>/orgs/{org}/mcp)──▶ ferristrace-mcp-gateway
+                                                                     │  ├─ AuthZEN 1.0 ─▶ FerrisKey (Cedar PDP)
+                                                                     │  └─ PIP lookups ─▶ FerrisTrace API (on-call, service, incident)
+                                                                     ▼
+                                                             ferristrace-mcp ──▶ FerrisTrace API
+```
+
+## Quickstart with Docker Compose
+
+`deploy/docker-compose.yml` already runs `mcp` and `mcp-gateway`, and `ferriskey-init` provisions the realm clients, scopes, schema, and a default read-only policy (`members-read-tools`).
+
+<Steps>
+
+<Step title="Allow your organisation ID in deploy/.env">
+
+FerrisKey issues audience-restricted MCP tokens only for explicitly registered resource URLs. Add your organisation UUID to `deploy/.env`:
+
+```sh
+FERRISTRACE_MCP_PUBLIC_URL=http://localhost:8080
+FERRISTRACE_MCP_ORGS=<your-org-uuid>
+```
+
+Re-run `ferriskey-init` to register the organisation resource idempotently:
+
+```sh
+docker compose run --rm ferriskey-init
+```
+
+</Step>
+
+<Step title="Enable MCP in FerrisTrace">
+
+Open **Settings > Organisation > MCP** in FerrisTrace and toggle MCP **On**, selecting the maximum scopes the gateway client may exercise (`telemetry:read`, `incidents:comment`, `incidents:resolve`, `oncall:acknowledge`). Copy the displayed MCP endpoint URL (`http://localhost:8080/orgs/<org-uuid>/mcp`).
+
+</Step>
+
+<Step title="Connect Claude Code or Claude Desktop">
+
+<CodeTabs group="mcp-client">
+<CodeTab label="Claude Code">
+
+```sh
+claude mcp add --transport http ferristrace http://localhost:8080/orgs/<org-uuid>/mcp
+```
+
+Then run `/mcp` inside Claude Code and select **Authenticate** to sign in through FerrisKey in your browser.
+
+</CodeTab>
+<CodeTab label="Claude Desktop / Other">
+
+In Claude Desktop, go to **Settings > Connectors** and add `http://localhost:8080/orgs/<org-uuid>/mcp` as a custom Streamable HTTP connector. For clients that only support local stdio config files, bridge with `mcp-remote`:
+
+```json
+{
+  "mcpServers": {
+    "ferristrace": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "http://localhost:8080/orgs/<org-uuid>/mcp"]
+    }
+  }
+}
+```
+
+</CodeTab>
+</CodeTabs>
+
+</Step>
+
+</Steps>
+
+## Available MCP tools (15)
+
+`tools/list` dynamically hides any tool that the caller's Cedar policies deny with an empty target. Responses are formatted as compact Markdown tables capped at `200` rows / `64 KiB` (`window` accepts `15m`, `1h`, `24h`, or `7d`, defaulting to `1h`).
+
+| Tool | Access | Arguments | Underlying data |
+| --- | --- | --- | --- |
+| `list_services` | `read` | `window` | Request, error, and latency summary per service |
+| `service_health` | `read` | `service`, `window` | Service health + per-operation breakdown |
+| `search_traces` | `read` | `service`, `errors_only`, `min_duration_ms`, `window`, `limit` | Recent matching distributed traces |
+| `get_trace` | `read` | `trace_id` | Full span waterfall and exception events |
+| `search_logs` | `read` | `service`, `severity`, `text`, `namespace`, `pod`, `window`, `limit` | Matching log records |
+| `query_metric` | `read` | `name`, `aggregation`, `group_by`, `service`, `window` | Aggregated metric time series |
+| `cluster_status` | `read` | `cluster`, `namespace` | Kubernetes nodes, workloads, and unhealthy pods |
+| `list_alerts` | `read` | `state` | Alert rules filtered by state (`firing`, `pending`, `ok`, `no_data`) |
+| `alert_history` | `read` | `alert_id`, `window` | Recent alert transitions |
+| `list_incidents` | `read` | `status` | Incidents filtered by status |
+| `get_incident` | `read` | `incident_id` | Incident details and full timeline |
+| `who_is_on_call` | `read` | `schedule` | Current on-call engineer across schedules |
+| `comment_incident` | `write` | `incident_id`, `text` | Appends an internal timeline comment |
+| `acknowledge_page` | `write` | `page_id` | Acknowledges an active on-call page |
+| `resolve_incident` | `write` (`destructive`) | `incident_id` | Marks an open incident `resolved` |
+
+## Writing Cedar policies in FerrisKey
+
+Before evaluating a call, the gateway enriches the AuthZEN request with live context from FerrisTrace (the caller's on-call status, the target incident's severity and services, the target service's project and environments, and the organisation's local wall-clock time):
+
+- **Principal (`FerrisKey::User`)** — `email`, `groups` (`in FerrisKey::Group::"Dev"`), `roles`, `on_call` (`Bool`), `on_call_schedules` (`Set<String>`).
+- **Resource (`FerrisKey::Tool`)** — `server == "ferristrace"`, `tool` (tool name), `access` (`"read"` or `"write"`), `destructive` (`Bool`), `organisation`.
+- **Context** — `agent`, `delegated`, `target.service`, `target.services`, `target.environment`, `target.environments`, `target.project`, `target.namespace`, `target.cluster`, `target.pod`, `target.severity` (`sev1`–`sev4`), `target.incident_status`, `arguments`, and DST-aware local `time.weekday` (`1` Mon – `7` Sun) & `time.hour` (`0`–`23`).
+
+### Example 1: Only the engineer currently on call may resolve incidents or acknowledge pages
+
+```cedar
+permit (
+  principal is FerrisKey::User,
+  action == FerrisKey::Action::"call_tool",
+  resource is FerrisKey::Tool
+)
+when {
+  resource.server == "ferristrace" &&
+  ["resolve_incident", "acknowledge_page"].contains(resource.tool) &&
+  principal has on_call &&
+  principal.on_call
+};
+```
+
+### Example 2: Forbid resolving `sev1` incidents via MCP under all circumstances
+
+```cedar
+forbid (
+  principal,
+  action == FerrisKey::Action::"call_tool",
+  resource is FerrisKey::Tool
+)
+when {
+  resource.tool == "resolve_incident"
+}
+unless {
+  context.target has severity &&
+  context.target.severity != "sev1"
+};
+```
+
+### Example 3: Support group reads only `staging` services
+
+```cedar
+permit (
+  principal in FerrisKey::Group::"Support",
+  action == FerrisKey::Action::"call_tool",
+  resource is FerrisKey::Tool
+)
+when {
+  resource.server == "ferristrace" &&
+  resource has access &&
+  resource.access == "read" &&
+  context.target has environment &&
+  context.target.environment == "staging"
+};
+```
+
+<Callout type="note" title="Always guard optional attributes with has">
+Cedar has no `null`: optional attributes (`context.target.service`, `context.target.severity`, `context.target.namespace`) are omitted when not applicable. Always guard them with `has` so policies evaluate cleanly without type/attribute errors.
+</Callout>
+
+## Auditing MCP decisions
+
+Every policy evaluation emits a structured `mcp_decision` event in `mcp-gateway` logs (`decision=permit|deny`, `policies`, `reason`, `subject`, `groups`, `tool`, `target`, `arguments`). Set `FERRISTRACE_MCP_GATEWAY_INGEST_KEY` and `FERRISTRACE_MCP_GATEWAY_INGEST_ENDPOINT=http://server:4318/v1/logs` to stream every permit (`INFO`) and refusal (`WARN`) directly into FerrisTrace's own **Logs** explorer under `service = ferristrace-mcp-gateway`.

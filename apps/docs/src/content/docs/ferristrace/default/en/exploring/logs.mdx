@@ -1,0 +1,43 @@
+---
+title: Logs
+description: Search structured and plain-text logs, visualise severity volume histograms, and pivot seamlessly into distributed traces.
+icon: scroll-text
+order: 4
+---
+
+# Logs
+
+The **Logs** explorer (`/logs`, shortcut `g` then `l`) queries structured and unstructured OpenTelemetry logs stored alongside your spans in ClickHouse.
+
+## Filtering and full-text search
+
+Use the query bar to combine severity levels, service names, substring searches on `body`, trace/span IDs, and arbitrary structured attributes:
+
+```text
+service = payments AND severity IN (error, fatal) AND body CONTAINS "stripe"
+```
+
+- **Severity histogram** — At the top of the explorer, a stacked bar chart plots log counts bucketed over time and split by severity (`trace`, `debug`, `info`, `warn`, `error`, `fatal`). Dragging across the histogram zooms the query window.
+- **Facet sidebar** — Displays top values and counts for `service`, `severity`, resource attributes, and structured log attributes within the current filter.
+- **Kubernetes placement** — Narrow logs by `cluster`, `namespace`, `workload`, `pod`, or `node` using the placement pickers or query parameters (`k8s_*` materialised columns with bloom filter indexes).
+- **Cursor pagination** — Results stream in deterministic reverse chronological order using a stateless cursor (`next`) so paging through high-volume bursts never skips or duplicates lines.
+
+## Inspecting a log record
+
+Selecting a log row opens its full detail drawer:
+
+- **Timestamps** — Exact `time_ns` (when the event occurred) and `observed_ns` (when the SDK/Collector observed it).
+- **Body** — Complete message string.
+- **Log attributes vs Resource attributes** — Displayed in two separate sections so structured event fields (`order_id`, `attempt`, `error.code`) stay distinct from process and infrastructure metadata (`service.name`, `k8s.pod.name`, `host.name`).
+- **Trace jump** — When the OpenTelemetry logger injected trace context (`trace_id` and `span_id`), clicking the trace badge opens the exact trace waterfall at `/traces/{trace_id}` with the originating span highlighted.
+- **Attach to incident** — Save the active log search and time window directly onto an open incident timeline.
+
+## Correlating logs with traces automatically
+
+Most OpenTelemetry logging bridges inject `trace_id` and `span_id` automatically whenever a log statement executes inside an active span:
+
+- **Node.js** — `@opentelemetry/instrumentation-pino`, `@opentelemetry/instrumentation-winston`, or `@opentelemetry/instrumentation-bunyan`
+- **Python** — `OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED=true`
+- **Go** — `go.opentelemetry.io/contrib/bridges/otelslog`
+- **Rust** — `opentelemetry-appender-tracing` paired with `tracing-opentelemetry`
+- **Java** — Automatic with `opentelemetry-javaagent.jar` for Logback, Log4j2, and JUL

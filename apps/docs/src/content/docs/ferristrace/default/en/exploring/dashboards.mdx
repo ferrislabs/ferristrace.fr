@@ -1,0 +1,54 @@
+---
+title: Dashboards
+description: Build project dashboards across traces, logs, and metrics with 11 panel types, template variables, explorer drilldowns, and JSON import/export.
+icon: layout-dashboard
+order: 9
+---
+
+# Dashboards
+
+**Dashboards** (`/dashboards`) let any member of a project compose custom views combining traces, logs, and metrics on a 12-column drag-and-resize grid.
+
+## Panel types
+
+FerrisTrace supports **11 panel visualisations**, grouped in the editor picker by purpose:
+
+| Category | Panel kinds | Query shape |
+| --- | --- | --- |
+| **Trends** | `TimeSeries`, `Area` | Time-bucketed series (`<= 50` series, `<= 500` points/series) with optional release markers |
+| **Comparisons** | `Bar`, `Pie`, `Scatter` | Grouped series, categorical proportions, or `(x, y)` pairs |
+| **Distributions** | `Histogram`, `Heatmap` | Value buckets or 2D time-by-bucket density cells |
+| **Single values** | `Number` | Scalar KPI figure over the active window |
+| **Records & tables** | `Table`, `List` | Tabular aggregations or log/span lists (`<= 1,000` rows) |
+| **Documentation** | `Text` | Markdown notes, runbook links, and SLO context |
+
+## Structured query builder
+
+Every data panel runs one or more typed queries against **Traces**, **Logs**, or **Metrics** — never raw SQL, guaranteeing strict organisation and project isolation:
+
+- **Traces & Logs aggregations** — `count`, `count_distinct(field)`, `sum`, `avg`, `min`, `max`, `p50`, `p90`, `p95`, `p99`, and `rate`, filtered with the [FerrisTrace query language](/en/ferristrace/exploring/query-language) and grouped by up to **3 dimensions**.
+- **Metrics aggregations** — Select any metric with a temporal aggregation (`avg`, `sum`, `min`, `max`, `rate`, `increase`, or histogram `p50`/`p95`/`p99`), spatial aggregation (`sum`, `avg`, `min`, `max`, `count`), filter, and group-by attributes.
+- **Live preview** — The panel editor previews unsaved changes live via `POST /api/v1/dashboards/query`.
+
+## Template variables (`$name`)
+
+Define up to **20 variables** per dashboard to let viewers slice every panel dynamically from the top bar:
+
+- **Attribute variables** — Populated dynamically from observed attribute values on `traces`, `logs`, or `metrics` (for example `$service` from `service.name` or `$namespace` from `k8s.namespace.name`).
+- **Static variables** — A fixed list of choices (for example `production`, `staging`, `dev`).
+- Supports multi-select and **All** (`all: true`). Referencing `$variable` inside a panel filter binds escaped typed values directly into the ClickHouse parameter list — quote or parenthesis characters inside variable values can never alter filter structure.
+
+## Interactive investigation
+
+- **Synchronized tooltip & pinning** — Hovering any time chart lists all series sorted by value at that timestamp; press **`P`** to pin the tooltip.
+- **One-click drilldown** — Clicking a series or bar opens **Traces**, **Logs**, or **Metrics** pre-populated with the panel's filter, the clicked group value, and the active time range.
+- **Drag-to-zoom** — Dragging across any time chart zooms the time range for the entire dashboard.
+- **Release markers** — Toggle release annotations to overlay version rollouts on time-series panels.
+
+## Exporting, importing, and limits
+
+Dashboards are stored in PostgreSQL as versioned JSON documents (`schema_version: 1`) owned by a project:
+
+- **Clone, export & import** — Duplicate dashboards in place (`POST /api/v1/dashboards/{id}/clone`), download portable JSON (`GET /api/v1/dashboards/{id}/export`), or import JSON into another project or FerrisTrace instance (`POST /api/v1/dashboards/import?project=<uuid>`).
+- **Guardrails** — Up to **100 dashboards per project**, **30 panels per dashboard**, **20 variables**, **256 KiB** per document, **50 series** per chart query (queries exceeding 50 series return a clear count error rather than silently dropping series), and a **10-second** per-panel query timeout.
+- Every create, update, and delete is recorded in the organisation's audit log.

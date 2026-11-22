@@ -1,0 +1,104 @@
+---
+title: AI agents
+description: Authenticate autonomous AI agents via FerrisKey client credentials with scoped, project-bound permissions and full jti audit logging.
+icon: bot
+order: 1
+---
+
+# AI agents
+
+Autonomous bots and background triage agents authenticate to FerrisTrace using their own OIDC identity in FerrisKey (`client_credentials` grant) rather than long-lived static secrets stored in FerrisTrace.
+
+Every request an agent makes is verified against the issuer's JWKS, intersected against scopes granted by an administrator, and recorded in the audit log with the exact JWT ID (`jti`).
+
+## Enable agent authentication on the server
+
+Set the agent token issuer and mandatory audience in `.env` or `ferristrace.toml`:
+
+```sh
+# Defaults to FERRISTRACE_OIDC__ISSUER when omitted
+FERRISTRACE_AGENTS__ISSUER=http://ferriskey:3333/realms/ferristrace
+
+# Mandatory: prevents human web-app tokens from being accepted as agent tokens
+FERRISTRACE_AGENTS__AUDIENCE=ferristrace-agents
+```
+
+<Callout type="warning" title="Audience separation is mandatory">
+In the bundled Docker Compose stack, `FERRISTRACE_AGENTS__AUDIENCE` defaults to `ferristrace-agents`. On custom deployments or Helm installs, if `FERRISTRACE_AGENTS__AUDIENCE` is unset, FerrisTrace logs a startup warning, keeps human sign-in working normally, and rejects all agent tokens with `401 Unauthorized`.
+</Callout>
+
+Only **RS256** and **ES256** JWTs are accepted, and every token must carry valid `iss`, `aud`, `exp` (30s leeway), `typ: "Bearer"`, and a non-empty **`jti`** claim. JWKS keys are fetched from the issuer's discovery `jwks_uri` (capped at 1 MiB, same host as the issuer) and cached for 10 minutes.
+
+## Provision and register an agent
+
+<Steps>
+
+<Step title="Create a confidential client in FerrisKey">
+
+In your FerrisKey realm, create a client (for example `triage-bot`) with **Client authentication** enabled and **Service accounts roles (`client_credentials`)** enabled.
+
+</Step>
+
+<Step title="Attach client scopes">
+
+Create client scopes named **`telemetry:read`**, **`incidents:comment`**, and **`incidents:resolve`**, and attach only the scopes this agent should ever be able to request.
+
+</Step>
+
+<Step title="Add an audience mapper">
+
+Add an audience protocol mapper on the agent client (never on the human web sign-in client!) that adds `ferristrace-agents` (the value of `FERRISTRACE_AGENTS__AUDIENCE`) to the token's `aud` claim.
+
+</Step>
+
+<Step title="Register the agent in FerrisTrace">
+
+Open **Settings > Organisation > Agents**, click **Register agent**, and enter:
+- **Name** (shown on incident timelines and in the audit log)
+- **Client ID** (`triage-bot` — registering the human web `FERRISTRACE_OIDC__CLIENT_ID` is refused)
+- **Allowed scopes** (`telemetry:read`, `incidents:comment`, `incidents:resolve`)
+- **Optional Project** — Restricts the agent to reading telemetry and acting on incidents belonging exclusively to that single project.
+
+</Step>
+
+</Steps>
+
+An agent's **effective permissions** are the intersection of the scopes carried in its JWT `scope` claim and the scopes ticked in FerrisTrace. Revoking an agent in **Settings > Organisation > Agents** blocks its very next request immediately, regardless of remaining JWT lifetime.
+
+## Calling the API as an agent
+
+```sh
+TOKEN=$(curl -s "http://ferriskey:3333/realms/ferristrace/protocol/openid-connect/token" \
+  -d grant_type=client_credentials \
+  -d client_id=triage-bot \
+  -d client_secret="$AGENT_CLIENT_SECRET" \
+  -d "scope=telemetry:read incidents:comment" | jq -r .access_token)
+
+# Verify agent identity and effective scopes
+curl -H "Authorization: Bearer $TOKEN" \
+  "http://localhost:4318/api/orgs/$ORG_ID/agents/me"
+
+# Query traces
+curl -H "Authorization: Bearer $TOKEN" \
+  "http://localhost:4318/api/orgs/$ORG_ID/traces?from=1763396400000&to=1763400000000"
+```
+
+## Scope boundaries & audit trail
+
+| Scope | Allowed operations | Restrictions |
+| --- | --- | --- |
+| `telemetry:read` | Read traces, services, operations, logs, metrics, cluster, infrastructure, releases, deploys, LLM calls/spend, issues, incidents, and timelines | Never reaches session/admin routes (API keys, agents, members, settings, audit, export) |
+| `incidents:comment` | `POST /api/orgs/{org}/incidents/{id}/comments` | Timeline displays an **`agent`** badge; `"public": true` is refused with `403` so an agent can never post directly to a public status page |
+| `incidents:resolve` | `PATCH /api/orgs/{org}/incidents/{id}` with exact body `{"status": "resolved"}` | Any other field or status returns `403`; opening incidents, attachments, postmortems, on-call, and status pages are refused |
+
+Every read writes `agent.read` (recording route template and `jti`), and every accepted write records `incident.commented` or `incident.resolved` with the agent identity and `jti`.
+
+## Next steps
+
+<Cards>
+
+<Card href="/en/ferristrace/ai-agents-and-mcp/mcp-gateway" title="MCP server & policy gateway">
+Connect Claude Code or Claude Desktop with per-tool Cedar policy enforcement in FerrisKey.
+</Card>
+
+</Cards>

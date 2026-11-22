@@ -21,6 +21,17 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
     envDir: '../../',
+    optimizeDeps: {
+      include: [
+        'lucide-react',
+        '@cometrace/ui > @radix-ui/react-tooltip',
+        '@cometrace/ui > @radix-ui/react-slot',
+        '@cometrace/ui > @iconify/react',
+        '@cometrace/ui > class-variance-authority',
+        '@cometrace/ui > clsx',
+        '@cometrace/ui > tailwind-merge',
+      ],
+    },
     server: {
       allowedHosts: ['unlimitedly-uncompletable-addilyn.ngrok-free.dev']
     }

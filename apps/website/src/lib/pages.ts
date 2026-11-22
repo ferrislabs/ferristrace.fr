@@ -105,8 +105,8 @@ export const pages: PageMeta[] = [
     path: '/pricing/',
     title: 'Pricing',
     description:
-      'Every plan includes every feature. Self-hosting is free under Apache 2.0, and Cloud is free during the beta.',
-    card: { eyebrow: 'Pricing', headline: 'Every plan gets every feature. You pick who runs the servers.' },
+      'Every plan includes every feature and unlimited users. Self-host free under Apache 2.0, start on Cloud Free (30 GB/mo), or scale on Pro (€19.99/mo).',
+    card: { eyebrow: 'Pricing', headline: 'Every plan gets every feature. Pay for volume, never per seat.' },
     priority: 0.7,
   },
   {

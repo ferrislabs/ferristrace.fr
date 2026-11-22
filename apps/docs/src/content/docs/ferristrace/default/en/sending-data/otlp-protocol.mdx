@@ -1,0 +1,62 @@
+---
+title: OTLP endpoints & wire format
+description: Exact OTLP gRPC and HTTP endpoints, supported encodings, payload limits, and signal storage semantics.
+icon: radio
+order: 4
+---
+
+# OTLP endpoints & wire format
+
+FerrisTrace implements the OpenTelemetry Protocol (`v1`) specification directly in Rust (`crates/otlp` and `crates/api`). No translation proxy is needed.
+
+## Transports and endpoints
+
+| Transport | Default port | Endpoint / gRPC service | Encodings | Compression |
+| --- | --- | --- | --- | --- |
+| **OTLP/gRPC** | `4317` | `opentelemetry.proto.collector.trace.v1.TraceService/Export`<br />`opentelemetry.proto.collector.logs.v1.LogsService/Export`<br />`opentelemetry.proto.collector.metrics.v1.MetricsService/Export` | Protobuf | `gzip` or uncompressed |
+| **OTLP/HTTP** | `4318` | `POST /v1/traces`<br />`POST /v1/logs`<br />`POST /v1/metrics` | `application/x-protobuf`<br />`application/json` | `Content-Encoding: gzip` or uncompressed |
+
+All endpoints require `Authorization: Bearer ft_live_<prefix>.<secret>` with an active `ingest`-scoped API key.
+
+## Limits and HTTP status codes
+
+- **Maximum body size (OTLP/HTTP)** — **4 MiB (`4,194,304` bytes) decompressed**. Requests exceeding 4 MiB after gzip decompression are rejected whole with `413 Payload Too Large` so partial batches are never silently truncated.
+- **Metering unit** — Usage and quota accounting measure the **decompressed payload bytes** for traces and logs, and **datapoint count** (plus total decompressed bytes for plan ceilings) for metrics.
+
+| HTTP status / gRPC code | Cause |
+| --- | --- |
+| `200 OK` / `OK` | Batch accepted and queued for ClickHouse flush |
+| `400 Bad Request` / `INVALID_ARGUMENT` | Malformed protobuf or JSON payload |
+| `401 Unauthorized` / `UNAUTHENTICATED` | Missing `Authorization: Bearer` header, unknown key, or revoked key |
+| `403 Forbidden` / `PERMISSION_DENIED` | Valid key lacks the `ingest` scope (for example a `read`-only key) |
+| `413 Payload Too Large` | Decompressed HTTP body exceeds 4 MiB |
+| `415 Unsupported Media Type` | `Content-Type` is neither `application/x-protobuf` nor `application/json` |
+| `429 Too Many Requests` / `RESOURCE_EXHAUSTED` | Organisation has reached a capped monthly ingestion allowance |
+
+## Signal storage behaviour
+
+### Traces (`POST /v1/traces`)
+
+- **Resource merging** — Resource attributes are merged into each span's `attributes` map at ingest. If both the resource and the span set the same attribute key, the **span's own attribute wins**.
+- **Deduplication** — Spans are stored in a ClickHouse `ReplacingMergeTree` table, so retried OTLP exports carrying identical `(tenant_id, service_name, hour, trace_id, span_id)` collapse during ClickHouse merges (see ADR 0016).
+- **Span events & exceptions** — Span events are written to `span_events`. Any event named `exception` is normalised and SHA-256 fingerprinted (`16` bytes) at ingest to power the **Issues** view.
+
+### Logs (`POST /v1/logs`)
+
+- **Resource separation** — Log records keep `attributes` and `resource` maps distinct so resource metadata (`k8s.pod.name`, `host.name`, `service.name`) never collides with structured log fields.
+- **Severity mapping** — OpenTelemetry `severity_number` (`1`–`24`) maps to the six canonical levels used in FerrisTrace filters: `trace`, `debug`, `info`, `warn`, `error`, and `fatal`.
+- **Trace correlation** — Non-zero `trace_id` (16 bytes) and `span_id` (8 bytes) fields link log records directly to the trace waterfall.
+
+### Metrics (`POST /v1/metrics`)
+
+| OTLP metric type | Stored in ClickHouse | Notes |
+| --- | --- | --- |
+| **Gauge** | Yes (`metric_points`) | Instantaneous scalar measurements, plus exemplars (`metric_exemplars`) |
+| **Sum** (monotonic & non-monotonic) | Yes (`metric_points`) | Counters and up/down counters, temporality preserved, plus exemplars |
+| **Histogram** (explicit buckets) | Yes (`metric_histograms`) | Bucket counts, bounds, sum, count, min/max, p50/p95/p99 queries, plus exemplars |
+| **ExponentialHistogram** | Accepted, not stored yet | Returns `200 OK`, counted in usage, logs a one-time server warning |
+| **Summary** | Accepted, not stored yet | Returns `200 OK`, counted in usage, logs a one-time server warning |
+
+## Write batching and durability
+
+Accepted payloads are buffered in memory per signal (`spans`, `logs`, `metrics`) and committed to ClickHouse either when a batch threshold is reached or on a **5-second** deadline (`MIN_FLUSH_WAIT` `100ms`). On `SIGTERM`, `ferristrace` stops accepting new connections and performs a final flush of all three buffers before exiting.

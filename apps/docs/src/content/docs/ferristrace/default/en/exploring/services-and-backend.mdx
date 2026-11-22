@@ -1,0 +1,65 @@
+---
+title: Services, releases & backend views
+description: Monitor RED service health, dependency maps, version rollouts, HTTP requests, background jobs, caches, database queries, and host metrics.
+icon: server
+order: 6
+---
+
+# Services, releases & backend views
+
+Under the **Services** section in the navigation rail, FerrisTrace turns standard OpenTelemetry spans and metrics into domain-specific operational views — reporting only what your telemetry genuinely carries, never fabricated placeholders.
+
+## Services & Service map
+
+- **Services (`/services`, shortcut `g` then `v`)** — Computed from `server` and `consumer` spans. Lists every `service.name` with request count, error rate, and latency percentiles (`p50`, `p95`, `p99`), filterable by `environment` (`deployment.environment.name` or `deployment.environment`) and Kubernetes placement.
+- **Service detail (`/services/{name}`)** — Breaks down individual operations/endpoints, request & latency charts overlaid with release markers, recent issues, and a **Runs on** card listing the Kubernetes clusters, pods, hosts, or containers where the service executed in the last 10 minutes.
+- **Service map (`/service-map`)** — Directed dependency graph built from parent/child spans crossing `service.name` boundaries (`/api/orgs/{org}/services/dependencies`), showing call volume and error rates on each edge.
+
+## Releases (`/releases`, shortcut `g` then `r`)
+
+FerrisTrace tracks software rollouts in two ways:
+
+1. **Automatic detection from spans** — The first span of a service carrying a new `service.version` creates one release and one deploy marker per environment, regardless of how many pods start up.
+2. **Explicit CI/CD deploy logs** — Sending an OTLP log record with `event.name = "deploy"` (or `"deployment.event"`), `service.name`, `service.version`, and `deployment.environment.name` records an exact deploy timestamp.
+
+Release markers appear as vertical annotations on service and dashboard charts, and deploys affecting an open incident's service are appended to the incident timeline automatically within a minute.
+
+## Backend domain views
+
+Each backend view selects spans or metrics matching standard OpenTelemetry semantic conventions:
+
+### Requests (`/backend/requests`)
+
+Selects **`server` spans** carrying `http.request.method` (or `http.method`) or an HTTP status code:
+- **Route**: `http.route`, falling back to the span name.
+- **Status codes**: `2xx`, `4xx`, and `5xx` counts from `http.response.status_code` (or `http.status_code`), falling back to `status = error` when no numeric code was recorded.
+- **Latency & time share**: p50/p95/p99 latency and percentage of total server time consumed by each route.
+
+### Jobs (`/backend/jobs`)
+
+Selects **`consumer` spans** or any span with `messaging.operation.type = "process"` (or `messaging.operation = "process"`):
+- **Queue / destination**: `messaging.destination.name`
+- **Broker / system**: `messaging.system` (such as `kafka`, `rabbitmq`, `sqs`, ` sidekiq`)
+- Reports throughput, failure rate, and processing duration percentiles per job/queue.
+
+### Cache (`/backend/cache`)
+
+Selects **`client` spans** carrying `cache.hit` (`true` or `false`) or naming `redis`, `memcached`, or `valkey` in `db.system.name` (or `db.system`):
+- **Hit rate**: Computed strictly as `hits / (hits + misses)` from explicit boolean `cache.hit` attributes. If your instrumentation does not set `cache.hit`, FerrisTrace reports call count and latency honestly and leaves hit rate blank rather than reporting `0%`.
+- **Key pattern privacy**: When grouping by `cache.key`, runs of digits and hex strings of 8+ characters are masked to `*` (`cart:4812` becomes `cart:*`, `session:a3f9b2c1d4e5` becomes `session:*`) so raw user identifiers are never exposed in tables.
+
+### Queries (`/backend/queries`)
+
+Selects **`client` spans** where `db.system.name` (or `db.system`) is set and is **not** `redis`, `memcached`, or `valkey`:
+- **Normalised statement**: Reads `db.query.text` (or `db.statement`) with literals replaced by `?`, grouped by statement and database system (`postgresql`, `mysql`, `clickhouse`, etc.).
+- **N+1 / repeated statement fanouts**: A dedicated fanout detector (`/api/orgs/{org}/statements/fanouts`) highlights normalised statements executed repeatedly within single traces (`(trace_id, statement)`).
+
+### System metrics (`/backend/system`)
+
+Reads host telemetry emitted by the OpenTelemetry Collector's `hostmetrics` receiver, grouped by `host.name`:
+- **CPU**: `1 - avg(system.cpu.utilization{state="idle"})` (average busy share per core; amber from 75%).
+- **Memory**: `sum(system.memory.utilization{state="used"})`.
+- **Disk**: `max(system.filesystem.utilization{state="used"})` (fullest mounted filesystem; amber from 85%).
+- **Load**: `avg(system.cpu.load_average.1m)`.
+
+Unreported scrapers display `not reported` rather than `0`.

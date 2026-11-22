@@ -35,7 +35,7 @@ export interface NavbarProps {
 }
 
 export function Navbar({
-  brand = 'Cometrace',
+  brand = 'FerrisTrace',
   brandHref = '/',
   brandIcon = '/logo.svg',
   links = [],
@@ -64,7 +64,13 @@ export function Navbar({
         <div className="flex items-center gap-3">
           {leftSlot}
           <a href={brandHref} className="flex items-center gap-2 font-semibold text-lg">
-            {brandIcon && <img src={brandIcon} alt="" className="size-5 dark:invert" />}
+            {brandIcon && (
+              <img
+                src={brandIcon}
+                alt=""
+                className={cn('size-5', brandIcon === '/logo.svg' && 'dark:invert')}
+              />
+            )}
             {brand}
           </a>
           {appLinks.length > 0 && (

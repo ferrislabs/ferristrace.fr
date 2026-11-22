@@ -1,0 +1,48 @@
+---
+title: LLM observability
+description: Track LLM latency, token consumption, cache read hits, and US dollar spend by feature, customer, prompt version, and model.
+icon: sparkles
+order: 1
+---
+
+# LLM observability
+
+The **Home > AI** view (`/ai`, shortcut `g` then `c`) turns OpenTelemetry GenAI spans into real-time token, latency, and spend analytics — without storing prompts or completions unless your application explicitly attaches them as span attributes.
+
+## OpenTelemetry GenAI attributes
+
+FerrisTrace indexes a span as an LLM call whenever it carries `gen_ai.provider.name` (or the older `gen_ai.system`) or `gen_ai.request.model`:
+
+| Attribute | Fallback | Purpose |
+| --- | --- | --- |
+| `gen_ai.provider.name` | `gen_ai.system` | Provider identifier (`openai`, `anthropic`, `google`, `mistral`, `bedrock`) |
+| `gen_ai.operation.name` | — | Operation (`chat`, `embeddings`, `text_completion`) |
+| `gen_ai.request.model` | — | Requested model ID |
+| `gen_ai.response.model` | `gen_ai.request.model` | Actual model version served (used first when computing cost) |
+| `gen_ai.usage.input_tokens` | — | Total input tokens (including cached input tokens) |
+| `gen_ai.usage.output_tokens` | — | Generated output tokens |
+| `gen_ai.usage.cache_read.input_tokens` | `0` | Subset of `input_tokens` served from prompt cache |
+| `enduser.id` | — | End-user identifier |
+
+### Product attribution attributes
+
+Add up to three optional attributes on your LLM spans to break down spend by product feature, tenant/customer, and prompt revision:
+
+| Attribute | Fallback chain | Example |
+| --- | --- | --- |
+| `ferristrace.feature` | `gen_ai.agent.name`, then `service.name` | `incident-summarizer`, `support-reply` |
+| `ferristrace.customer` | `enduser.id` | `acme-corp` |
+| `ferristrace.prompt.version` | `gen_ai.prompt.version` | `v4-2026-11` |
+
+## Configuring model prices
+
+FerrisTrace intentionally ships **no hardcoded price table** that goes stale when providers update rates. Instead, organisation owners and administrators maintain the models they actually run under **Settings > Organisation > LLM prices** (`POST /api/orgs/{org}/llm/prices`):
+
+- **Effective dates** — Each price entry specifies an effective timestamp so historical calls keep the rate that applied when they ran, while new calls pick up price cuts automatically.
+- **Prefix wildcards (`*`)** — A model pattern ending in `*` (for example `claude-sonnet-4-5-*` or `gpt-4.1-mini-*`) prices every model sharing that prefix. Exact model names take precedence over prefixes, and the longest matching prefix wins.
+- **Cached input pricing** — Enter prices per million **input**, **output**, and **cached input** tokens (stored as integer micro-dollars via the API). If no cached input rate is set, cached tokens fall back to the regular input rate.
+- **Unpriced model detection** — Calls whose model matches no price entry return `cost: null` rather than `$0.00`, and surface under `GET /api/orgs/{org}/llm/unpriced` and in the UI banner so you know immediately which model needs a rate.
+
+## Exploring calls and spend
+
+Filter `/ai` or `GET /api/orgs/{org}/llm/calls` by `feature`, `model`, `customer`, `user`, `prompt`, `provider`, `trace`, and `project`. Clicking any LLM call opens its full parent trace waterfall in **Traces** so you can inspect tool calls, retrieval latency, and retries around the model invocation.

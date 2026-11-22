@@ -1,0 +1,83 @@
+---
+title: Core concepts
+description: How FerrisTrace scopes data and access across organisations, projects, teams, keys, and signals.
+icon: layers
+order: 2
+---
+
+# Core concepts
+
+Every piece of telemetry and configuration in FerrisTrace belongs to a strict hierarchy. Understanding these building blocks makes configuration, access control, and querying predictable.
+
+## Identity and accounts
+
+An **account** represents a person. FerrisTrace never stores a password, second factor, or session cookie for an account. Instead, FerrisKey (or an external OIDC provider) authenticates the user and issues an OIDC access token.
+
+An identity is bound to the pair `(issuer, sub)`. When an account is pre-created by `ferristrace bootstrap` or by an organisation invitation, the first OIDC sign-in with that email address adopts the account **only if** the token carries `email_verified: true`.
+
+## Organisations
+
+An **organisation** is the top-level tenant boundary (`TenantId`). Every span, log record, metric point, alert rule, incident, status page, API key, and audit entry belongs to exactly one organisation.
+
+- A typical self-hosted deployment runs a single organisation created during `ferristrace bootstrap`.
+- Additional organisations can be created with `ferristrace create-org` if you want hard isolation between business units or environments.
+- Every self-hosted organisation starts on the built-in `self-hosted` plan with unlimited ingestion and retention governed by your server configuration.
+
+## Roles and teams
+
+Each member of an organisation holds one of three roles:
+
+| Role | Capabilities |
+| --- | --- |
+| **`owner`** | Full control, including organisation settings, retention, full data export, managing other owners, and deleting the organisation. Every organisation retains at least one owner. |
+| **`admin`** | Manage projects, teams, members (except owners), API keys, AI agents, MCP settings, LLM price tables, alert channels, on-call schedules, postmortem publishing,status pages, and read the audit log. |
+| **`member`** | Explore all telemetry, create and edit dashboards, declare and update incidents, draft postmortems, acknowledge pages targeted at them, and manage their own profile. |
+
+**Teams** group organisation members so you can assign project ownership and build **on-call rotations** over a defined roster.
+
+## Projects
+
+A **project** partitions telemetry and dashboards inside an organisation. `ferristrace bootstrap` creates an initial `default` project automatically.
+
+- Project names are URL-safe lowercase slugs (`payments-eu`, `checkout-api`). Uppercase input is normalised to lowercase on creation.
+- **Ingest keys** bind incoming OTLP payloads to a specific project.
+- Renaming a project preserves all existing API keys and stored telemetry because every row stores the immutable `project_id` UUID rather than the slug.
+- Deleting a project immediately revokes its API keys and deletes its dashboards; existing ClickHouse telemetry becomes unreachable and ages out on its normal TTL.
+
+## Credentials and Bearer tokens
+
+Every HTTP and gRPC endpoint authenticates via `Authorization: Bearer <token>`. FerrisTrace distinguishes three kinds of credentials automatically:
+
+1. **Person OIDC token (JWT)** — Issued to the web UI by FerrisKey (`client_id` matching `FERRISTRACE_OIDC__CLIENT_ID`). Used for interactive browsing and administration.
+2. **API key (`ft_live_<prefix>.<secret>`)** — Created in **Settings > Project > API keys** or via `ferristrace issue-key`. Only a SHA-256 digest of the secret is stored in PostgreSQL; the cleartext prefix locates the key in constant time. Keys hold one or both scopes:
+   - `ingest`: send OTLP traces, logs, and metrics on ports `4317` and `4318`.
+   - `read`: query telemetry, services, issues, incidents, and dashboards via `/api/...` (optionally restricted to one project).
+3. **AI agent OIDC token (JWT)** — Issued via OAuth 2.0 `client_credentials` (or RFC 8693 token exchange through the MCP gateway) carrying `FERRISTRACE_AGENTS__AUDIENCE` and fine-grained scopes (`telemetry:read`, `incidents:comment`, `incidents:resolve`).
+
+## Signals
+
+FerrisTrace stores three OpenTelemetry signals in ClickHouse and derives higher-level views from them:
+
+- **Traces & spans** — Distributed request trees (`spans` and `span_events`). Resource attributes are merged into span attributes at ingest, with span-level attributes winning on key collisions.
+- **Logs** — Structured and unstructured log records (`logs`) with severity levels (`TRACE` through `FATAL`), resource and record attributes, and `trace_id` / `span_id` correlation.
+- **Metrics** — Gauges, sums (monotonic counters and non-monotonic sums), and explicit-bucket histograms (`metric_points`, `metric_histograms`, and `metric_exemplars`).
+
+From those three raw streams, FerrisTrace automatically populates **Services & Service Map**, **Backend views** (HTTP requests, background jobs, caches, database queries, host metrics), **Releases & deploy markers**, **Exception issues**, **Kubernetes & infrastructure resources**, and **LLM call analytics**.
+
+## Retention and storage tiers
+
+Retention is stamped per row at ingestion time (default **30 days** via `RETENTION_DAYS` / `FERRISTRACE_SPANS__RETENTION_DAYS`, or overridden per organisation by an owner in **Settings > Organisation > General**). ClickHouse drops expired parts asynchronously on its background merge schedule. Optionally, ClickHouse can move parts older than `cold_after_days` to S3-compatible object storage while keeping recent days on local NVMe/SSD.
+
+## Next steps
+
+<Cards>
+
+<Card href="/en/ferristrace/getting-started/quickstart-self-host" title="Quickstart: Docker Compose">
+Start FerrisTrace locally or on a VM in under five minutes.
+</Card>
+
+<Card href="/en/ferristrace/sending-data/ingest-keys" title="Ingest keys">
+Create project-scoped keys for your services and Collectors.
+</Card>
+
+</Cards>

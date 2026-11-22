@@ -1,0 +1,123 @@
+---
+title: HTTP API reference
+description: Complete endpoint directory for FerrisTrace's query, dashboard, incident-response, and control-plane HTTP APIs.
+icon: globe
+order: 2
+---
+
+# HTTP API reference
+
+All HTTP API routes are served on the main HTTP port (`4318` by default, alongside OTLP/HTTP `/v1/*` and the web application).
+
+<Callout type="note" title="Timestamps and window units">
+Query parameters `from` and `to` on `/api/orgs/{org}/*` routes are **Unix epoch milliseconds** (`u64`), except `POST /api/v1/dashboards/query` which takes `from_ns` and `to_ns` in **Unix epoch nanoseconds**.
+</Callout>
+
+**Auth legend:**
+- **`Public`** — No `Authorization` header required.
+- **`Read`** — Accepts a signed-in member OIDC token, a `read`-scoped `ft_live_` API key, or an AI agent JWT with `telemetry:read`.
+- **`Member`** — Requires a signed-in organisation member OIDC token (`member`, `admin`, or `owner`).
+- **`Admin`** — Requires a signed-in `admin` or `owner` OIDC token (some org-level actions require `owner`).
+
+## Health, auth & public status
+
+| Method | Path | Auth | Description |
+| --- | --- | --- | --- |
+| `GET` | `/health` | `Public` | Liveness probe (`200 OK`, body `ok`) |
+| `GET` | `/auth/methods` | `Public` | Returns `{ "oidc": bool, "issuer": string\|null, "client_id": string\|null }` |
+| `GET` | `/api/me` | `Member` | Current account profile, avatar URL, and organisation memberships |
+| `GET` | `/api/pages/ack?token=...` | `Public` | One-click HMAC-signed on-call page acknowledgement (`24h` validity) |
+| `GET` | `/api/status/{slug}` | `Public` | Public status page JSON (`Access-Control-Allow-Origin: *`) |
+| `POST` | `/api/status/{slug}/subscribe` | `Public` | Subscribe an email address to public status updates (`202 Accepted`) |
+
+## Traces, spans & services
+
+| Method | Path | Auth | Description |
+| --- | --- | --- | --- |
+| `GET` | `/api/orgs/{org}/traces` | `Read` | List trace summaries (`from`, `to`, `project`, `service`, `name`, `errors`, `at_least_us`, `order`, `limit`, K8s placement) |
+| `POST` | `/api/orgs/{org}/traces/search` | `Read` | Search traces with a structured query AST (`ExprBody`) |
+| `POST` | `/api/orgs/{org}/traces/facets` | `Read` | Compute facet value counts across matching spans |
+| `GET` | `/api/orgs/{org}/traces/{trace_id}` | `Read` | Fetch full trace waterfall (`spans`, `attributes`, `events`) |
+| `POST` | `/api/orgs/{org}/spans/search` | `Read` | Search individual spans (`started` or `duration` order) |
+| `POST` | `/api/orgs/{org}/spans/series` | `Read` | Time-bucketed span aggregations |
+| `POST` | `/api/orgs/{org}/spans/table` | `Read` | Grouped span aggregation table |
+| `GET` | `/api/orgs/{org}/attributes` | `Read` | List observed span attribute keys |
+| `GET` | `/api/orgs/{org}/attributes/{key}/values` | `Read` | List observed values for a span attribute key |
+| `GET` | `/api/orgs/{org}/services` | `Read` | List services with request count, error rate, and latency percentiles |
+| `GET` | `/api/orgs/{org}/services/dependencies` | `Read` | Directed service-to-service call graph edges |
+| `GET` | `/api/orgs/{org}/services/{service}/operations` | `Read` | Per-operation RED metrics for one service |
+| `GET` | `/api/orgs/{org}/services/{service}/series` | `Read` | Request, error, and latency time series for one service |
+| `GET` | `/api/orgs/{org}/services/{name}/placement` | `Read` | Project and environments observed for a service |
+| `GET` | `/api/orgs/{org}/series` | `Read` | Organisation-wide request/error/latency time series |
+
+## Backend domain views, releases, issues & LLM
+
+| Method | Path | Auth | Description |
+| --- | --- | --- | --- |
+| `GET` | `/api/orgs/{org}/requests` & `/requests/series` | `Read` | HTTP server route breakdown (`2xx`/`4xx`/`5xx`, latency, time share) |
+| `GET` | `/api/orgs/{org}/jobs` & `/jobs/series` | `Read` | Queue/consumer job throughput, errors, and duration |
+| `GET` | `/api/orgs/{org}/caches` & `/caches/series` | `Read` | Redis/Memcached/Valkey call volume, latency, masked key patterns, and `cache.hit` rate |
+| `GET` | `/api/orgs/{org}/statements`, `/statements/series`, `/statements/fanouts` | `Read` | Normalised SQL/DB queries and N+1 per-trace fanout detection |
+| `GET` | `/api/orgs/{org}/releases`, `/releases/{service}/{version}`, `/deploys` | `Read` | Detected `service.version` releases and deploy markers |
+| `GET` | `/api/orgs/{org}/issues` | `Read` | Grouped exception issues in window (`project`, `service`, `text`, `limit`) |
+| `GET` | `/api/orgs/{org}/issues/{fingerprint}` & `.../occurrences` | `Read` | Issue detail and recent occurrences with `trace_id` links |
+| `PATCH` | `/api/orgs/{org}/issues/{fingerprint}` | `Member` | Update issue status (`unresolved`, `resolved`, `ignored`) or `owner` |
+| `GET` | `/api/orgs/{org}/llm/calls` & `/llm/unpriced` | `Read` | Query GenAI calls/costs and list models missing a price entry |
+| `GET` / `POST` | `/api/orgs/{org}/llm/prices` | `Read` / `Admin` | List or add effective-dated model token rates (micro-dollars per 1M tokens) |
+
+## Logs, metrics & infrastructure
+
+| Method | Path | Auth | Description |
+| --- | --- | --- | --- |
+| `GET` | `/api/orgs/{org}/logs` & `/logs/histogram` | `Read` | Paginated log search (`next` cursor) and severity-stacked time buckets |
+| `POST` | `/api/orgs/{org}/logs/search`, `/logs/series`, `/logs/facets` | `Read` | Query-AST log search, series, and facet counts |
+| `GET` | `/api/orgs/{org}/log-attributes` & `/{key}/values` | `Read` | Discovered log attribute keys and values |
+| `GET` | `/api/orgs/{org}/metrics` | `Read` | Discovered metric catalogue (`name`, `kind`, `unit`, `description`) |
+| `GET` / `POST` | `/api/orgs/{org}/metrics/{name}/series` | `Read` | Aggregated metric time series and trace exemplars |
+| `GET` | `/api/orgs/{org}/metrics/{name}/attributes` & `/{key}/values` | `Read` | Label keys and values for a metric |
+| `GET` | `/api/orgs/{org}/placements` | `Read` | Observed K8s `cluster`, `namespace`, `workload`, `pod`, and `node` values |
+| `GET` | `/api/orgs/{org}/cluster` | `Read` | Live 10-minute Kubernetes nodes, workloads, and pods (`cluster`, `namespace`, `project`) |
+| `GET` | `/api/orgs/{org}/infrastructure` | `Read` | Estate catalogue across clusters, hosts, and containers (`kind`, `provider`, `region`, `status`) |
+
+## Dashboards (`/api/v1/dashboards`)
+
+| Method | Path | Auth | Description |
+| --- | --- | --- | --- |
+| `GET` | `/api/v1/dashboards?project={uuid}` | `Read` | List project dashboards |
+| `POST` | `/api/v1/dashboards` | `Member` | Create a dashboard (`{ project, name, tags, doc }`) |
+| `GET` / `PUT` / `DELETE` | `/api/v1/dashboards/{id}` | `Read` / `Member` | Fetch, replace, or delete a dashboard |
+| `POST` | `/api/v1/dashboards/{id}/clone` | `Member` | Duplicate a dashboard |
+| `GET` | `/api/v1/dashboards/{id}/export` | `Read` | Download portable dashboard JSON |
+| `POST` | `/api/v1/dashboards/import?project={uuid}` | `Member` | Import exported dashboard JSON |
+| `POST` | `/api/v1/dashboards/query` | `Read` | Execute a typed panel query (`{ project, kind, query, from_ns, to_ns, variables }`) |
+
+## Alerts, on-call, incidents, postmortems & status pages
+
+| Method | Path | Auth | Description |
+| --- | --- | --- | --- |
+| `GET` / `POST` | `/api/orgs/{org}/alerts` | `Read` / `Admin` | List or create alert rules |
+| `GET` / `PATCH` / `DELETE` | `/api/orgs/{org}/alerts/{id}` & `.../history` | `Read` / `Admin` | Inspect, update, delete, or read transition history of an alert rule |
+| `GET` / `POST` / `DELETE` | `/api/orgs/{org}/alert-channels` | `Admin` | Manage email and HMAC-signed webhook notification channels |
+| `GET` / `POST` | `/api/orgs/{org}/schedules` & `/oncall/now` | `Read` / `Admin` | Manage on-call schedules, overrides, and query current on-call holders |
+| `POST` | `/api/orgs/{org}/pages/{id}/ack` | `Member` | Acknowledge an active page |
+| `GET` / `POST` | `/api/orgs/{org}/incidents` | `Read` / `Member` | List or declare incidents |
+| `GET` / `PATCH` | `/api/orgs/{org}/incidents/{id}` | `Read` / `Member`* | Read or update incident (*AI agents with `incidents:resolve` may send `{"status":"resolved"}`) |
+| `POST` | `/api/orgs/{org}/incidents/{id}/comments` | `Member`* | Add a timeline comment (*AI agents with `incidents:comment` may post non-public comments) |
+| `POST` | `/api/orgs/{org}/incidents/{id}/attachments` | `Member` | Attach a trace, log search, or metric chart |
+| `GET` / `POST` / `PATCH` | `/api/orgs/{org}/incidents/{id}/postmortem` | `Read` / `Member` | Read, draft (`?force=true` for admins), or edit Markdown postmortem |
+| `POST` | `.../postmortem/publish` & `.../unpublish` | `Admin` | Publish or unpublish a postmortem |
+| `GET` / `POST` / `PATCH` / `DELETE` | `/api/orgs/{org}/status-pages` & `.../{id}/preview` | `Member` / `Admin` | Manage status pages, components, and member previews |
+
+## Administration, keys, agents, usage & export
+
+| Method | Path | Auth | Description |
+| --- | --- | --- | --- |
+| `GET` / `PATCH` / `DELETE` | `/api/orgs/{org}` | `Member` / `Admin` | Read/update organisation settings (owner required for retention & deletion) |
+| `GET` / `POST` / `PATCH` / `DELETE` | `/api/orgs/{org}/projects` | `Member` / `Admin` | List, create, rename, assign team, or delete projects |
+| `GET` / `POST` / `PATCH` / `DELETE` | `/api/orgs/{org}/members` & `/teams` | `Member` / `Admin` | Manage organisation roster, roles, and teams |
+| `GET` / `POST` / `DELETE` | `/api/orgs/{org}/keys` & `/keys/{id}` | `Admin` | List, issue, and revoke `ft_live_` API keys |
+| `GET` / `POST` / `DELETE` | `/api/orgs/{org}/agents` & `/agents/me` | `Admin` / `Agent` | Register/revoke OIDC AI agents and inspect agent identity |
+| `GET` / `PUT` | `/api/orgs/{org}/mcp` | `Admin` | Read or toggle organisation MCP gateway registration and scopes |
+| `GET` | `/api/orgs/{org}/usage` | `Member` | Hourly/monthly usage, signal & project splits, projections, and `[billing]` calculations |
+| `GET` | `/api/orgs/{org}/audit` | `Admin` | Immutable organisation audit log |
+| `GET` | `/api/orgs/{org}/export` | `Admin` (`owner`) | Stream full `ferristrace-<org>-<YYYYMMDD>.tar.gz` archive |

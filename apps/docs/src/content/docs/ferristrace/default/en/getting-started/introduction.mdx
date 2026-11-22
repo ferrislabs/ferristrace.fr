@@ -1,0 +1,63 @@
+---
+title: Introduction
+description: What FerrisTrace is, how its self-hosted stack fits together, and where each piece of data lives.
+icon: book-open
+order: 1
+---
+
+# Introduction
+
+FerrisTrace is an open-source, self-hosted observability platform licensed under Apache-2.0. One deployment ingests OpenTelemetry traces, logs, and metrics over OTLP, correlates them across services and Kubernetes infrastructure, evaluates alert rules, manages incidents, on-call schedules, postmortems, and public status pages, tracks LLM usage and telemetry volumes, and exposes governed access to AI agents and MCP clients.
+
+Everything runs from a single server binary (`ferristrace`) paired with standard open-source stores. There is no proprietary agent to install: any OpenTelemetry SDK or OpenTelemetry Collector points directly at FerrisTrace.
+
+## Architecture at a glance
+
+A complete self-hosted stack brings together five runtime components:
+
+| Component | Role | Default port |
+| --- | --- | --- |
+| **`ferristrace` server** | OTLP gRPC & HTTP ingestion, query & control-plane REST API, background evaluation loops, and the built React web UI | `4317` (gRPC), `4318` (HTTP + UI) |
+| **ClickHouse (`24.8`)** | Columnar signal store for spans, span events, logs, metric points, histograms, exemplars, releases, infra resources, and LLM calls | Internal (`8123`) |
+| **PostgreSQL (`16`)** | Transactional control plane for accounts, organisations, projects, teams, API keys, dashboards, alerts, on-call, incidents, postmortems, status pages, and the audit log | `127.0.0.1:5432` |
+| **Redis (`7`)** | Atomic hourly and monthly ingestion usage counters (`usage_hourly` rollups and allowance checks) | Internal (`6379`) |
+| **FerrisKey** | OIDC identity provider (PKCE public web client, agent `client_credentials`, and AuthZEN/Cedar policy engine for MCP) | `127.0.0.1:3333` (API), `127.0.0.1:5555` (Console) |
+
+Two optional containers (`ferristrace-mcp` and `ferristrace-mcp-gateway`, published on `127.0.0.1:8080` in Docker Compose) let MCP hosts such as Claude Code and Claude Desktop query telemetry and act on incidents under Cedar policies evaluated by FerrisKey.
+
+## Key design principles
+
+- **OpenTelemetry native.** Traces, logs, and metrics arrive over standard OTLP gRPC (`4317`) and OTLP HTTP (`4318`, protobuf or JSON, plain or gzip). Infrastructure, releases, exceptions, backend views, and LLM calls are derived directly from OpenTelemetry semantic conventions — never from custom agents or Kubernetes API polling.
+- **Passwordless control plane.** FerrisTrace stores no passwords, TOTP secrets, or browser sessions. Users sign in through FerrisKey (or any OIDC provider) using Authorization Code with PKCE, and the browser presents short-lived Bearer tokens verified against the issuer's JWKS.
+- **Automatic schema migrations.** On startup, `ferristrace` applies both PostgreSQL and ClickHouse migrations before opening its listeners.
+- **Multi-replica safe.** Alert evaluation, notification delivery, paging escalations, status page emails, and deploy tracking coordinate across server replicas using PostgreSQL transactional advisory locks (`pg_try_advisory_xact_lock`).
+- **Installable PWA.** The web interface is an English-only Progressive Web App designed for both dense desktop investigation and on-call incident triage from a phone.
+
+<Screenshot
+  src="/screenshots/trace-light.png"
+  darkSrc="/screenshots/trace-dark.png"
+  alt="Trace waterfall view in FerrisTrace"
+  caption="Inspecting a distributed trace waterfall and span attributes in FerrisTrace."
+/>
+
+## Where to start
+
+<Cards>
+
+<Card href="/en/ferristrace/getting-started/concepts" title="Core concepts">
+Understand organisations, projects, roles, API keys, signals, and retention before deploying.
+</Card>
+
+<Card href="/en/ferristrace/getting-started/quickstart-self-host" title="Quickstart: Docker Compose">
+Bring up the full stack on one machine, bootstrap your first organisation, and send your first trace.
+</Card>
+
+<Card href="/en/ferristrace/getting-started/kubernetes-helm" title="Deploy on Kubernetes (Helm)">
+Install the official OCI Helm chart against external PostgreSQL, ClickHouse, and Redis clusters.
+</Card>
+
+<Card href="/en/ferristrace/sending-data/opentelemetry-sdks" title="Send OpenTelemetry data">
+Configure Node.js, Python, Go, Rust, Java, .NET, or the OpenTelemetry Collector.
+</Card>
+
+</Cards>

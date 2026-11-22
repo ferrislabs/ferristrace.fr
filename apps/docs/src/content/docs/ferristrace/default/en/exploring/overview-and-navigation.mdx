@@ -1,0 +1,67 @@
+---
+title: Home, navigation & shortcuts
+description: Navigate FerrisTrace with the Overview hub, global scope pickers, command palette, keyboard shortcuts, and mobile PWA.
+icon: compass
+order: 1
+---
+
+# Home, navigation & shortcuts
+
+FerrisTrace ranks broken things above healthy ones on every screen so an engineer on call reaches the root cause in one click.
+
+## Home (`Overview`)
+
+Opening `/` lands on **Overview**, scoped to your active organisation, project, and time window:
+
+- **Status line & attention list** — Open incidents, firing alerts, regressed exception issues, and unhealthy Kubernetes pods appear first, ordered by severity.
+- **Recent changes** — Recent service releases and CI/CD deploy markers in the window so you can immediately correlate an error spike with a rollout.
+- **Key figures & service table** — Request throughput, error rate, and latency percentiles across active services, clicking directly into a service or its failing traces.
+- **Empty-project onboarding** — When a project has received no telemetry yet, Home displays ready-to-copy OTLP setup snippets for your project.
+
+## Global scope & time window
+
+The top bar persists scope across navigation:
+
+- **Organisation & Project switchers** — Narrow every explorer, dashboard, issue list, and service table to one project or view the whole organisation.
+- **Time window (`?window=...`)** — Preserved across route transitions (`15m`, `1h`, `6h`, `24h`, `7d`, or custom bounds). Dragging across any time-series chart zooms the active window.
+- **Placement & environment filters** — Filter by `deployment.environment.name` (`production`, `staging`) and Kubernetes placement (`cluster`, `namespace`, `workload`, `pod`, `node`).
+
+## Command palette & keyboard shortcuts
+
+Press **`⌘K`** (`Ctrl+K` on Windows/Linux) or **`/`** from anywhere outside an input field to open the command palette, or press **`?`** to view the shortcut sheet.
+
+### Global shortcuts
+
+| Keys | Action |
+| --- | --- |
+| `⌘K` / `Ctrl+K` or `/` | Open the command palette |
+| `?` | Show keyboard shortcuts dialog |
+| `g` then `o` | Go to **Overview** (`/`) |
+| `g` then `c` | Go to **AI / LLM observability** (`/ai`) |
+| `g` then `a` | Go to **Alert rules** (`/alerts`) |
+| `g` then `n` | Go to **Incidents** (`/incidents`) |
+| `g` then `i` | Go to **Issues** (`/issues`) |
+| `g` then `p` | Go to **Status page editor** (`/status-page`) |
+| `g` then `v` | Go to **Services** (`/services`) |
+| `g` then `r` | Go to **Releases** (`/releases`) |
+| `g` then `l` | Go to **Logs** (`/logs`) |
+| `g` then `t` | Go to **Traces** (`/traces`) |
+| `g` then `m` | Go to **Metrics** (`/metrics`) |
+| `g` then `s` | Go to **Settings** (`/settings`) |
+
+### Chart interactions
+
+| Interaction | Behaviour |
+| --- | --- |
+| **Hover** | Shows a synchronized tooltip with all series sorted by value at the pointer timestamp |
+| **`P` while hovering** | Pins or unpins the chart tooltip so you can copy values or click drilldown links |
+| **Click a series / bar** | Opens Traces, Logs, or Metrics filtered to that series, group value, and timestamp |
+| **Click & drag horizontally** | Zooms the time window to the selected range |
+
+## Progressive Web App (PWA) & mobile on-call
+
+FerrisTrace ships with a web app manifest and service worker so you can install it to a desktop dock or phone home screen. On phones, the left rail collapses into bottom mobile tabs and the incident view caches critical state to remain readable over degraded cellular connections.
+
+<Callout type="note">
+Every route in the web application reads live backend APIs except **Settings > Preferences** (`/settings/preferences`), which is marked as a UI preview placeholder in this release.
+</Callout>

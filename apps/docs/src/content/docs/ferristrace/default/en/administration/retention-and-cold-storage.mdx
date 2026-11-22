@@ -1,0 +1,86 @@
+---
+title: Retention & cold storage
+description: Configure signal retention TTLs and offload older ClickHouse partitions to S3-compatible object storage (MinIO, RustFS, Garage, AWS S3, R2).
+icon: hard-drive
+order: 4
+---
+
+# Retention & cold storage
+
+FerrisTrace keeps ClickHouse storage predictable with row-level TTL expiration and optional hot-to-cold S3 tiering.
+
+## Signal retention (`RETENTION_DAYS`)
+
+By default, ingested spans, span events, logs, metric points, histograms, exemplars, and LLM call records expire after **30 days**:
+
+- **Server default** — Set `RETENTION_DAYS` in Docker Compose (or `FERRISTRACE_SPANS__RETENTION_DAYS` / `spans.retention_days` in `ferristrace.toml`).
+- **Per-organisation override** — An organisation `owner` can set a custom retention period (in days, `>= 1`) under **Settings > Organisation > General**.
+- **How expiration works** — Each row receives its expiry timestamp when ingested. Changing retention applies to **newly ingested telemetry** from that moment forward; ClickHouse drops expired parts asynchronously during background merges.
+
+## S3-compatible cold storage (`cold_after_days`)
+
+To keep fast local SSD/NVMe storage small while retaining weeks or months of searchable history, ClickHouse can keep recent days on its local `default` disk and automatically move older data parts to S3-compatible object storage (AWS S3, MinIO, RustFS, Ceph, or Garage), reading cold parts transparently through a local SSD cache when queried.
+
+<Steps>
+
+<Step title="Mount a tiered storage policy in ClickHouse">
+
+Create a `tiered` storage policy file with a local `default` volume and an S3-backed cached `cold` volume, and mount it into ClickHouse at `/etc/clickhouse-server/config.d/tiered.xml` (ensure the bucket already exists and pass `COLD_ACCESS_KEY` and `COLD_SECRET_KEY` to the `clickhouse` container):
+
+```xml
+<clickhouse>
+    <storage_configuration>
+        <disks>
+            <cold_s3>
+                <type>s3</type>
+                <endpoint>http://rustfs:9000/ferristrace-cold/clickhouse/</endpoint>
+                <access_key_id from_env="COLD_ACCESS_KEY"/>
+                <secret_access_key from_env="COLD_SECRET_KEY"/>
+                <skip_access_check>true</skip_access_check>
+            </cold_s3>
+            <cold>
+                <type>cache</type>
+                <disk>cold_s3</disk>
+                <path>/var/lib/clickhouse/cold_cache/</path>
+                <max_size>10737418240</max_size>
+            </cold>
+        </disks>
+        <policies>
+            <tiered>
+                <volumes>
+                    <default>
+                        <disk>default</disk>
+                    </default>
+                    <cold>
+                        <disk>cold</disk>
+                    </cold>
+                </volumes>
+            </tiered>
+        </policies>
+    </storage_configuration>
+</clickhouse>
+```
+
+</Step>
+
+<Step title="Set FERRISTRACE_SPANS__COLD_AFTER_DAYS">
+
+Configure the age (a non-zero integer in days) after which parts move to `cold`:
+
+```sh
+FERRISTRACE_SPANS__COLD_AFTER_DAYS=7
+```
+
+On startup, `ferristrace` verifies that ClickHouse's `tiered` storage policy exposes a `cold` volume (refusing to start if misconfigured so data is never silently misplaced) and configures TTL move rules on spans, span events, logs, metric points, histograms, exemplars, and LLM calls. Lightweight metadata catalogues remain on fast local storage.
+
+</Step>
+
+</Steps>
+
+## Operational rules for cold storage
+
+<Callout type="warning" title="Read before enabling cold storage">
+1. **Back up ClickHouse disk + S3 bucket together.** ClickHouse's local metadata volume holds the object map referencing files in the S3 bucket; losing either side makes cold data unrecoverable.
+2. **Keep `<skip_access_check>true</skip_access_check>`.** Without it, ClickHouse 24.8 refuses to start if the object store is temporarily unreachable at boot. With it enabled, ingestion and recent local-window queries continue working even during an object-store outage.
+3. **One-way policy transition.** Once a ClickHouse table adopts the `tiered` storage policy, it cannot revert to `default`. Unsetting `FERRISTRACE_SPANS__COLD_AFTER_DAYS` stops new moves to S3, while parts already in `cold` remain queryable there until their retention TTL expires.
+</Callout>

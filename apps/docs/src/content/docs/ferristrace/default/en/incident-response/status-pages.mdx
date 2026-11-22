@@ -1,0 +1,49 @@
+---
+title: Public status pages
+description: Host public status pages driven automatically by alert rules or service error rates, with public incident feeds and email subscriptions.
+icon: activity
+order: 5
+---
+
+# Public status pages
+
+**Incidents > Status page** (`/status-page`, shortcut `g` then `p`) lets an organisation publish one or more external status pages directly from FerrisTrace — served without authentication as both a responsive web page and a CORS-enabled JSON feed.
+
+## URLs and visibility
+
+Each status page claims a unique slug (`3` to `48` lowercase letters, digits, or hyphens; `confirm` and `unsubscribe` are reserved):
+
+| Endpoint | Format | Access |
+| --- | --- | --- |
+| `/status/{slug}` | HTML / PWA UI | Public once published (`404` while private) |
+| `/api/status/{slug}` | JSON (`Access-Control-Allow-Origin: *`) | Public once published |
+| `/status/{slug}/postmortems/{incident}` | Redacted postmortem | Public when both page and incident are public and the postmortem is published |
+| `/api/orgs/{org}/status-pages/{id}/preview` | JSON preview | Organisation members (even while private) |
+
+Enabling **Hide from search** injects `<meta name="robots" content="noindex">` so internal or customer-specific status pages stay out of search engines.
+
+## Automated & manual component status
+
+Each component on a status page derives its live state from one of three sources:
+
+1. **Linked alert rule** — Shows **Down** while a `critical` rule is `firing`, **Degraded** while a `warning` or `info` rule is `firing`, and **Operational** otherwise.
+2. **Live service error rate** — Computes the service's error rate over the last **5 minutes** in ClickHouse: **Degraded** at `>= 5%` errors, **Down** at `>= 25%` errors, and **Operational** below `5%`.
+3. **Manual override** — Set directly by an administrator during planned maintenance or external upstream outages.
+
+Only components marked **public** are rendered externally.
+
+## Public incidents & strict data redaction
+
+A status page displays only organisation incidents explicitly marked **public** that are currently open or resolved within the last **7 days**, along with:
+- Status transitions (`investigating`, `identified`, `monitoring`, `resolved`)
+- Comments explicitly posted with **Post publicly on the status page** (`"public": true`)
+
+Private internal comments, incident owners, internal alert names, telemetry attachments, and member email addresses are **never** included in public HTML or `/api/status/{slug}` JSON responses.
+
+## Email subscriptions
+
+When both `FERRISTRACE_SECRETS__AT_REST_KEY` and `FERRISTRACE_MAIL__*` are configured, visitors can subscribe to status updates by email (`POST /api/status/{slug}/subscribe`):
+
+- **Enumeration-safe & rate-limited** — Subscribe requests always return `202 Accepted` and send at most one confirmation email per address per hour.
+- **Double opt-in** — Subscribers click an HMAC-signed confirmation link valid for **7 days**.
+- **Automated delivery & unsubscribe** — Confirmed subscribers receive emails whenever a public incident opens, changes status, or receives a public comment. Every email includes a signed one-click unsubscribe link valid for **90 days**.

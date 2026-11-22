@@ -1,0 +1,63 @@
+---
+title: Cost meter & usage
+description: Measure ingested telemetry by signal and project, project end-of-month volumes, and optionally attach internal unit prices on self-hosted deployments.
+icon: coins
+order: 2
+---
+
+# Cost meter & usage
+
+FerrisTrace tracks ingestion volume in real time using atomic Redis counters rolled up every hour into PostgreSQL (`usage_hourly` and `usage_hourly_project`).
+
+Two screens expose these figures:
+- **Cost (`/cost`)** — Breaks down monthly ingestion per signal (**Spans**, **Logs**, **Metrics**) and **per project**, with daily stacked bars, cumulative pace projections to month end, and optional internal cost attribution.
+- **Settings > Organisation > Usage (`/settings/usage`)** — Shows raw hourly and monthly decompressed ingestion totals against any configured plan allowance.
+
+## How each signal is metered
+
+| Signal | Metered unit | Details |
+| --- | --- | --- |
+| **Spans** | Decompressed payload bytes (`spans_bytes`) | Measured at OTLP gRPC / HTTP ingestion after gzip decompression (`1 GB = 10^9 bytes`). |
+| **Logs** | Decompressed payload bytes (`logs_bytes`) | Measured at OTLP gRPC / HTTP ingestion after gzip decompression (`1 GB = 10^9 bytes`). |
+| **Metrics** | Datapoints (`metrics_points`) | Counts every scalar gauge/sum point and histogram point accepted (`1M = 10^6 points`). Exemplars do not add extra datapoints. |
+
+<Callout type="note">
+Payloads rejected by authentication or quota checks never increment counters. If Redis is temporarily unreachable, ingestion fails open so you never drop production telemetry because a usage counter was unavailable.
+</Callout>
+
+## Optional internal unit pricing (`[billing]`)
+
+Out of the box on a self-hosted server, `/cost` displays pure **volumes** (gigabytes and millions of datapoints) with a note that no unit prices are configured.
+
+Platform teams running shared internal FerrisTrace clusters can attach internal chargeback / showback rates and monthly included allowances in `ferristrace.toml` or `.env`:
+
+```sh
+# 3-letter ISO 4217 currency code (display only, e.g. EUR, USD, GBP)
+FERRISTRACE_BILLING__CURRENCY=EUR
+
+# Unit prices in micro-units (1,000,000 = 1.00 EUR)
+FERRISTRACE_BILLING__SPANS_GB_MICROS=250000          # €0.25 / GB of spans
+FERRISTRACE_BILLING__LOGS_GB_MICROS=500000           # €0.50 / GB of logs
+FERRISTRACE_BILLING__METRICS_MILLION_MICROS=100000   # €0.10 / 1M metric datapoints
+
+# Optional monthly included allowances before billable spend accrues
+FERRISTRACE_BILLING__INCLUDED_SPANS_GB=50
+FERRISTRACE_BILLING__INCLUDED_LOGS_GB=50
+FERRISTRACE_BILLING__INCLUDED_METRICS_MILLION=100
+```
+
+When `[billing]` is configured, `/cost` displays:
+- **Spend to date** (billable spend above included allowances, compared to the same day of last month)
+- **Projected bill** at month end based on current hourly pace, plus the projected date any included allowance will be exhausted
+- **Usage value** (total gross value and how much was covered by included allowances)
+- **Spend by project** table with search, sorting, daily mini-bars, and single-project filtering
+
+## Backfilling historical signal & project splits
+
+If you upgraded from an earlier FerrisTrace version where `usage_hourly` held only total bytes without per-signal or per-project splits, run:
+
+```sh
+docker compose exec server ferristrace backfill-usage
+```
+
+`backfill-usage` inspects stored ClickHouse rows to populate missing `spans_bytes`, `logs_bytes`, `metrics_points`, and `usage_hourly_project` shares without ever modifying `ingested_bytes` or overwriting hours that were already metered live.
