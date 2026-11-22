@@ -19,7 +19,12 @@ interface Sponsor {
 
 /** Add an entry per company, with its logo in public/sponsors/. */
 const sponsors: Sponsor[] = [
-  { name: 'Wakfuli', logoSrc: '/sponsors/wakfuli.svg', logoOnDark: true },
+  {
+    name: 'Wakfuli',
+    logoSrc: '/sponsors/wakfuli.svg',
+    logoOnDark: true,
+    href: 'https://wakfuli.com',
+  },
 ]
 
 export function Sponsors() {

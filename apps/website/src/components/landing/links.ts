@@ -10,6 +10,7 @@
  * being invented: the container registry, the licence and the legal entity.
  */
 const ORG = 'https://github.com/ferrislabs'
+const CONSOLE = 'https://console.ferristrace.dev'
 
 /** Container image, `<registry namespace>/<image>`. Change it here and every command follows. */
 export const IMAGE = 'ferrislabs/ferristrace'
@@ -50,10 +51,14 @@ export const links = {
   changelog: '/changelog',
   /** The core repository: what a visitor clicking "GitHub" is after. */
   github: `${ORG}/ferristrace`,
-  sponsor: 'https://github.com/sponsors/Comettrace',
-  signIn: '/sign-in',
-  startOnCloud: '/sign-up',
+  sponsor: 'https://github.com/sponsors/ferrislabs',
+  signIn: CONSOLE,
+  startOnCloud: CONSOLE,
   selfHostGuide: docs('/getting-started/quickstart-self-host'),
-  status: '/status',
+  status: 'https://status.ferristrace.dev',
   security: '/security',
+  terms: '/terms',
+  termsOfSale: '/terms-of-sale',
+  privacy: '/privacy',
+  dpa: '/dpa',
 } as const

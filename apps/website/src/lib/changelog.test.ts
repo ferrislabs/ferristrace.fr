@@ -41,7 +41,7 @@ describe('parseChangelog', () => {
   it('pulls a Breaking bullet out of its section and strips the marker', () => {
     const release = byVersion('0.9.0')
     expect(release.breaking).toEqual([
-      '`cmt_key_` ingest keys are rejected. Reissue them as `cmt_ik_` from the workspace settings.',
+      '`ft_key_` ingest keys are rejected. Reissue them as `ft_ik_` from the workspace settings.',
     ])
 
     const changed = release.groups.find((group) => group.type === 'Changed')

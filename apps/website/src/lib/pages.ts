@@ -117,6 +117,46 @@ export const pages: PageMeta[] = [
     card: { eyebrow: 'Changelog', headline: 'Every release of FerrisTrace, as it ships.' },
     priority: 0.5,
   },
+  {
+    path: '/security/',
+    title: 'Security & Trust',
+    description:
+      'Memory-safe Rust binaries, passwordless OIDC via FerrisKey, scoped AI agent tokens, EU Cloud hosting in France and responsible vulnerability disclosure.',
+    card: { eyebrow: 'Security & Trust', headline: 'Security built into the binary, not bolted on later.' },
+    priority: 0.6,
+  },
+  {
+    path: '/terms/',
+    title: 'Terms of Use (CGU)',
+    description:
+      'Terms of Use and statutory legal notice (LCEN) governing access to ferristrace.dev, docs.ferristrace.dev and FerrisTrace Cloud.',
+    card: { eyebrow: 'Legal · CGU', headline: 'Terms of Use & Legal Notice.' },
+    priority: 0.3,
+  },
+  {
+    path: '/terms-of-sale/',
+    title: 'Terms of Sale (CGV)',
+    description:
+      'Terms of Sale governing FerrisTrace Cloud subscriptions (Free, Pro and Enterprise), quotas, Stripe billing and statutory consumer rights.',
+    card: { eyebrow: 'Legal · CGV', headline: 'Terms of Sale for FerrisTrace Cloud.' },
+    priority: 0.3,
+  },
+  {
+    path: '/privacy/',
+    title: 'Privacy Policy (GDPR)',
+    description:
+      'How FerrisTrace processes personal data and Cloud telemetry under the EU GDPR and French Data Protection Act, hosted in the European Union.',
+    card: { eyebrow: 'Legal · GDPR / RGPD', headline: 'Privacy Policy & Data Protection.' },
+    priority: 0.3,
+  },
+  {
+    path: '/dpa/',
+    title: 'Data Processing Agreement (DPA)',
+    description:
+      'Article 28 GDPR Data Processing Agreement governing observability telemetry ingested into FerrisTrace Cloud workspaces in the European Union.',
+    card: { eyebrow: 'Legal · GDPR Art. 28', headline: 'Data Processing Agreement (DPA).' },
+    priority: 0.3,
+  },
 ]
 
 export function pageMeta(path: string): PageMeta {
