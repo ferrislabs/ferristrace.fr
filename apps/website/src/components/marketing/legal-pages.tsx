@@ -21,7 +21,7 @@ const LEGAL_TABS: Array<{ id: LegalDocId; label: string; shortLabel: string; hre
   { id: 'dpa', label: 'Data Processing Agreement (DPA)', shortLabel: 'DPA', href: links.dpa },
 ]
 
-const EFFECTIVE_DATE = 'November 18, 2026'
+const EFFECTIVE_DATE = 'November 22, 2026'
 
 const PLACEHOLDER_CLASS =
   'inline-block border border-border bg-surface-tint px-1.5 py-0.5 font-mono text-[12px] text-accent-text'
@@ -211,8 +211,8 @@ const termsSections: LegalSection[] = [
                 </th>
                 <td className="px-4 py-3">
                   <strong>Thibault Pointurier — Entrepreneur Individuel (EI)</strong>, operating
-                  under the trade name <strong>FerrisLabs</strong> (French{' '}
-                  <em>micro-entreprise / auto-entreprise</em> regime, zero share capital)
+                  under the trade name <strong>FerrisTrace</strong> / <strong>FerrisLabs</strong>{' '}
+                  (French <em>micro-entreprise / auto-entreprise</em> regime, zero share capital)
                 </td>
               </tr>
               <tr>
@@ -220,8 +220,9 @@ const termsSections: LegalSection[] = [
                   Registration &amp; VAT
                 </th>
                 <td className="px-4 py-3">
-                  SIREN / SIRET <Placeholder>[SIREN / SIRET — À compléter]</Placeholder> ·
-                  Registered with the French <em>Registre National des Entreprises (RNE)</em> ·{' '}
+                  SIREN <strong>905 294 013</strong> · SIRET <strong>905 294 013 00024</strong> ·
+                  APE <strong>62.01Z</strong> · Registered with the French{' '}
+                  <em>Registre National des Entreprises (RNE)</em> ·{' '}
                   <strong>
                     VAT not applicable — Art. 293 B of the French General Tax Code (
                     <em>TVA non applicable, art. 293 B du CGI</em>)
@@ -232,9 +233,7 @@ const termsSections: LegalSection[] = [
                 <th scope="row" className="px-4 py-3 font-medium text-foreground">
                   Business address
                 </th>
-                <td className="px-4 py-3">
-                  <Placeholder>[Business address — À compléter]</Placeholder>, France
-                </td>
+                <td className="px-4 py-3">51 rue Léo Mérigot, 18100 Vierzon, France</td>
               </tr>
               <tr>
                 <th scope="row" className="px-4 py-3 font-medium text-foreground">
@@ -510,7 +509,7 @@ const termsSections: LegalSection[] = [
               <strong>Business Users (B2B):</strong> Failing amicable settlement within 30 days, any
               dispute relating to the validity, interpretation, or performance of these Terms shall
               fall under the exclusive jurisdiction of the competent courts of{' '}
-              <Placeholder>[Competent Commercial Court — À compléter]</Placeholder>, France.
+              <strong>Bourges</strong>, France.
             </>,
           ]}
         />
@@ -533,9 +532,10 @@ const saleSections: LegalSection[] = [
           These Terms of Sale (<em>Conditions Générales de Vente — CGV</em>) govern all
           subscriptions to <strong>FerrisTrace Cloud</strong> entered into between{' '}
           <strong>Thibault Pointurier — Entrepreneur Individuel (EI)</strong>, trading as{' '}
-          <strong>FerrisLabs</strong> (French <em>micro-entreprise / auto-entreprise</em>, SIREN /
-          SIRET <Placeholder>[SIREN / SIRET — À compléter]</Placeholder>, whose statutory details
-          appear in Article 01 of the <InlineLink href={links.terms}>Terms of Use</InlineLink>) and
+          <strong>FerrisTrace</strong> / <strong>FerrisLabs</strong> (French{' '}
+          <em>micro-entreprise / auto-entreprise</em>, SIREN <strong>905 294 013</strong> · SIRET{' '}
+          <strong>905 294 013 00024</strong>, whose statutory details appear in Article 01 of the{' '}
+          <InlineLink href={links.terms}>Terms of Use</InlineLink>) and
           any Business Customer (B2B) or Consumer Customer (B2C) subscribing on{' '}
           <InlineLink href={links.signIn}>console.ferristrace.dev</InlineLink> or via a signed
           Enterprise order form (&ldquo;Customer&rdquo;).
@@ -866,8 +866,7 @@ const saleSections: LegalSection[] = [
           L. 612-1 French Consumer Code) and bring claims before the courts designated by mandatory
           consumer protection law. <strong>Business Customers (B2B)</strong> agree that any dispute
           not resolved amicably within 30 days shall be submitted to the exclusive jurisdiction of
-          the competent courts of{' '}
-          <Placeholder>[Competent Commercial Court — À compléter]</Placeholder>, France.
+          the competent courts of <strong>Bourges</strong>, France.
         </p>
       </>
     ),
@@ -886,9 +885,9 @@ const privacySections: LegalSection[] = [
       <>
         <p>
           <strong>Thibault Pointurier — Entrepreneur Individuel (EI)</strong>, trading as{' '}
-          <strong>FerrisLabs</strong> (SIREN / SIRET{' '}
-          <Placeholder>[SIREN / SIRET — À compléter]</Placeholder>,{' '}
-          <Placeholder>[Business address — À compléter]</Placeholder>, France), processes personal
+          <strong>FerrisTrace</strong> / <strong>FerrisLabs</strong> (SIREN{' '}
+          <strong>905 294 013</strong> · SIRET <strong>905 294 013 00024</strong>, 51 rue Léo
+          Mérigot, 18100 Vierzon, France), processes personal
           data in compliance with Regulation (EU) 2016/679 (the{' '}
           <strong>General Data Protection Regulation — GDPR / RGPD</strong>) and French Law
           No. 78-17 of January 6, 1978 as amended (<em>Loi Informatique et Libertés</em>).
@@ -1255,11 +1254,11 @@ const dpaSections: LegalSection[] = [
             <>
               <strong>The Data Processor (Sous-traitant — &ldquo;FerrisLabs&rdquo;):</strong>{' '}
               <strong>Thibault Pointurier — Entrepreneur Individuel (EI)</strong>, operating under
-              the trade name <strong>FerrisLabs</strong> (French{' '}
-              <em>micro-entreprise / auto-entreprise</em>, SIREN / SIRET{' '}
-              <Placeholder>[SIREN / SIRET — À compléter]</Placeholder>, registered with the French{' '}
-              <em>Registre National des Entreprises (RNE)</em>, business address:{' '}
-              <Placeholder>[Business address — À compléter]</Placeholder>, France).
+              the trade name <strong>FerrisTrace</strong> / <strong>FerrisLabs</strong> (French{' '}
+              <em>micro-entreprise / auto-entreprise</em>, SIREN <strong>905 294 013</strong> ·
+              SIRET <strong>905 294 013 00024</strong> · APE <strong>62.01Z</strong>, registered
+              with the French <em>Registre National des Entreprises (RNE)</em>, business address: 51
+              rue Léo Mérigot, 18100 Vierzon, France).
             </>,
           ]}
         />
