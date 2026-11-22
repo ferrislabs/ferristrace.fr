@@ -1,0 +1,6 @@
+apiVersion: v2
+name: ferristrace-docs
+description: The FerrisTrace documentation site, served as static files by nginx behind a Gateway API HTTPRoute.
+type: application
+version: 0.1.0
+appVersion: "0.1.0"

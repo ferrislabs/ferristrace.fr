@@ -39,6 +39,7 @@ export default defineConfig({
     }),
     thumbnailIntegration({
       appName: 'Docs',
+      primaryColor: '#4338ca',
       content: { type: 'collection', dir: './src/content/docs' },
     }),
   ],
