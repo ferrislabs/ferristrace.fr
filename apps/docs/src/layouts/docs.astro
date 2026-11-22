@@ -132,10 +132,11 @@ const appUrlOverrides = {
     />
     <div id="docs-nav-data" data-items={JSON.stringify(navItems)} hidden />
     <div class="flex max-w-350 mx-auto">
-      <div class="hidden lg:block w-64 shrink-0 border-r h-[calc(100vh-var(--header-height))] overflow-y-auto sticky top-(--header-height) py-6 pl-3 pr-3" transition:persist transition:animate="none">
+      <div class="hidden lg:block w-64 shrink-0 border-r h-[calc(100vh-var(--header-height))] overflow-y-auto sticky top-(--header-height) py-6 pl-4 sm:pl-6 pr-4" transition:persist transition:animate="none">
         <Sidebar items={navItems} currentPath={currentPath} authEnabled={authEnabled} client:load />
       </div>
-      <main class="flex-1 min-w-0 px-4 sm:px-8 py-6" transition:animate="none">
+      <main class="flex-1 min-w-0 px-5 sm:px-8 lg:px-12 py-8 lg:py-10" transition:animate="none">
+        <div class="mx-auto max-w-4xl">
         {breadcrumb.length > 1 && (
           <nav class="flex items-center gap-1.5 text-sm text-primary mb-4">
             {breadcrumb.slice(0, -1).map((item, i) => (
@@ -158,7 +159,7 @@ const appUrlOverrides = {
               forbiddenId="forbidden-content"
               client:only="react"
             />
-            <article id="protected-doc" hidden class="prose prose-neutral dark:prose-invert max-w-none">
+            <article id="protected-doc" hidden class="prose prose-neutral dark:prose-invert max-w-none [&>*:first-child]:mt-0">
               <slot />
             </article>
             <div id="forbidden-content" hidden class="flex flex-col items-center justify-center px-6 text-center py-20">
@@ -166,12 +167,13 @@ const appUrlOverrides = {
             </div>
           </>
         ) : (
-          <article class="prose prose-neutral dark:prose-invert max-w-none" data-pagefind-body>
+          <article class="prose prose-neutral dark:prose-invert max-w-none [&>*:first-child]:mt-0" data-pagefind-body>
             <slot />
           </article>
         )}
         <Pagination prev={prev} next={next} client:load />
         <Footer config={siteConfig} locale={currentLocale} appUrlOverrides={appUrlOverrides} client:load />
+        </div>
       </main>
       <div transition:animate="none">
         <TableOfContents headings={headings} client:load />
