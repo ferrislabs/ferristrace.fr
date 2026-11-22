@@ -67,7 +67,7 @@ export function TableOfContents({ headings }: TocProps) {
   })
 
   return (
-    <nav className="w-56 shrink-0 hidden xl:block h-[calc(100vh-var(--header-height,4rem))] overflow-y-auto sticky top-(--header-height,4rem) py-6 pl-4">
+    <nav className="w-60 shrink-0 hidden xl:block h-[calc(100vh-var(--header-height,4rem))] overflow-y-auto sticky top-(--header-height,4rem) py-8 pl-4 pr-4 sm:pr-6">
       <p className="text-sm font-medium mb-3">On this page</p>
       <ul className="border-l border-border space-y-0.5">
         {numbered.map((heading) => (

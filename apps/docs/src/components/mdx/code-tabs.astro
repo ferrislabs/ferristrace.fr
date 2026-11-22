@@ -60,7 +60,7 @@ const { class: className, group = 'code-tabs' } = Astro.props
 
     const bar = document.createElement('div')
     bar.className =
-      'flex items-center gap-1 overflow-x-auto border-b border-border bg-section-alt px-2'
+      'flex items-center gap-1 overflow-x-auto border-b border-border bg-section-alt px-3 sm:px-4'
     bar.setAttribute('role', 'tablist')
 
     const buttons = labels.map((label, index) => {
@@ -70,7 +70,7 @@ const { class: className, group = 'code-tabs' } = Astro.props
       button.setAttribute('role', 'tab')
       button.id = `${group}-tab-${index}-${Math.random().toString(36).slice(2, 7)}`
       button.className =
-        'shrink-0 border-b-2 border-transparent px-2.5 py-2 font-mono text-xs text-muted-foreground transition-colors hover:text-foreground'
+        'shrink-0 cursor-pointer border-b-2 border-transparent px-3 py-2.5 font-mono text-xs text-muted-foreground transition-colors hover:text-foreground'
       bar.append(button)
       return button
     })
