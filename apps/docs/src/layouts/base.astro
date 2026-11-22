@@ -11,7 +11,9 @@ interface Props {
 }
 
 const { title, description, thumbnail } = Astro.props
-const thumbnailUrl = thumbnail ?? siteConfig.thumbnail
+const absolute = (path: string) => (Astro.site ? new URL(path, Astro.site).href : path)
+const rawThumbnail = thumbnail ?? siteConfig.thumbnail
+const thumbnailUrl = rawThumbnail ? absolute(rawThumbnail) : undefined
 ---
 
 <!doctype html>
