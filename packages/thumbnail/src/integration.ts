@@ -2,6 +2,7 @@ import type { AstroIntegration } from 'astro'
 import matter from 'gray-matter'
 import { readFile, readdir } from 'node:fs/promises'
 import { join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { generateThumbnail } from './generator'
 import { renderThumbnail, renderThumbnailToFile } from './renderer'
 
@@ -37,15 +38,16 @@ async function buildContentIndex(
   const mdxFiles = allFiles.filter((f) => f.endsWith('.mdx') || f.endsWith('.md'))
 
   for (const file of mdxFiles) {
+    const normalizedFile = file.replaceAll('\\', '/')
     const filePath = join(contentDir, file)
-    if (file.startsWith('_') || file.includes('/_')) continue
+    if (normalizedFile.startsWith('_') || normalizedFile.includes('/_')) continue
 
     try {
       const fileContent = await readFile(filePath, 'utf8')
       const { data } = matter(fileContent)
 
       // Derive URL path from file path by stripping extension
-      const urlPath = file
+      const urlPath = normalizedFile
         .replace(/\.(mdx|md)$/, '')
         .replace(/\/index$/, '')
 
@@ -145,7 +147,7 @@ export function thumbnailIntegration(config: ThumbnailConfig): AstroIntegration 
       },
 
       'astro:build:done': async ({ dir, pages, logger }) => {
-        const outputDir = dir.pathname
+        const outputDir = fileURLToPath(dir)
         const index = await getContentIndex()
 
         if (config.content.type === 'static') {
@@ -171,7 +173,20 @@ export function thumbnailIntegration(config: ThumbnailConfig): AstroIntegration 
         // Collection mode
         const tasks = pages.map((page) => async () => {
           const pathname = page.pathname.replace(/\/$/, '')
-          if (!pathname) return
+          if (!pathname) {
+            try {
+              const svg = await generateThumbnail({
+                headline: config.appName,
+                title: 'Documentation',
+                primaryColor: config.primaryColor,
+              })
+              await renderThumbnailToFile(svg, join(outputDir, 'thumbnail.png'))
+              logger.info('Thumbnail generated for /')
+            } catch (error) {
+              logger.warn(`Failed to generate thumbnail for /: ${error}`)
+            }
+            return
+          }
 
           try {
             const { headline, title, description } = resolveFromIndex(
@@ -256,9 +271,25 @@ function resolveFromIndex(
     const entrySegments = entry.urlPath.split('/')
 
     // Check if the last N segments match (the actual content path portion)
-    // and the pathname contains all entry segments
+    // and the pathname segments all appear in the entry segments (matching locale/project)
     if (entrySegments.length >= 2 && pathSegments.length >= 2) {
-      // Compare trailing segments (the content-specific part)
+      const entryTail = entrySegments.slice(-2).join('/')
+      const pathTail = pathSegments.slice(-2).join('/')
+
+      if (entryTail === pathTail && pathSegments.every((seg) => entrySegments.includes(seg))) {
+        return {
+          headline: appName,
+          title: entry.title,
+          description: entry.shortDescription ?? entry.description,
+        }
+      }
+    }
+  }
+
+  for (const [, entry] of index) {
+    const entrySegments = entry.urlPath.split('/')
+
+    if (entrySegments.length >= 2 && pathSegments.length >= 2) {
       const entryTail = entrySegments.slice(-2).join('/')
       const pathTail = pathSegments.slice(-2).join('/')
 

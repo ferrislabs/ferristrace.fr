@@ -9,9 +9,6 @@ dist
 .output
 charts
 deploy
-apps/docs
-packages/auth
-packages/mdx
 *.log
 .DS_Store
 .env
