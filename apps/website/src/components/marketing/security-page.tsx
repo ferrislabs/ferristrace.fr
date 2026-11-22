@@ -34,7 +34,7 @@ const selfHostGuarantees = [
 ]
 
 const disclosureRules = [
-  'Email your report to contact@ferrislabs.fr or open a GitHub Private Security Advisory on github.com/ferrislabs/ferristrace/security/advisories/new',
+  'Email your report to contact@ferristrace.dev or open a GitHub Private Security Advisory on github.com/ferrislabs/ferristrace/security/advisories/new',
   'Include affected component/version, reproduction steps or proof-of-concept, and impact assessment',
   'We acknowledge receipt within 24 hours and provide a triage assessment and fix timeline within 72 hours',
   'Please allow us reasonable time to release a patch before public disclosure, and avoid testing against other customers’ Cloud workspaces',
@@ -117,7 +117,7 @@ export function SecurityPage() {
               </span>
             </div>
             <p className="mt-4 text-sm leading-7 text-muted-foreground">
-              Managed by FerrisLabs in the European Union with strict GDPR processor commitments and
+              Managed by FerrisTrace in the European Union with strict GDPR processor commitments and
               zero non-EEA telemetry transfers.
             </p>
             <div className="my-7 border-t border-border" />
@@ -191,11 +191,11 @@ export function SecurityPage() {
             <p className="mt-4 text-sm leading-7 text-muted-foreground">
               We welcome coordinated vulnerability reports from security researchers and users. Good-faith
               research conducted in accordance with this policy is authorised and will never result
-              in legal action from FerrisLabs.
+              in legal action from FerrisTrace.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <a
-                href="mailto:contact@ferrislabs.fr?subject=Security%20Vulnerability%20Report%20-%20FerrisTrace"
+                href="mailto:contact@ferristrace.dev?subject=Security%20Vulnerability%20Report%20-%20FerrisTrace"
                 className="inline-flex items-center gap-2 bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-hover"
               >
                 <ShieldAlert className="size-4" aria-hidden="true" />

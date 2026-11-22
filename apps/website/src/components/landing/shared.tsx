@@ -9,7 +9,7 @@ export function Container({ className, children }: { className?: string; childre
 
 /**
  * One band of the page: a full-width rule under it and the bordered column in
- * the middle, so the sections stack into the same grid as ferrislabs.fr.
+ * the middle, so the sections stack into a single continuous grid.
  */
 export function Frame({
   id,

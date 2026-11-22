@@ -3,7 +3,7 @@
  * one character per pixel, "." for transparent. The palette maps each
  * character to a colour.
  *
- * The comet crab is the one FerrisTrace wears on ferrislabs.fr. Every other
+ * The comet crab is the FerrisTrace mark. Every other
  * sprite reuses its indigo so the set reads as one family.
  */
 export interface Sprite {
@@ -36,21 +36,6 @@ export const cometCrab: Sprite = {
     '.....D.OOO.D.',
   ],
   palette: INK,
-}
-
-/** The Ferrislabs crab, in rust, for the footer signature. */
-export const rustCrab: Sprite = {
-  rows: [
-    '.........',
-    '..D...D..',
-    '.DD...DD.',
-    '.D.E.E.D.',
-    '.DOOOOOD.',
-    'OOOOOOOOO',
-    '.OOOOOOO.',
-    'D.OOOOO.D',
-  ],
-  palette: { D: '#a83e08', O: '#f2670f', E: '#1c1917' },
 }
 
 /** FerrisKey: the golden key, the same one as on ferriskey.rs. */

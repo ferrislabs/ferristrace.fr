@@ -145,7 +145,7 @@ export const pages: PageMeta[] = [
     path: '/privacy/',
     title: 'Privacy Policy (GDPR)',
     description:
-      'How FerrisLabs processes personal data and Cloud telemetry under the EU GDPR and French Data Protection Act, hosted in the European Union.',
+      'How FerrisTrace processes personal data and Cloud telemetry under the EU GDPR and French Data Protection Act, hosted in the European Union.',
     card: { eyebrow: 'Legal · GDPR / RGPD', headline: 'Privacy Policy & Data Protection.' },
     priority: 0.3,
   },

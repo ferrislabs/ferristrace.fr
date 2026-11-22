@@ -137,7 +137,7 @@ function LegalLayout({
                 </p>
                 <p className="mt-2">
                   Write to{' '}
-                  <InlineLink href="mailto:contact@ferrislabs.fr">contact@ferrislabs.fr</InlineLink>
+                  <InlineLink href="mailto:contact@ferristrace.dev">contact@ferristrace.dev</InlineLink>
                   .
                 </p>
               </div>
@@ -211,7 +211,7 @@ const termsSections: LegalSection[] = [
                 </th>
                 <td className="px-4 py-3">
                   <strong>Thibault Pointurier — Entrepreneur Individuel (EI)</strong>, operating
-                  under the trade name <strong>FerrisTrace</strong> / <strong>FerrisLabs</strong>{' '}
+                  under the trade name <strong>FerrisTrace</strong>{' '}
                   (French <em>micro-entreprise / auto-entreprise</em> regime, zero share capital)
                 </td>
               </tr>
@@ -248,8 +248,8 @@ const termsSections: LegalSection[] = [
                   Contact
                 </th>
                 <td className="px-4 py-3">
-                  <InlineLink href="mailto:contact@ferrislabs.fr">contact@ferrislabs.fr</InlineLink>{' '}
-                  · <InlineLink href="https://ferrislabs.fr">ferrislabs.fr</InlineLink>
+                  <InlineLink href="mailto:contact@ferristrace.dev">contact@ferristrace.dev</InlineLink>{' '}
+                  · <InlineLink href="https://ferristrace.dev">ferristrace.dev</InlineLink>
                 </td>
               </tr>
               <tr>
@@ -279,7 +279,7 @@ const termsSections: LegalSection[] = [
           to and use of the public websites (<strong>ferristrace.dev</strong> and{' '}
           <strong>docs.ferristrace.dev</strong>) as well as the managed observability platform{' '}
           <strong>FerrisTrace Cloud</strong> (<InlineLink href={links.signIn}>console.ferristrace.dev</InlineLink>
-          ), operated by FerrisLabs (&ldquo;we&rdquo;, &ldquo;us&rdquo;, &ldquo;FerrisLabs&rdquo;).
+          ), operated by Thibault Pointurier — Entrepreneur Individuel (EI), trading as FerrisTrace (&ldquo;we&rdquo;, &ldquo;us&rdquo;, &ldquo;FerrisTrace&rdquo;).
         </p>
         <p>
           They apply to both professional users acting in the course of their trade or business
@@ -297,7 +297,7 @@ const termsSections: LegalSection[] = [
             Apache License, Version 2.0
           </InlineLink>
           . When you self-host FerrisTrace on your own servers, that licence governs your use of the
-          software, and FerrisLabs has no access to your infrastructure or data.
+          software, and FerrisTrace has no access to your infrastructure or data.
         </p>
       </>
     ),
@@ -330,7 +330,7 @@ const termsSections: LegalSection[] = [
             </>,
             <>
               <strong>Notification:</strong> You agree to notify{' '}
-              <InlineLink href="mailto:contact@ferrislabs.fr">contact@ferrislabs.fr</InlineLink>{' '}
+              <InlineLink href="mailto:contact@ferristrace.dev">contact@ferristrace.dev</InlineLink>{' '}
               promptly upon becoming aware of any unauthorised access to your workspace.
             </>,
           ]}
@@ -386,9 +386,9 @@ const termsSections: LegalSection[] = [
           Cloud.
         </p>
         <p>
-          You grant FerrisLabs a limited, non-exclusive, worldwide licence to host, index, query,
+          You grant FerrisTrace a limited, non-exclusive, worldwide licence to host, index, query,
           back up, and display Customer Data solely as necessary to provide, secure, and support the
-          FerrisTrace Cloud service for your Organisation. FerrisLabs never sells Customer Data and
+          FerrisTrace Cloud service for your Organisation. FerrisTrace never sells Customer Data and
           never uses your telemetry or LLM traces to train machine-learning models.
         </p>
         <p>
@@ -414,9 +414,9 @@ const termsSections: LegalSection[] = [
           in these Terms restricts your rights under that open-source licence.
         </p>
         <p>
-          The <strong>FerrisTrace</strong> and <strong>FerrisLabs</strong> names, logos, pixel crab
+          The <strong>FerrisTrace</strong> name, logos, pixel crab
           marks, visual design, and marketing copy on <strong>ferristrace.dev</strong> remain the
-          exclusive property of FerrisLabs and may not be used in a way that suggests endorsement or
+          exclusive property of Thibault Pointurier (trading as FerrisTrace) and may not be used in a way that suggests endorsement or
           causes confusion without prior written permission.
         </p>
       </>
@@ -454,7 +454,7 @@ const termsSections: LegalSection[] = [
           <InlineLink href={links.termsOfSale}>Terms of Sale (CGV)</InlineLink>.
         </p>
         <p>
-          FerrisLabs is not responsible for failures originating in your own applications, networks,
+          FerrisTrace is not responsible for failures originating in your own applications, networks,
           OpenTelemetry SDK configurations, third-party identity providers, or alert notification
           targets (such as Slack, PagerDuty, email relays, or webhooks). Nothing in these Terms
           excludes or limits liability where such exclusion or limitation is prohibited by mandatory
@@ -471,7 +471,7 @@ const termsSections: LegalSection[] = [
         <p>
           You may leave an Organisation or delete your Organisation workspace at any time from{' '}
           <InlineLink href={links.signIn}>console.ferristrace.dev</InlineLink> or by emailing{' '}
-          <InlineLink href="mailto:contact@ferrislabs.fr">contact@ferrislabs.fr</InlineLink>. We
+          <InlineLink href="mailto:contact@ferristrace.dev">contact@ferristrace.dev</InlineLink>. We
           recommend exporting your Organisation archive before deletion, as workspace deletion
           permanently purges ingested telemetry and metadata in accordance with our{' '}
           <InlineLink href={links.privacy}>Privacy Policy</InlineLink>.
@@ -492,7 +492,7 @@ const termsSections: LegalSection[] = [
         <p>
           These Terms of Use are governed by <strong>French law</strong>. In the event of a dispute,
           please contact{' '}
-          <InlineLink href="mailto:contact@ferrislabs.fr">contact@ferrislabs.fr</InlineLink> first
+          <InlineLink href="mailto:contact@ferristrace.dev">contact@ferristrace.dev</InlineLink> first
           so we can seek an amicable resolution.
         </p>
         <BulletList
@@ -532,7 +532,7 @@ const saleSections: LegalSection[] = [
           These Terms of Sale (<em>Conditions Générales de Vente — CGV</em>) govern all
           subscriptions to <strong>FerrisTrace Cloud</strong> entered into between{' '}
           <strong>Thibault Pointurier — Entrepreneur Individuel (EI)</strong>, trading as{' '}
-          <strong>FerrisTrace</strong> / <strong>FerrisLabs</strong> (French{' '}
+          <strong>FerrisTrace</strong> (French{' '}
           <em>micro-entreprise / auto-entreprise</em>, SIREN <strong>905 294 013</strong> · SIRET{' '}
           <strong>905 294 013 00024</strong>, whose statutory details appear in Article 01 of the{' '}
           <InlineLink href={links.terms}>Terms of Use</InlineLink>) and
@@ -651,7 +651,7 @@ const saleSections: LegalSection[] = [
               payable.
             </>,
             <>
-              <strong>Transition to VAT collection (if applicable):</strong> Should FerrisLabs
+              <strong>Transition to VAT collection (if applicable):</strong> Should FerrisTrace
               subsequently become subject to VAT (upon crossing statutory turnover thresholds or by
               tax election), prices will be treated as excluding VAT (<em>HT</em>) and applicable
               VAT (<em>TVA</em>) will be added at checkout in accordance with EU VAT rules (standard
@@ -681,7 +681,7 @@ const saleSections: LegalSection[] = [
       <>
         <p>
           Online payments are processed by <strong>Stripe</strong> (Stripe Payments Europe, Ltd., a
-          PCI-DSS Level 1 certified payment service provider). FerrisLabs never receives or stores
+          PCI-DSS Level 1 certified payment service provider). FerrisTrace never receives or stores
           raw payment card numbers or CVV codes.
         </p>
         <BulletList
@@ -696,7 +696,7 @@ const saleSections: LegalSection[] = [
             <>
               <strong>Failed payments:</strong> If a charge fails, Stripe retries collection
               automatically and notifies the Organisation owner. If payment remains unsettled 10
-              days after notice, FerrisLabs may pause ingestion or downgrade the workspace to the
+              days after notice, FerrisTrace may pause ingestion or downgrade the workspace to the
               Free tier limits until settled.
             </>,
             <>
@@ -730,14 +730,14 @@ const saleSections: LegalSection[] = [
           request. Under Article L. 221-25 of the French Consumer Code, if you request immediate
           start of the subscription and then exercise your right of withdrawal within the 14-day
           window, you remain liable only for the proportionate amount corresponding to the service
-          provided up to the time you notify us of your withdrawal (and FerrisLabs refunds the
+          provided up to the time you notify us of your withdrawal (and FerrisTrace refunds the
           balance within 14 days via the original payment method). Where Article L. 221-28 13°
           applies to fully performed digital content, any prior express consent and acknowledgement
           is collected separately at checkout as required by law.
         </p>
         <p>
           <strong>How to withdraw:</strong> Send an unambiguous statement before the 14-day deadline
-          to <InlineLink href="mailto:contact@ferrislabs.fr">contact@ferrislabs.fr</InlineLink> (for
+          to <InlineLink href="mailto:contact@ferristrace.dev">contact@ferristrace.dev</InlineLink> (for
           instance: <em>&ldquo;I hereby notify my withdrawal from my FerrisTrace Cloud Pro
           subscription ordered on [date] for Organisation [name], account email [email].&rdquo;</em>
           ). We acknowledge receipt by email without delay.
@@ -756,7 +756,7 @@ const saleSections: LegalSection[] = [
               <strong>Term &amp; renewal:</strong> Paid subscriptions run for the selected billing
               cycle (one month or one year) and renew automatically for successive periods of the
               same duration unless cancelled prior to the renewal date. For Consumers on annual
-              plans, FerrisLabs sends the statutory renewal reminder notice between three months and
+              plans, FerrisTrace sends the statutory renewal reminder notice between three months and
               one month before renewal in accordance with Article L. 215-1 of the French Consumer
               Code.
             </>,
@@ -770,7 +770,7 @@ const saleSections: LegalSection[] = [
               <InlineLink href={links.signIn}>console.ferristrace.dev</InlineLink>. Cancellation
               stops future renewals while keeping your Pro features and retention active until the
               end of the current paid period. Except where required by statutory Consumer rights or
-              termination for FerrisLabs&apos; uncured material breach, prepaid fees for the current
+              termination for FerrisTrace&apos;s uncured material breach, prepaid fees for the current
               period are non-refundable.
             </>,
           ]}
@@ -787,7 +787,7 @@ const saleSections: LegalSection[] = [
           <strong>Support &amp; availability:</strong> Free workspaces receive community support via{' '}
           <InlineLink href={`${links.github}/discussions`}>GitHub Discussions</InlineLink>; Pro
           workspaces receive email support via{' '}
-          <InlineLink href="mailto:contact@ferrislabs.fr">contact@ferrislabs.fr</InlineLink>;
+          <InlineLink href="mailto:contact@ferristrace.dev">contact@ferristrace.dev</InlineLink>;
           Enterprise customers benefit from contractual response times and uptime SLAs set out in
           their order form. Live platform status is published on our status page.
         </p>
@@ -816,9 +816,9 @@ const saleSections: LegalSection[] = [
         </p>
         <p>
           <strong>Business Customers (B2B):</strong> To the maximum extent permitted by French law,
-          FerrisLabs shall not be liable to Business Customers for indirect or consequential losses
+          FerrisTrace shall not be liable to Business Customers for indirect or consequential losses
           (including loss of profit, revenue, business opportunity, or anticipated savings), and
-          FerrisLabs&apos; aggregate liability arising out of or in connection with a Cloud
+          FerrisTrace&apos;s aggregate liability arising out of or in connection with a Cloud
           subscription over any 12-month period shall not exceed the total subscription fees
           actually paid by the Business Customer for the affected Organisation during the 12 months
           preceding the event giving rise to the claim.
@@ -838,13 +838,13 @@ const saleSections: LegalSection[] = [
       <>
         <p>
           When a Business Customer ingests personal data within telemetry sent to FerrisTrace Cloud,
-          the Customer acts as Data Controller and FerrisLabs acts as Data Processor within the
+          the Customer acts as Data Controller and FerrisTrace acts as Data Processor within the
           meaning of Article 28 of Regulation (EU) 2016/679 (GDPR). Our{' '}
           <InlineLink href={links.dpa}>Data Processing Agreement (DPA)</InlineLink> forms an
           integral part of these Terms of Sale and applies automatically to every Business Customer
           workspace. Enterprise customers requiring a countersigned PDF execution copy of the DPA
           may request one at{' '}
-          <InlineLink href="mailto:contact@ferrislabs.fr">contact@ferrislabs.fr</InlineLink>.
+          <InlineLink href="mailto:contact@ferristrace.dev">contact@ferristrace.dev</InlineLink>.
         </p>
       </>
     ),
@@ -858,7 +858,7 @@ const saleSections: LegalSection[] = [
           These Terms of Sale are governed by <strong>French law</strong> (excluding the UN
           Convention on Contracts for the International Sale of Goods). Any billing or contractual
           complaint should first be addressed to{' '}
-          <InlineLink href="mailto:contact@ferrislabs.fr">contact@ferrislabs.fr</InlineLink>.
+          <InlineLink href="mailto:contact@ferristrace.dev">contact@ferristrace.dev</InlineLink>.
         </p>
         <p>
           <strong>Consumers (B2C)</strong> may refer unresolved disputes free of charge to the
@@ -885,7 +885,7 @@ const privacySections: LegalSection[] = [
       <>
         <p>
           <strong>Thibault Pointurier — Entrepreneur Individuel (EI)</strong>, trading as{' '}
-          <strong>FerrisTrace</strong> / <strong>FerrisLabs</strong> (SIREN{' '}
+          <strong>FerrisTrace</strong> (SIREN{' '}
           <strong>905 294 013</strong> · SIRET <strong>905 294 013 00024</strong>, 51 rue Léo
           Mérigot, 18100 Vierzon, France), processes personal
           data in compliance with Regulation (EU) 2016/679 (the{' '}
@@ -895,13 +895,13 @@ const privacySections: LegalSection[] = [
         <BulletList
           items={[
             <>
-              <strong>FerrisLabs as Data Controller (Responsable de traitement):</strong> For
+              <strong>FerrisTrace as Data Controller (Responsable de traitement):</strong> For
               visitors to <strong>ferristrace.dev</strong> and <strong>docs.ferristrace.dev</strong>
               , and for account holders, Organisation members, billing contacts, and support
               correspondents on <strong>console.ferristrace.dev</strong>.
             </>,
             <>
-              <strong>FerrisLabs as Data Processor (Sous-traitant, Art. 28 GDPR):</strong> For
+              <strong>FerrisTrace as Data Processor (Sous-traitant, Art. 28 GDPR):</strong> For
               observability telemetry (traces, spans, logs, metrics, LLM spans, alerts, and incident
               records) ingested by Customers into their FerrisTrace Cloud workspaces. Each Customer
               controls what telemetry its OpenTelemetry SDKs emit, remains the Data Controller for
@@ -910,7 +910,7 @@ const privacySections: LegalSection[] = [
             </>,
             <>
               <strong>Privacy contact:</strong>{' '}
-              <InlineLink href="mailto:contact@ferrislabs.fr">contact@ferrislabs.fr</InlineLink>{' '}
+              <InlineLink href="mailto:contact@ferristrace.dev">contact@ferristrace.dev</InlineLink>{' '}
               (Thibault Pointurier).
             </>,
           ]}
@@ -989,7 +989,7 @@ const privacySections: LegalSection[] = [
                 </th>
                 <td className="px-4 py-3">
                   Sender email, name, and message contents sent to{' '}
-                  <code>contact@ferrislabs.fr</code>.
+                  <code>contact@ferristrace.dev</code>.
                 </td>
                 <td className="px-4 py-3">
                   Answering technical, commercial, or legal requests ·{' '}
@@ -1144,8 +1144,8 @@ const privacySections: LegalSection[] = [
     content: (
       <>
         <p>
-          Pursuant to Article 32 GDPR, FerrisLabs implements defence-in-depth measures across the
-          FerrisTrace stack:
+          Pursuant to Article 32 GDPR, FerrisTrace implements defence-in-depth measures across the
+          platform:
         </p>
         <BulletList
           items={[
@@ -1178,7 +1178,7 @@ const privacySections: LegalSection[] = [
         <p>
           Under Articles 15 to 22 of the GDPR and the French Data Protection Act (
           <em>Loi Informatique et Libertés</em>), you hold the following rights over your personal
-          data where FerrisLabs acts as Data Controller:
+          data where FerrisTrace acts as Data Controller:
         </p>
         <BulletList
           items={[
@@ -1206,11 +1206,11 @@ const privacySections: LegalSection[] = [
         />
         <p>
           <strong>Exercising your rights:</strong> Email{' '}
-          <InlineLink href="mailto:contact@ferrislabs.fr">contact@ferrislabs.fr</InlineLink>{' '}
+          <InlineLink href="mailto:contact@ferristrace.dev">contact@ferristrace.dev</InlineLink>{' '}
           specifying the email address associated with your workspace. We respond within{' '}
           <strong>one month</strong> of receipt (extendable by two months for complex requests under
           Article 12(3) GDPR). If your request concerns telemetry inside an Organisation&apos;s
-          workspace where FerrisLabs is Data Processor, we will direct your request to that
+          workspace where FerrisTrace is Data Processor, we will direct your request to that
           Organisation&apos;s controller.
         </p>
         <p>
@@ -1252,9 +1252,9 @@ const dpaSections: LegalSection[] = [
               <InlineLink href={links.signIn}>console.ferristrace.dev</InlineLink>); and
             </>,
             <>
-              <strong>The Data Processor (Sous-traitant — &ldquo;FerrisLabs&rdquo;):</strong>{' '}
+              <strong>The Data Processor (Sous-traitant — &ldquo;FerrisTrace&rdquo;):</strong>{' '}
               <strong>Thibault Pointurier — Entrepreneur Individuel (EI)</strong>, operating under
-              the trade name <strong>FerrisTrace</strong> / <strong>FerrisLabs</strong> (French{' '}
+              the trade name <strong>FerrisTrace</strong> (French{' '}
               <em>micro-entreprise / auto-entreprise</em>, SIREN <strong>905 294 013</strong> ·
               SIRET <strong>905 294 013 00024</strong> · APE <strong>62.01Z</strong>, registered
               with the French <em>Registre National des Entreprises (RNE)</em>, business address: 51
@@ -1269,7 +1269,7 @@ const dpaSections: LegalSection[] = [
           automatically whenever Customer telemetry ingested into FerrisTrace Cloud contains
           personal data. Enterprise customers requiring a countersigned PDF execution copy may
           request one at{' '}
-          <InlineLink href="mailto:contact@ferrislabs.fr">contact@ferrislabs.fr</InlineLink>. In the
+          <InlineLink href="mailto:contact@ferristrace.dev">contact@ferristrace.dev</InlineLink>. In the
           event of any conflict between this DPA and the CGU/CGV regarding personal data protection,
           this DPA prevails.
         </p>
@@ -1373,8 +1373,8 @@ const dpaSections: LegalSection[] = [
           5(1)(c) GDPR).
         </p>
         <p>
-          <strong>FerrisLabs obligations as Data Processor:</strong> Pursuant to Article 28(3)(a)
-          and (b) GDPR, FerrisLabs undertakes to:
+          <strong>FerrisTrace obligations as Data Processor:</strong> Pursuant to Article 28(3)(a)
+          and (b) GDPR, FerrisTrace undertakes to:
         </p>
         <BulletList
           items={[
@@ -1383,12 +1383,12 @@ const dpaSections: LegalSection[] = [
               accordance with the Customer&apos;s documented instructions — as set out in this DPA,
               the CGU/CGV, and the Customer&apos;s configurations in{' '}
               <code>console.ferristrace.dev</code> — unless required to do so by European Union or
-              French law (in which case FerrisLabs shall inform the Customer of that legal
+              French law (in which case FerrisTrace shall inform the Customer of that legal
               requirement before processing, unless the law prohibits such information on important
               grounds of public interest).
             </>,
             <>
-              <strong>Duty to alert:</strong> Immediately inform the Customer if, in FerrisLabs&apos;
+              <strong>Duty to alert:</strong> Immediately inform the Customer if, in FerrisTrace&apos;s
               opinion, an instruction given by the Customer infringes the GDPR or other EU or Member
               State data protection provisions (Art. 28(3) subparagraph 2 GDPR).
             </>,
@@ -1413,7 +1413,7 @@ const dpaSections: LegalSection[] = [
     content: (
       <>
         <p>
-          Pursuant to Article 28(3)(c) and Article 32 GDPR, FerrisLabs implements and maintains the
+          Pursuant to Article 28(3)(c) and Article 32 GDPR, FerrisTrace implements and maintains the
           following technical and organisational security measures (TOMs) to protect Customer
           telemetry against accidental or unlawful destruction, loss, alteration, unauthorised
           disclosure, or access:
@@ -1461,7 +1461,7 @@ const dpaSections: LegalSection[] = [
     content: (
       <>
         <p>
-          The Customer grants FerrisLabs a general written authorisation under Article 28(2) GDPR to
+          The Customer grants FerrisTrace a general written authorisation under Article 28(2) GDPR to
           engage the sub-processors listed below for the hosting and delivery of FerrisTrace Cloud:
         </p>
         <div className="overflow-x-auto border border-border bg-card">
@@ -1498,7 +1498,7 @@ const dpaSections: LegalSection[] = [
         </div>
         <p>
           <em>
-            Note: Stripe Payments Europe, Ltd. processes subscription billing data where FerrisLabs
+            Note: Stripe Payments Europe, Ltd. processes subscription billing data where FerrisTrace
             acts as Data Controller (covered by our{' '}
             <InlineLink href={links.privacy}>Privacy Policy</InlineLink>), and never receives or
             processes ingested Customer observability telemetry.
@@ -1507,7 +1507,7 @@ const dpaSections: LegalSection[] = [
         <BulletList
           items={[
             <>
-              <strong>Prior notice &amp; right to object:</strong> FerrisLabs informs Organisation
+              <strong>Prior notice &amp; right to object:</strong> FerrisTrace informs Organisation
               owners by email at least <strong>30 calendar days</strong> before adding or replacing
               any sub-processor that handles Customer telemetry. The Customer may object on
               reasonable, documented data protection grounds within 15 days of notice; if the
@@ -1516,7 +1516,7 @@ const dpaSections: LegalSection[] = [
               sub-processor taking effect, receiving a pro-rata refund of any prepaid unused fees.
             </>,
             <>
-              <strong>Flow-down obligations (Art. 28(4) GDPR):</strong> FerrisLabs imposes on each
+              <strong>Flow-down obligations (Art. 28(4) GDPR):</strong> FerrisTrace imposes on each
               sub-processor data protection obligations no less protective than those set out in
               this DPA and remains liable to the Customer for the performance of the
               sub-processor&apos;s obligations.
@@ -1537,14 +1537,14 @@ const dpaSections: LegalSection[] = [
               <strong>Self-service tools &amp; Data Subject Requests (DSRs):</strong> The
               FerrisTrace Cloud console and HTTP API enable the Customer to search, export (
               <code>tar.gz</code>), and delete project or workspace telemetry directly. If
-              FerrisLabs receives a request directly from an end user relating to telemetry in a
-              Customer&apos;s workspace, FerrisLabs will promptly forward the request to the
+              FerrisTrace receives a request directly from an end user relating to telemetry in a
+              Customer&apos;s workspace, FerrisTrace will promptly forward the request to the
               Customer and will not respond directly to the data subject without the Customer&apos;s
               prior authorisation, unless legally compelled.
             </>,
             <>
               <strong>DPIA &amp; supervisory authority consultation:</strong> Taking into account
-              the nature of processing and the information available to FerrisLabs, FerrisLabs
+              the nature of processing and the information available to FerrisTrace, FerrisTrace
               assists the Customer upon request in carrying out Data Protection Impact Assessments
               (Art. 35 GDPR) and prior consultations with the CNIL or other competent supervisory
               authorities (Art. 36 GDPR) by providing up-to-date architectural and security
@@ -1562,7 +1562,7 @@ const dpaSections: LegalSection[] = [
       <>
         <p>
           In the event of a confirmed personal data breach affecting Customer telemetry processed by
-          FerrisLabs (Art. 4(12) and Art. 33(2) GDPR), FerrisLabs shall notify the Customer&apos;s
+          FerrisTrace (Art. 4(12) and Art. 33(2) GDPR), FerrisTrace shall notify the Customer&apos;s
           Organisation owner by email <strong>without undue delay</strong> — and in any event within{' '}
           <strong>48 hours</strong> of becoming aware of the breach — so the Customer can meet its
           own 72-hour notification deadline where applicable.
@@ -1575,13 +1575,13 @@ const dpaSections: LegalSection[] = [
               approximate volume of affected telemetry records;
             </>,
             <>
-              The contact point at FerrisLabs (
-              <InlineLink href="mailto:contact@ferrislabs.fr">contact@ferrislabs.fr</InlineLink>)
+              The contact point at FerrisTrace (
+              <InlineLink href="mailto:contact@ferristrace.dev">contact@ferristrace.dev</InlineLink>)
               from whom further information may be obtained;
             </>,
             <>The likely consequences of the breach; and</>,
             <>
-              The technical measures taken or proposed by FerrisLabs to contain the breach and
+              The technical measures taken or proposed by FerrisTrace to contain the breach and
               mitigate its possible adverse effects.
             </>,
           ]}
@@ -1615,7 +1615,7 @@ const dpaSections: LegalSection[] = [
               Any residual copies in encrypted operational backups are permanently overwritten and
               purged within <strong>30 calendar days</strong> as backup snapshots rotate out, unless
               European Union or French law requires storage of specific records. Upon written
-              request, FerrisLabs confirms completion of deletion by email.
+              request, FerrisTrace confirms completion of deletion by email.
             </>,
           ]}
         />
@@ -1631,14 +1631,14 @@ const dpaSections: LegalSection[] = [
           <strong>Transparency &amp; documentation:</strong> Because FerrisTrace is open-source (
           <InlineLink href={links.github}>github.com/ferrislabs/ferristrace</InlineLink>), the
           Customer can inspect the exact ingestion, storage, tenant-isolation, and authentication
-          code running on FerrisTrace Cloud at any time. Upon written request, FerrisLabs also makes
+          code running on FerrisTrace Cloud at any time. Upon written request, FerrisTrace also makes
           available information necessary to demonstrate compliance with Article 28 GDPR.
         </p>
         <p>
           <strong>Audit rights:</strong> Where the documentation above is insufficient to satisfy a
           mandatory regulatory requirement of the Customer, the Customer (or an independent auditor
-          mandated by the Customer who is not a competitor of FerrisLabs and is bound by
-          confidentiality) may conduct a remote or on-document audit of FerrisLabs&apos; data
+          mandated by the Customer who is not a competitor of FerrisTrace and is bound by
+          confidentiality) may conduct a remote or on-document audit of FerrisTrace&apos;s data
           protection controls at most once per 12-month period (or following a confirmed personal
           data breach affecting the Customer&apos;s workspace), subject to at least{' '}
           <strong>30 calendar days&apos; prior written notice</strong>, conducted during normal
@@ -1689,7 +1689,7 @@ export function PrivacyPage() {
       active="privacy"
       eyebrow="Legal · Privacy & GDPR (RGPD)"
       title="Privacy Policy"
-      lead="How FerrisLabs collects, secures, and retains account data and Cloud observability telemetry in the European Union under the GDPR and French law."
+      lead="How FerrisTrace collects, secures, and retains account data and Cloud observability telemetry in the European Union under the GDPR and French law."
       sections={privacySections}
     />
   )

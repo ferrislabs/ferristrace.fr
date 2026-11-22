@@ -7,7 +7,7 @@
 
 @source "../../../../packages/ui/src";
 
-/* Square corners everywhere, as on ferrislabs.fr and ferriskey.rs. A global
+/* Square corners everywhere, as on ferriskey.rs. A global
    rule also catches the radii set by the cva variants of the UI package. */
 *,
 *::before,
@@ -16,11 +16,10 @@
 }
 
 /* ---------------------------------------------------------------------------
-   The "pixel" system of ferrislabs.fr and ferriskey.rs.
+   The "pixel" design system.
 
-   Same grammar as the two other sites: Space Grotesk for text, Silkscreen for
-   labels, a bordered grid, square corners. The colour is the one FerrisTrace
-   wears on ferrislabs.fr: the indigo of the comet crab. Scoped to the site:
+   Space Grotesk for text, Silkscreen for labels, a bordered grid, square
+   corners, and the indigo ramp of the comet crab. Scoped to the site:
    the docs keep the tokens of packages/ui.
    --------------------------------------------------------------------------- */
 @theme {
