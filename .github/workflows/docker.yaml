@@ -15,6 +15,7 @@ on:
     tags:
       - "v*.*.*"
     paths:
+      - "!**/*.md"
       - .github/workflows/docker.yaml
       - apps/website/**
       - packages/**
@@ -24,9 +25,9 @@ on:
       - package.json
       - pnpm-lock.yaml
       - pnpm-workspace.yaml
-      - "!**/*.md"
   pull_request:
     paths:
+      - "!**/*.md"
       - .github/workflows/docker.yaml
       - apps/website/**
       - packages/**
@@ -36,7 +37,6 @@ on:
       - package.json
       - pnpm-lock.yaml
       - pnpm-workspace.yaml
-      - "!**/*.md"
   workflow_dispatch:
     inputs:
       push:
@@ -99,6 +99,17 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: hash the core changelog
+        id: changelog
+        shell: bash
+        env:
+          CHANGELOG_URL: https://raw.githubusercontent.com/ferrislabs/ferristrace/main/CHANGELOG.md
+        run: |
+          # The site reads this file while it builds. The layer cache cannot see
+          # that, so a new release has to change a build argument to rebuild it.
+          hash=$(curl -fsS --max-time 20 "$CHANGELOG_URL" | sha256sum | cut -d' ' -f1) || hash=unavailable
+          echo "hash=${hash}" >> "$GITHUB_OUTPUT"
+
       - name: image metadata
         id: meta
         uses: docker/metadata-action@v5
@@ -116,6 +127,7 @@ jobs:
           build-args: |
             PUBLIC_WEBSITE_URL=${{ vars.PUBLIC_WEBSITE_URL || 'https://ferristrace.dev' }}
             PUBLIC_DOCS_URL=${{ vars.PUBLIC_DOCS_URL || 'https://docs.ferristrace.dev' }}
+            CHANGELOG_HASH=${{ steps.changelog.outputs.hash }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha,scope=website-${{ matrix.platform }}
           cache-to: type=gha,scope=website-${{ matrix.platform }},mode=max
