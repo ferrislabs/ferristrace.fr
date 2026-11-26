@@ -38,6 +38,10 @@ ARG PUBLIC_DOCS_URL
 ENV PUBLIC_WEBSITE_URL=${PUBLIC_WEBSITE_URL} \
     PUBLIC_DOCS_URL=${PUBLIC_DOCS_URL}
 
+# The changelog page reads CHANGELOG.md from the core repository during this
+# build. The cache key cannot see that file, so the workflow passes its hash: a
+# new release changes it and the build below runs again.
+ARG CHANGELOG_HASH
 RUN pnpm --filter @cometrace/website build
 
 # --- Runtime ---------------------------------------------------------------
