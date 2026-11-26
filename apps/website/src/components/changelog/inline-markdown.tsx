@@ -7,7 +7,7 @@ import type { ReactNode } from 'react'
  */
 
 // Code spans come first so their contents are never re-parsed.
-const TOKEN = /`([^`]+)`|\[([^\]]+)\]\(([^)\s]+)\)|\*\*([^*]+)\*\*|\*([^*]+)\*|_([^_]+)_/g
+const TOKEN = /`([^`]+)`|\[([^\]]+)\]\(([^)\s]+)\)|\*\*([^*]+)\*\*|\*([^*]+)\*|_([^_]+)_/
 
 /** Only schemes that cannot execute. Anything else renders as plain text. */
 function safeHref(href: string): string | null {
@@ -21,8 +21,11 @@ function render(text: string, keyPrefix: string): ReactNode[] {
   let last = 0
   let match: RegExpExecArray | null
 
-  TOKEN.lastIndex = 0
-  while ((match = TOKEN.exec(text)) !== null) {
+  // One regex per call: render() recurses into emphasis and link labels, and a
+  // shared global regex would have its lastIndex reset by the inner call, so the
+  // outer loop would match the same token again for ever.
+  const token = new RegExp(TOKEN.source, 'g')
+  while ((match = token.exec(text)) !== null) {
     if (match.index > last) nodes.push(text.slice(last, match.index))
     const key = `${keyPrefix}-${match.index}`
 
