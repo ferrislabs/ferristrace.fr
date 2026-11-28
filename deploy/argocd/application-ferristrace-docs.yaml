@@ -12,7 +12,7 @@ metadata:
 spec:
   project: ferristrace-docs
   source:
-    repoURL: https://github.com/ferrislabs/ferristrace.fr
+    repoURL: https://github.com/Ferristrace/ferristrace.dev
     targetRevision: main
     path: charts/ferristrace-docs
     helm:

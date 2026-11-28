@@ -8,7 +8,7 @@ metadata:
 spec:
   description: The FerrisTrace marketing website.
   sourceRepos:
-    - https://github.com/ferrislabs/ferristrace.fr
+    - https://github.com/Ferristrace/ferristrace.dev
   destinations:
     - namespace: ferristrace
       server: https://kubernetes.default.svc
