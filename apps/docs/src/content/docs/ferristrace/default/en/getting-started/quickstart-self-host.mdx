@@ -20,7 +20,7 @@ The `deploy/` directory in the FerrisTrace repository brings up a complete self-
 <Step title="Clone the repository">
 
 ```sh
-git clone https://github.com/ferrislabs/ferristrace.git
+git clone https://github.com/Ferristrace/ferristrace.git
 cd ferristrace/deploy
 ```
 
@@ -183,7 +183,7 @@ cp .env.example .env
 ```sh
 cosign verify ghcr.io/ferrislabs/ferristrace:0.1.0 \
   --certificate-oidc-issuer https://token.actions.githubusercontent.com \
-  --certificate-identity-regexp '^https://github.com/ferrislabs/ferristrace/\.github/workflows/docker\.yaml@'
+  --certificate-identity-regexp '^https://github.com/Ferristrace/ferristrace/\.github/workflows/docker\.yaml@'
 ```
 
 ## Next steps

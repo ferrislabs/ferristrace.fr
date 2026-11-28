@@ -34,7 +34,7 @@ const selfHostGuarantees = [
 ]
 
 const disclosureRules = [
-  'Email your report to contact@ferristrace.dev or open a GitHub Private Security Advisory on github.com/ferrislabs/ferristrace/security/advisories/new',
+  'Email your report to contact@ferristrace.dev or open a GitHub Private Security Advisory on github.com/Ferristrace/ferristrace/security/advisories/new',
   'Include affected component/version, reproduction steps or proof-of-concept, and impact assessment',
   'We acknowledge receipt within 24 hours and provide a triage assessment and fix timeline within 72 hours',
   'Please allow us reasonable time to release a patch before public disclosure, and avoid testing against other customers’ Cloud workspaces',

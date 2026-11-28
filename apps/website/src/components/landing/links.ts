@@ -9,7 +9,7 @@
  * What is still unknown stays a visible bracketed placeholder rather than
  * being invented: the container registry, the licence and the legal entity.
  */
-const ORG = 'https://github.com/ferrislabs'
+const ORG = 'https://github.com/Ferristrace'
 const CONSOLE = 'https://console.ferristrace.dev'
 
 /** Container image, `<registry namespace>/<image>`. Change it here and every command follows. */
@@ -51,7 +51,8 @@ export const links = {
   changelog: '/changelog',
   /** The core repository: what a visitor clicking "GitHub" is after. */
   github: `${ORG}/ferristrace`,
-  sponsor: 'https://github.com/sponsors/ferrislabs',
+  sponsor: 'https://github.com/sponsors/Ferristrace',
+  discord: 'https://discord.gg/XGFpuYdvZ2',
   signIn: CONSOLE,
   startOnCloud: CONSOLE,
   selfHostGuide: docs('/getting-started/quickstart-self-host'),

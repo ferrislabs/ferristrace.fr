@@ -14,6 +14,7 @@ const columns = [
       { label: 'Pricing', href: links.pricing },
       { label: 'Changelog', href: links.changelog },
       { label: 'GitHub', href: links.github },
+      { label: 'Discord', href: links.discord },
       { label: 'Status', href: links.status },
       { label: 'Security', href: links.security },
     ],

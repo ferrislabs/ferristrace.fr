@@ -21,14 +21,7 @@ const LEGAL_TABS: Array<{ id: LegalDocId; label: string; shortLabel: string; hre
   { id: 'dpa', label: 'Data Processing Agreement (DPA)', shortLabel: 'DPA', href: links.dpa },
 ]
 
-const EFFECTIVE_DATE = 'November 22, 2026'
-
-const PLACEHOLDER_CLASS =
-  'inline-block border border-border bg-surface-tint px-1.5 py-0.5 font-mono text-[12px] text-accent-text'
-
-function Placeholder({ children }: { children: string }) {
-  return <span className={PLACEHOLDER_CLASS}>{children}</span>
-}
+const EFFECTIVE_DATE = 'November 25, 2026'
 
 function InlineLink({ href, children }: { href: string; children: ReactNode }) {
   const external = href.startsWith('http')
@@ -231,9 +224,17 @@ const termsSections: LegalSection[] = [
               </tr>
               <tr>
                 <th scope="row" className="px-4 py-3 font-medium text-foreground">
-                  Business address
+                  Registered office
                 </th>
-                <td className="px-4 py-3">51 rue Léo Mérigot, 18100 Vierzon, France</td>
+                <td className="px-4 py-3">
+                  France — Non-public Sirene registration pursuant to Article A. 123-96 of the
+                  French Commercial Code (statutory postal address stated on Customer invoices and
+                  communicated upon legal request to{' '}
+                  <InlineLink href="mailto:contact@ferristrace.dev">
+                    contact@ferristrace.dev
+                  </InlineLink>
+                  )
+                </td>
               </tr>
               <tr>
                 <th scope="row" className="px-4 py-3 font-medium text-foreground">
@@ -410,7 +411,7 @@ const termsSections: LegalSection[] = [
           <InlineLink href="https://www.apache.org/licenses/LICENSE-2.0">
             Apache License 2.0
           </InlineLink>{' '}
-          at <InlineLink href={links.github}>github.com/ferrislabs/ferristrace</InlineLink>. Nothing
+          at <InlineLink href={links.github}>github.com/Ferristrace/ferristrace</InlineLink>. Nothing
           in these Terms restricts your rights under that open-source licence.
         </p>
         <p>
@@ -498,12 +499,17 @@ const termsSections: LegalSection[] = [
         <BulletList
           items={[
             <>
-              <strong>Consumers (B2C):</strong> Pursuant to Articles L. 612-1 et seq. of the French
-              Consumer Code, if an amicable request remains unresolved, you may refer the matter
-              free of charge to the consumer mediator:{' '}
-              <Placeholder>[Consumer mediator name, address &amp; URL — À compléter]</Placeholder>.
-              Consumers may bring proceedings before any court competent under Article R. 631-3 of
-              the French Consumer Code or applicable EU consumer protection rules.
+              <strong>Consumers (B2C):</strong> Pursuant to Articles L. 612-1 and R. 616-1 of the
+              French Consumer Code, if an amicable written complaint to{' '}
+              <InlineLink href="mailto:contact@ferristrace.dev">contact@ferristrace.dev</InlineLink>{' '}
+              remains unresolved, you may refer the matter free of charge to the consumer mediator:{' '}
+              <strong>
+                CM2C (Centre de la Médiation de la Consommation de Conciliateurs de Justice)
+              </strong>
+              , 49 rue de Ponthieu, 75008 Paris, France —{' '}
+              <InlineLink href="https://www.cm2c.net">cm2c.net</InlineLink>. Consumers may also
+              bring proceedings before any court competent under Article R. 631-3 of the French
+              Consumer Code or applicable EU consumer protection rules.
             </>,
             <>
               <strong>Business Users (B2B):</strong> Failing amicable settlement within 30 days, any
@@ -861,9 +867,15 @@ const saleSections: LegalSection[] = [
           <InlineLink href="mailto:contact@ferristrace.dev">contact@ferristrace.dev</InlineLink>.
         </p>
         <p>
-          <strong>Consumers (B2C)</strong> may refer unresolved disputes free of charge to the
-          consumer mediator <Placeholder>[Consumer mediator — À compléter]</Placeholder> (Art.
-          L. 612-1 French Consumer Code) and bring claims before the courts designated by mandatory
+          <strong>Consumers (B2C)</strong> may, following a prior written complaint to{' '}
+          <InlineLink href="mailto:contact@ferristrace.dev">contact@ferristrace.dev</InlineLink>,
+          refer unresolved disputes free of charge to the consumer mediator{' '}
+          <strong>
+            CM2C (Centre de la Médiation de la Consommation de Conciliateurs de Justice)
+          </strong>
+          , 49 rue de Ponthieu, 75008 Paris, France (
+          <InlineLink href="https://www.cm2c.net">cm2c.net</InlineLink>, Art. L. 612-1 &amp;
+          R. 616-1 French Consumer Code) and bring claims before the courts designated by mandatory
           consumer protection law. <strong>Business Customers (B2B)</strong> agree that any dispute
           not resolved amicably within 30 days shall be submitted to the exclusive jurisdiction of
           the competent courts of <strong>Bourges</strong>, France.
@@ -885,9 +897,8 @@ const privacySections: LegalSection[] = [
       <>
         <p>
           <strong>Thibault Pointurier — Entrepreneur Individuel (EI)</strong>, trading as{' '}
-          <strong>FerrisTrace</strong> (SIREN{' '}
-          <strong>905 294 013</strong> · SIRET <strong>905 294 013 00024</strong>, 51 rue Léo
-          Mérigot, 18100 Vierzon, France), processes personal
+          <strong>FerrisTrace</strong> (SIREN <strong>905 294 013</strong> · SIRET{' '}
+          <strong>905 294 013 00024</strong>, established in France), processes personal
           data in compliance with Regulation (EU) 2016/679 (the{' '}
           <strong>General Data Protection Regulation — GDPR / RGPD</strong>) and French Law
           No. 78-17 of January 6, 1978 as amended (<em>Loi Informatique et Libertés</em>).
@@ -1257,8 +1268,8 @@ const dpaSections: LegalSection[] = [
               the trade name <strong>FerrisTrace</strong> (French{' '}
               <em>micro-entreprise / auto-entreprise</em>, SIREN <strong>905 294 013</strong> ·
               SIRET <strong>905 294 013 00024</strong> · APE <strong>62.01Z</strong>, registered
-              with the French <em>Registre National des Entreprises (RNE)</em>, business address: 51
-              rue Léo Mérigot, 18100 Vierzon, France).
+              with the French <em>Registre National des Entreprises (RNE)</em>, established in
+              France — statutory postal address stated on Customer invoices and Order Forms).
             </>,
           ]}
         />
@@ -1629,7 +1640,7 @@ const dpaSections: LegalSection[] = [
       <>
         <p>
           <strong>Transparency &amp; documentation:</strong> Because FerrisTrace is open-source (
-          <InlineLink href={links.github}>github.com/ferrislabs/ferristrace</InlineLink>), the
+          <InlineLink href={links.github}>github.com/Ferristrace/ferristrace</InlineLink>), the
           Customer can inspect the exact ingestion, storage, tenant-isolation, and authentication
           code running on FerrisTrace Cloud at any time. Upon written request, FerrisTrace also makes
           available information necessary to demonstrate compliance with Article 28 GDPR.
