@@ -63,7 +63,7 @@ You can either run a published multi-arch release image from GitHub Container Re
 <CodeTab label="Published image">
 
 ```sh
-export FERRISTRACE_IMAGE=ghcr.io/ferrislabs/ferristrace:latest
+export FERRISTRACE_IMAGE=ghcr.io/ferristrace/ferristrace:latest
 docker compose up --detach --no-build --pull always
 ```
 
@@ -181,7 +181,7 @@ cp .env.example .env
 5. **Verify image signatures (optional)** — Every official release image is keyless-signed with Cosign in Sigstore:
 
 ```sh
-cosign verify ghcr.io/ferrislabs/ferristrace:0.1.0 \
+cosign verify ghcr.io/ferristrace/ferristrace:0.1.0 \
   --certificate-oidc-issuer https://token.actions.githubusercontent.com \
   --certificate-identity-regexp '^https://github.com/Ferristrace/ferristrace/\.github/workflows/docker\.yaml@'
 ```

@@ -1,7 +1,7 @@
 name: docker
 
-# main push      -> ghcr.io/ferrislabs/ferristrace-website:sha-<7 chars>
-# tag v0.1.0     -> ghcr.io/ferrislabs/ferristrace-website:0.1.0 and :latest
+# main push      -> ghcr.io/ferristrace/ferristrace-website:sha-<7 chars>
+# tag v0.1.0     -> ghcr.io/ferristrace/ferristrace-website:0.1.0 and :latest
 # tag v0.1.0-rc1 -> :0.1.0-rc1 only
 # `latest` is never put on a sha build.
 #
@@ -53,7 +53,7 @@ permissions:
   contents: read
 
 env:
-  IMAGE: ghcr.io/ferrislabs/ferristrace-website
+  IMAGE: ghcr.io/ferristrace/ferristrace-website
 
 jobs:
   gate:
@@ -103,7 +103,7 @@ jobs:
         id: changelog
         shell: bash
         env:
-          CHANGELOG_URL: https://raw.githubusercontent.com/ferrislabs/ferristrace/main/CHANGELOG.md
+          CHANGELOG_URL: https://raw.githubusercontent.com/Ferristrace/ferristrace/main/CHANGELOG.md
         run: |
           # The site reads this file while it builds. The layer cache cannot see
           # that, so a new release has to change a build argument to rebuild it.

@@ -5,7 +5,7 @@ nameOverride: ""
 fullnameOverride: ""
 
 image:
-  repository: ghcr.io/ferrislabs/ferristrace-docs
+  repository: ghcr.io/ferristrace/ferristrace-docs
   # REQUIRED. Pin an immutable tag such as sha-<commit>. There is no default on
   # purpose: a chart that quietly falls back to a tag can ship the wrong site.
   tag: ""

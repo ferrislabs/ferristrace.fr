@@ -48,7 +48,7 @@ Update `FERRISTRACE_IMAGE` in `deploy/.env` (or `git pull` if building from sour
 
 ```sh
 cd deploy
-export FERRISTRACE_IMAGE=ghcr.io/ferrislabs/ferristrace:0.2.0
+export FERRISTRACE_IMAGE=ghcr.io/ferristrace/ferristrace:0.2.0
 docker compose pull
 docker compose up --detach
 ```
@@ -57,7 +57,7 @@ docker compose up --detach
 <CodeTab label="Kubernetes (Helm)">
 
 ```sh
-helm upgrade ferristrace oci://ghcr.io/ferrislabs/charts/ferristrace \
+helm upgrade ferristrace oci://ghcr.io/ferristrace/charts/ferristrace \
   --version 0.2.0 \
   --namespace ferristrace \
   -f values.yaml
