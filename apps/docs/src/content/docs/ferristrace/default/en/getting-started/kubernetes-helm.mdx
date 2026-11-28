@@ -7,7 +7,7 @@ order: 4
 
 # Deploy on Kubernetes (Helm)
 
-FerrisTrace publishes an official OCI Helm chart at `oci://ghcr.io/ferrislabs/charts/ferristrace` matching every release tag.
+FerrisTrace publishes an official OCI Helm chart at `oci://ghcr.io/ferristrace/charts/ferristrace` matching every release tag.
 
 The chart deploys `ferristrace` as a stateless, horizontally scalable `Deployment` (plus optional `ferristrace-mcp` and `ferristrace-mcp-gateway` Deployments). **PostgreSQL, ClickHouse, Redis, and your OIDC provider are supplied externally** (for example via CloudNativePG, Altinity ClickHouse Operator, and a Redis cluster). On startup, `ferristrace` runs both PostgreSQL and ClickHouse schema migrations automatically.
 
@@ -91,7 +91,7 @@ httpRoute:
 ## Install the chart
 
 ```sh
-helm install ferristrace oci://ghcr.io/ferrislabs/charts/ferristrace \
+helm install ferristrace oci://ghcr.io/ferristrace/charts/ferristrace \
   --version 0.1.0 \
   --namespace ferristrace \
   --create-namespace \

@@ -5,7 +5,7 @@
 # resulting push triggers the deploy.
 #
 # From the core repository, on release:
-#   gh api repos/ferrislabs/ferristrace.fr/dispatches \
+#   gh api repos/Ferristrace/ferristrace.dev/dispatches \
 #     -f event_type=changelog-updated
 name: Changelog
 

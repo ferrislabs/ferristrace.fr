@@ -6,8 +6,8 @@ the Helm charts in `charts/`.
 
 | Site | Host | Image | Workflow |
 | --- | --- | --- | --- |
-| `apps/website` | `ferristrace.dev` (`www.` redirects to it) | `ghcr.io/ferrislabs/ferristrace-website` | `.github/workflows/docker.yaml` |
-| `apps/docs` | `docs.ferristrace.dev` | `ghcr.io/ferrislabs/ferristrace-docs` | `.github/workflows/docker-docs.yaml` |
+| `apps/website` | `ferristrace.dev` (`www.` redirects to it) | `ghcr.io/ferristrace/ferristrace-website` | `.github/workflows/docker.yaml` |
+| `apps/docs` | `docs.ferristrace.dev` | `ghcr.io/ferristrace/ferristrace-docs` | `.github/workflows/docker-docs.yaml` |
 
 ## How a deploy happens
 
@@ -53,8 +53,8 @@ Set up once, outside this repository:
 - **DNS** (Cloudflare): `ferristrace.dev`, `www.ferristrace.dev`, and
   `docs.ferristrace.dev` as A records to 163.172.34.223, DNS only (no proxy),
   or HTTP-01 cannot complete.
-- **GHCR packages** `ferrislabs/ferristrace-website` and
-  `ferrislabs/ferristrace-docs` set to public. The charts have no pull secret;
+- **GHCR packages** `ferristrace/ferristrace-website` and
+  `ferristrace/ferristrace-docs` set to public. The charts have no pull secret;
   a private package ends in `ImagePullBackOff`.
 
 ## First deploy

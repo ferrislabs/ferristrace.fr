@@ -13,7 +13,7 @@ const ORG = 'https://github.com/Ferristrace'
 const CONSOLE = 'https://console.ferristrace.dev'
 
 /** Container image, `<registry namespace>/<image>`. Change it here and every command follows. */
-export const IMAGE = 'ferrislabs/ferristrace'
+export const IMAGE = 'ferristrace/ferristrace'
 
 /**
  * Without this, every docs link silently becomes a relative path on the

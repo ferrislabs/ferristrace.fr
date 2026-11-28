@@ -87,7 +87,7 @@ Variables without the `FERRISTRACE_` prefix parameterize `deploy/docker-compose.
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
-| `FERRISTRACE_IMAGE` | built locally | Published server image (`ghcr.io/ferrislabs/ferristrace:X.Y.Z`) |
+| `FERRISTRACE_IMAGE` | built locally | Published server image (`ghcr.io/ferristrace/ferristrace:X.Y.Z`) |
 | `OTLP_GRPC_PORT` / `OTLP_HTTP_PORT` | `4317` / `4318` | Published host ports for gRPC and HTTP/UI |
 | `RETENTION_DAYS` | `30` | Passed to `FERRISTRACE_SPANS__RETENTION_DAYS` |
 | `POSTGRES_PASSWORD` / `CLICKHOUSE_PASSWORD` | `ferristrace` | Store passwords |
