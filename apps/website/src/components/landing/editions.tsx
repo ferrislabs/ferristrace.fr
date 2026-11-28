@@ -50,7 +50,7 @@ export function Editions() {
               <CopyCommand
                 label="Copy the self-host commands"
                 lines={[
-                  '$ git clone https://github.com/ferrislabs/ferristrace.git',
+                  '$ git clone https://github.com/Ferristrace/ferristrace.git',
                   '$ cd ferristrace/deploy && docker compose up --detach',
                 ]}
               />

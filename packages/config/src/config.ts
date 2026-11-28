@@ -1,6 +1,6 @@
 import type { SiteConfig } from './contracts'
 
-const REPO = 'https://github.com/ferrislabs/ferristrace'
+const REPO = 'https://github.com/Ferristrace/ferristrace'
 
 export const defaultConfig: SiteConfig = {
   name: 'FerrisTrace',

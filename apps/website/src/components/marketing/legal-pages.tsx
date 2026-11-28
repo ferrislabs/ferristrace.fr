@@ -410,7 +410,7 @@ const termsSections: LegalSection[] = [
           <InlineLink href="https://www.apache.org/licenses/LICENSE-2.0">
             Apache License 2.0
           </InlineLink>{' '}
-          at <InlineLink href={links.github}>github.com/ferrislabs/ferristrace</InlineLink>. Nothing
+          at <InlineLink href={links.github}>github.com/Ferristrace/ferristrace</InlineLink>. Nothing
           in these Terms restricts your rights under that open-source licence.
         </p>
         <p>
@@ -1629,7 +1629,7 @@ const dpaSections: LegalSection[] = [
       <>
         <p>
           <strong>Transparency &amp; documentation:</strong> Because FerrisTrace is open-source (
-          <InlineLink href={links.github}>github.com/ferrislabs/ferristrace</InlineLink>), the
+          <InlineLink href={links.github}>github.com/Ferristrace/ferristrace</InlineLink>), the
           Customer can inspect the exact ingestion, storage, tenant-isolation, and authentication
           code running on FerrisTrace Cloud at any time. Upon written request, FerrisTrace also makes
           available information necessary to demonstrate compliance with Article 28 GDPR.
